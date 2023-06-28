@@ -1,0 +1,274 @@
+---
+title: "Programming with a move2 object"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Programming with a move2 object}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(move2)
+library(assertthat)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Function overview
+
+## Extracting information from a `move2` object
+
+- `sf::st_coordinates()`: returns the coordinates from the the events in the
+  track(s)
+
+- `sf::st_crs()`: returns the projection of the tracks(s)
+
+- `mt_time()`: returns the timestamps for each event in the track
+
+- `mt_track_data()`: returns the table containing the information associated to
+  the tracks
+
+- `mt_track_id()`: returns a vector of the track id associated to each event
+
+- `unique(mt_track_id())`: returns the names of the tracks
+
+- `mt_n_tracks()`: returns the number of the tracks
+
+- `nrow()/table(mt_track_id())`: returns the number of events in total and per
+  track respectively
+
+- `mt_time_column()`: returns the name of the column containing the timestamps
+  used by the `move2` object
+
+- `mt_track_id_column()`: returns the name of the column containing the track
+  ids used by the `move2` object
+
+## Transforming a `move2` object into other classes
+
+- `as.data.frame()`: creates a `data.frame` including all information contained
+  in the `move2`, note that for most purposes the `move2` already functions like
+  a `data.frame`
+
+- `data.table::as.data.table()`: creates a `data.table` including all
+  information contained in the `move2`
+
+- `to_move()`: converts to a object of class `Move`/`MoveStack`
+
+## Transforming other classes to a `move2` object
+
+- `mt_as_move2()`: creates a `move2` object from a `sf`, `data.frame` or
+  `Move`/`MoveStack` object
+
+## Useful functions
+
+- `mt_read(mt_example())`: example dataset
+
+- `split(x, mt_track_id(x))`: split a `move2` object into a list of single
+  objects per track
+
+- `mt_stack()`: combine multiple `move2` objects into one
+
+- `sf::st_transform()`: to reproject the `move2` into a different projection
+
+- `mt_track_lines()`: convert a trajectory into lines for plotting with e.g.
+  `ggplot`
+
+- use the option `options(sf_max.plot=1)` to display a single plot of the track.
+  The attribute that should be used to color the tracks can be specified, e.g.
+  `plot(x["individual_local_identifier"])`.
+  [Here](https://r-spatial.github.io/sf/articles/sf5.html) is more information
+  on how to do simple plots.
+
+All functions of the `move2` package are described
+[here.](https://bartk.gitlab.io/move2/reference/index.html)
+
+# Structure of the `move2` object 
+- it is based on the `sf` objects and compatible with a lot of
+  `dplyr`/`tidyverse` based functionality
+
+- information of non location data (other sensors as e.g. acceleration,
+  magnetometer,etc) are associated to an empty locations.
+
+- *track attributes* and *event attributes* are distinguished. *event
+  attributes* are attributes associated to each recorded event (location or non
+  location), these will at least have a time and track id associated to them.
+  *track attributes* are attributes associated to each track (e.g. individual,
+  species, sex, etc), these will at least contain the track id, and can be
+  retrieved with the function `mt_track_data()`
+
+## Explanation
+
+To be able to expand and use the object in `move2` it is important to understand
+how the objects is structured. Here we explain some of the choices and explain
+the requirements.
+
+A move object in `move2` uses the `S3` class system, this is less rigors then
+the `S4` system that was used in the original `move` package. The objects are
+based on the `sf` objects from the `sf` package. This change is inspired by
+several factors, first by basing on `sf` we are able to profit from the speed
+and improvements that went into that package, second it makes it directly
+compatible with a lot of `dplyr`/`tidyverse` based functionality. To ensure
+information specific to movement is retrained we use attributes. This is in a
+fairly similar style to `sf`.
+
+To facilitate working with the associated sensor data we store other records
+with an empty point. This means, for example, acceleration and activity
+measurements can be part of the same `tbl`/`data.frame`.
+
+The `sf` package and `sf` in general allow to store coordinates as three
+dimensional records. As the altitude of tracking devices is typically much less
+accurate, few functions actually support this functionality we do not use it at
+this time.
+
+In the `move` package we implemented separate objects for one single individuals
+(`Move`) and multiple individuals (`MoveStack`). Here we choose to not do this.
+This reduces complexity. If functions require single individuals to work it is
+easy enough to split these of.
+
+### Event data
+
+Tracking data generally consists of a time series of observations from a range
+of "sensors". Each of these observation or events at least have a time and a
+sensor associated with them. Some have a location recorded by, for example, a
+gps sensor other have non locations data like acceleration or gyroscope
+measurements. All events are combined in one large dataset, this facilitates
+combined analysis between them (e.g. interpolation to the position of an
+acceleration measurement). However for some analysis specific sensors or data
+types will be needed therefore filtering functions are available that subset the
+data to, for example, all location data.
+
+### Separating track attributes
+
+To facilitate working with the trajectories we distinguish between track
+attributes and event attributes. Track level data could be individual and
+species names, sex and age. This can furthermore greatly facilitate object sizes
+as that is not duplicated. Keeping track attributes separate also contributes to
+data integrity as ensures track level attributes are consistent within a track.
+
+## Attributes
+
+In this section we go through the attributes that `move2` uses.
+
+### `time_column`
+
+This attributes should contain a string with a length of `1`. This string
+indicates in which column the timestamp information of the locations in it. The
+string should thus be an existing column. The time column in most cases will
+contain timestamps in the `POSIXct` format. In some cases timestamps will not be
+referring to an exact time point. For example when simulating movement data or
+analysis from a video. In these cases times can also be stored as `integer` or
+`numeric` values.
+
+### `track_id_column`
+
+This attribute should contain a string of length `1`. A column with this name
+should be contained both in the `track_data` attribute and in the main dataset.
+This column also functions as the link between the `track_data` and the main
+data, linking the individual attributes to the individual data.
+
+### `track_data`
+
+This dataset contains the track level data. Properties of the individual follows
+(e.g. sex, age and name) can be stored here. Additionally other deployment level
+information can be contained. As the move2 package does not separate
+individuals, tags and deployments. All information from these 3 entities in
+movebank are combined here.
+
+## Special columns
+
+### `time_column`
+
+Using the `time_column` attribute this column can be identified, for quick
+retrieval there is the `mt_time` function. Values should be either timestamps
+(e.g. `POSIXct`, `Date`) or `numeric`. Numeric values are facilitated as it can
+be useful for simulation, videos and laboratory experiments were absolute time
+reference is not available or relevant.
+
+### `track_id_column`
+
+This column is identified by the `track_id_column` attributes, values can either
+be a `character`, `factor` or `integer` like values. For retrieval there is the
+`mt_track_id` function.
+
+## General considerations
+
+### Quality checking
+
+In `move` relatively stringent quality checking was done on the object. This
+enforced certain attributes for a trajectory that are sensible but in practice
+are not always adhered to. Some of these properties are:
+
+- Every record had a valid location (except for `unUsedRecords` but those were
+  rarely used)
+
+- Records were time ordered within individual
+
+- All individuals were ordered
+
+- Timestamps could not be duplicated.
+
+Even though these are some useful properties for subsequent work when reading
+not all data adheres to these standards. To solve this there were options to
+remove duplicated records but these simply took the first record. Here we take a
+more permissive approach where less stringent checking is done on the input
+side. This means functions working with `move2` need to ensure input data
+adheres to their expectations. To facilitate that several assertion functions
+are provided that can quickly check data. Taking this approach gives the users
+more flexibility in resolving inconsistencies within R. We provide several
+functions to make this work quick. For specific use cases more informed
+functions can be developed.
+
+If you are writing functions based on the `move2` package and your function
+assumes a specific data structure this can best be checked with `assert_that` in
+combination with one of the assertion functions. This construct results in
+informative error messages:
+
+```{r, error=T}
+data <- mt_sim_brownian_motion(1:3)[c(1, 3, 2, 6, 4, 5), ]
+assert_that(mt_is_time_ordered(data))
+```
+
+### Function naming schemes
+
+To facilitate finding functions and assist in recognizably we use a prefix. For
+functions relating to movement trajectories we use `mt_`, similar to how the
+`sf` package uses `st_` for spatial type. This prefix has the advantage of being
+short compared to `move_`. Functions for accessing data from
+[movebank](https://www.movebank.org) use the prefix `movebank_`. Furthermore do
+all assertions functions start with either `mt_is_` or `mt_has_`.
+
+### Return type segment wise properties
+
+When analyzing trajectories frequently metrics are calculated that are
+properties of the time period in between two observations. Prime examples are
+the distance and speed between locations. This means that for each track with a
+length of $n$ locations there are $n-1$ measurements. To facilitate storing and
+processing this data we pad each track with a `NA` value at the end. This
+ensured that return vectors from functions like `mt_distance`, `mt_speed` and
+`mt_azimuth` return vectors with the same length of as the number of rows in the
+`move2` object. If the return values from these kind of functions are assigned
+to the `move2` object the properties stored in the first row reflect the value
+for the interval between the first and second row.
+
+Some metrics are calculated as a function of the segment before and after a
+segment (e.g. turn angles). In these cases the return vectors still have the
+same length however they are padded by a `NA` value at the beginning and end of
+each track so that the metric is stored with the location it is representative
+for.
+
+### Data size
+
+Data sets have been growing considerably over the past decade since `move` was
+written. The ambition with `move2` is to facilitate this trend. It should work
+smoothly with trajectories of more then a million records. We have successfully
+loaded up to 30 million events into R, however at some stage memory limitations
+of the host computer start being a concern. This can to some extent be
+alleviated by omitting unnecessary columns from the data set, either at download
+or when reading the data. An alternative approach would be to facilitate working
+with trajectories on disk or within a database (alike `dbplyr`). However since
+many functions and packages we rely on do not support this, we opt not to do
+this. Therefore, if reducing the data loaded does not solve the problem, it can
+be advisable to use a computer with more memory or when possible split up
+analysis per track.

@@ -1,0 +1,281 @@
+---
+title: "Downloading data from movebank"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Downloading data from movebank}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+knitr::knit_hooks$set(time_it = local({
+  now <- NULL
+  function(before, options) {
+    if (before) {
+      # record the current time before each chunk
+      now <<- Sys.time()
+    } else {
+      # calculate the time difference after a chunk
+      res <- units::as_units(difftime(Sys.time(), now))
+      # return a character string to show the time
+      paste(
+        '<div style="text-align: right; margin-top: -10px;"><font size="-3">This code took:',
+        format(res, digits = 3, nsmall = 1), "</font></div>"
+      )
+    }
+  }
+}))
+krba <- getOption("keyring_backend")
+options("keyring_backend" = "env")
+```
+
+```{r setup}
+library(move2)
+```
+
+# User credentials
+
+The credentials of the user are stored using the `keyring` package. With the
+following command a user can be added to the keyring. Run this line once, it
+will store your credentials in keyring. After that every time you load `move2`
+and execute a download function from movebank, these functions will retrieve
+your credentials from keyring.
+
+```{r, eval=F}
+movebank_store_credentials("myUserName", "myPassword")
+```
+
+```{r, echo=F}
+movebank_store_credentials("asf", "adsf", force = TRUE)
+```
+
+```{r}
+movebank_remove_credentials()
+```
+
+The `keyring` package can use several mechanisms to store credentials, these are
+called backends. Some of these backends are operating system dependent, others
+are more general. Some of the operating systems dependent backends have the
+advantage that they do not require providing credentials when opening a new R
+session.
+
+The `move2` package uses the default backend as is returned by
+`keyring::default_backend()`, this function thus shows the backend `move2` is
+using. If you want to change the default you can use the `keyring_backend`
+option, for more details see the \code{\link[keyring]{backends}} documentation
+in the keyring package.
+
+**macOS** and **Windows** generally do not require entering an extra password
+for keyring. The default in **Linux** is often the `file` backend which can be
+confusing as it creates an encrypted file with credentials that need a password
+to unlock. In this case a separate password for the keyring file has to be
+entered for each new R session before the movebank password can be accessed. To
+avoid having to enter each time a keyring password the Secret Service API can be
+used by installing the `libsecret` library. (Debian/Ubuntu: `libsecret-1-dev`;
+Recent RedHat, Fedora and CentOS systems: `libsecret-devel`)
+
+###  Handling multiple Movebank accounts - use `key_name`
+
+If you have multiple user accounts on movebank, the easiest way is to give each
+of them a key name with the argument `key_name`. For the most used account also
+the default option can be used. The `movebank_store_credentials()` only has to
+be executed once for each account. After that the credentials will be retrieved
+from keyring.
+
+```{r, eval=F}
+## store credentials for the most used account.
+movebank_store_credentials("myUserName", "myPassword")
+
+## store credentials for another movebank account
+movebank_store_credentials("myUserName_2", "myPassword_2", key_name = "myOtherAccount")
+```
+
+```{r, eval=TRUE, echo=FALSE}
+movebank_store_credentials("myUserName", "myPassword", force = TRUE)
+movebank_store_credentials("myUserName_2", "myPassword_2",
+  key_name = "myOtherAccount", force = TRUE
+)
+```
+
+When you want to download from Movebank using your default movebank account,
+nothing has to be specified before the download functions. If you want to
+download from Movebank with another account, than you should execute the line
+below, specifying the key name of the account to use, before the download
+functions are executed.
+
+```{r}
+options("move2_movebank_key_name" = "myOtherAccount")
+```
+
+If in one script/Rsession you are using several accounts, to use the credentials
+of the default account execute the line below:
+
+```{r}
+options("move2_movebank_key_name" = "movebank")
+```
+
+To check which accounts are stored in keyring:
+
+```{r, eval=FALSE}
+keyring::key_list()
+#   service           username
+# 1 movebank          myUserName
+# 2 myOtherAccount    myUserName_2
+```
+
+The `service` column corresponds to the names provided in `key_name`. The
+account entered without a key name (the default) will be called `movebank`. Note
+that the key names have to be unique, if there are several usernames with the
+same key name (service), it will cause an error.
+
+### Removing user credentials from keyring
+
+To deleted credentials from keyring:
+
+```{r}
+## for the default account
+movebank_remove_credentials()
+
+## for an account with a key name
+movebank_remove_credentials("myOtherAccount")
+```
+
+Next we can check if the keys are successfully removed:
+
+```{r, eval=FALSE}
+keyring::key_list()
+```
+```{r, echo=FALSE}
+# the previous statement can't be evaluated as the keyring is env which needs a service
+```
+# Downloading data
+
+```{r, echo=FALSE}
+options("keyring_backend" = krba)
+if (Sys.info()["user"] != "bart") {
+  if (Sys.getenv("MBPWD") != "") {
+    options(keyring_backend = "env")
+    move2::movebank_store_credentials("move2_user", Sys.getenv("MBPWD"))
+  } else {
+    knitr::opts_chunk$set(eval = FALSE)
+  }
+}
+```
+
+```{r}
+library(dplyr, quietly = TRUE)
+```
+
+Using the `movebank_retrieve` function it is possible to directly access the
+API, here all studies with a creative commons 0 license are returned. These are
+a good candidate for exploration and testing
+
+```{r, time_it=TRUE}
+movebank_retrieve(entity_type = "study", license_type = "CC_0") |>
+  select(id, name, number_of_deployed_locations) |>
+  filter(!is.na(number_of_deployed_locations))
+```
+
+A more quick way to retrieve the information is the following (the selection is
+performed on movebank and not all data is downloaded):
+
+```{r, eval=FALSE}
+movebank_download_study_info(license_type = "CC_0")
+```
+
+By default all attributes are downloaded:
+
+```{r, time_it=TRUE}
+movebank_download_study(2911040, sensor_type_id = "gps")
+```
+
+For speed of download you might want to add the argument `attributes = NULL` as
+it reduces the columns to download to the bare minimum. Note still all
+individual attributes are downloaded as this does not take much time.
+
+```{r, time_it=TRUE}
+movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
+```
+
+If only specific attributes want to be download you can state them in the argument `attributes`. The available attributes vary between studies and sensors. You can retrieve the list of available attributes for a specific sensor in given study. Note that only one sensor at a time can be stated.
+```{r, time_it=T}
+movebank_retrieve(entity_type = "study_attribute", study_id = 2911040, sensor_type_id = "gps")$short_name
+movebank_download_study(2911040, sensor_type_id = "gps",  attributes = c("height_above_ellipsoid", "eobs_temperature"))
+```
+
+
+Only load gps records:
+
+```{r, time_it=TRUE}
+movebank_download_study(1259686571, sensor_type_id = 653)
+```
+
+Note that the `sensor_type_id` can either be specified either of an `integer` or
+`character` with respectively the id or name of the sensor. In some cases
+additional data is added is downloaded if a specific sensor is selected. For
+example the column `eobs_acceleration_raw`:
+
+```{r, time_it=TRUE}
+movebank_download_study(2911040, sensor_type_id = "acceleration")
+```
+
+The following list of sensors is available:
+
+```{r}
+movebank_retrieve(
+  "entity_type" = "tag_type",
+  attributes = c("external_id", "id")
+)
+```
+
+Alternatively more informative names can be used for some arguments. For example
+you can use a `character` string to identify a study or a timestamp as a
+`POSIXct`:
+
+```{r, time_it=TRUE}
+movebank_download_study("LBBG_JUVENILE",
+  sensor_type_id = "gps",
+  timestamp_start = as.POSIXct("2021-02-03 00:00:00"),
+  timestamp_end = as.POSIXct("2021-03-03 00:00:00")
+)
+```
+
+# Deployments
+
+If you are interested in the deployment information you can use the
+`movebank_download_deployment` function.
+
+```{r galapagos_deployment, time_it=T}
+movebank_download_deployment("Galapagos Albatrosses")
+```
+
+# Advanced usage
+
+For specific request it might be useful to directly retrieve information from
+the movebank api. The `movebank_retrieve` function provides this functionality.
+The first argument is the entity type you would like to retrieve information for
+(e.g. `tag` or `event`). Other arguments make it possible to select, a study id
+is always required. For more details how to use the api see the
+[documentation](https://github.com/movebank/movebank-api-doc/blob/master/movebank-api.md).
+
+One common reason to use this options is to retrieve undeployed locations. In
+some cases a set of locations is collected before the tag attached to the animal
+for quality control or error measurements. The example below shows how all
+records for a specific tag can be retrieved. Filtering for locations where the
+`deployment_id` is `NA`, returns those locations that were collected while the
+tag was not deployed. The `timestamp_start` and `timestamp_end` might be good
+argument to filter down the data even more in the call to `movebank_retrieve`.
+
+```{r}
+movebank_retrieve("event",
+  study_id = 1259686571,
+  tag_local_identifier = "193967", attributes = "all"
+) %>%
+  filter(is.na(deployment_id))
+```

@@ -1,0 +1,178 @@
+## ---- include = FALSE---------------------------------------------------------
+knitr::opts_chunk$set(
+  collapse = TRUE, fig.width = 7, fig.height = 7,
+  comment = "#>"
+)
+if (Sys.info()["user"] != "bart") {
+  if (Sys.getenv("MBPWD") != "") {
+    options(keyring_backend = "env")
+    move2::movebank_store_credentials("move2_user", Sys.getenv("MBPWD"))
+  } else {
+    knitr::opts_chunk$set(eval = FALSE)
+  }
+}
+Sys.setlocale("LC_TIME", "en_US.utf8")
+
+## ----setup--------------------------------------------------------------------
+library(move2)
+vulture_data <-
+  movebank_download_study("Turkey vultures in North and South America")
+vulture_data
+
+## -----------------------------------------------------------------------------
+library(dplyr, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+library(rnaturalearth, quietly = TRUE)
+library(units, quietly = TRUE)
+vulture_lines <- vulture_data %>%
+  mutate_track_data(name = individual_local_identifier) %>%
+  mutate(
+    large_gaps = !(mt_time_lags(.) < set_units(1500, "h") |
+      is.na(mt_time_lags(.))),
+    track_sub_id = cumsum(lag(large_gaps, default = FALSE)),
+    new_track_id = paste(mt_track_id(.), track_sub_id)
+  ) %>%
+  mt_set_track_id("new_track_id") %>%
+  mt_track_lines()
+ggplot() +
+  geom_sf(data = ne_coastline(returnclass = "sf", 50)) +
+  theme_linedraw() +
+  geom_sf(
+    data = vulture_lines,
+    aes(color = name)
+  ) +
+  coord_sf(
+    crs = sf::st_crs("+proj=aeqd +lon_0=-83 +lat_0=8 +units=km"),
+    xlim = c(-3500, 3800), ylim = c(-4980, 4900)
+  )
+
+## -----------------------------------------------------------------------------
+library(magrittr, quietly = TRUE)
+library(lubridate, quietly = TRUE)
+vulture_data %<>% mutate(
+  month = month(mt_time(), label = TRUE, abbr = FALSE),
+  season = recode_factor(month,
+    January = "Wintering", February = "Wintering",
+    March = "Wintering", April = "North migration",
+    May = "North migration", June = "Breeding",
+    July = "Breeding", August = "Breeding",
+    September = "South migration", October = "South migration",
+    November = "Wintering", December = "Wintering"
+  ),
+  season = if_else(season == lead(season, 1) &
+    mt_track_id() == lead(mt_track_id(), 1),
+  season, NA
+  )
+)
+
+## -----------------------------------------------------------------------------
+vulture_data %<>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
+
+## -----------------------------------------------------------------------------
+library(circular, quietly = TRUE)
+vulture_azimuth_distributions <- vulture_data %>%
+  filter(speed > set_units(2, "m/s") & !is.na(season)) %>%
+  group_by(season, track_id = mt_track_id()) %>%
+  filter(n() > 50) %>%
+  summarise(azimuth_distribution = list(density(
+    as.circular(
+      drop_units(set_units(
+        azimuth,
+        "degrees"
+      )),
+      units = "degrees",
+      modulo = "asis",
+      zero = 0,
+      template = "geographic", rotation = "clock", type = "angles"
+    ),
+    bw = 180, kernel = "vonmises"
+  )))
+
+# Load purrr for map function
+library(purrr, quietly = TRUE)
+# Load tidy r for unnest function
+library(tidyr, quietly = TRUE)
+vulture_azimuth_distributions %>%
+  mutate(
+    x = map(azimuth_distribution, ~ .$x),
+    y = map(azimuth_distribution, ~ .$y)
+  ) %>%
+  select(-azimuth_distribution) %>%
+  unnest(c(x, y)) %>%
+  ggplot() +
+  geom_path(aes(x = x, y = y, color = season)) +
+  coord_polar(start = pi / 2) +
+  theme_linedraw() +
+  facet_wrap(~ factor(track_id)) +
+  scale_x_continuous(
+    name = NULL, breaks = (-2:1) * 90,
+    labels = c("S", "W", "N", "E")
+  ) +
+  scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L))
+
+## ---- fig.height=5------------------------------------------------------------
+leo <- vulture_data |>
+  filter_track_data(individual_local_identifier == "Leo") |>
+  mutate(speed_categorical = cut(speed, breaks = c(2, 5, 10, 15, 35)))
+leo |> ggplot(aes(x = azimuth, y = speed)) +
+  geom_point() +
+  scale_x_units(unit = "degrees", breaks = c(-2:2) * 90, expand = c(0L, 0L)) +
+  theme_linedraw()
+
+## -----------------------------------------------------------------------------
+leo |>
+  filter(speed > set_units(2L, "m/s") & !is.na(season)) |>
+  ggplot() +
+  coord_polar(start = pi) +
+  geom_histogram(
+    aes(
+      x = set_units(azimuth, "degrees"),
+      fill = speed_categorical
+    ),
+    breaks = set_units(seq(-180L, 180L, by = 10L), "degrees"),
+    position = position_stack(reverse = TRUE)
+  ) +
+  scale_x_units(
+    name = NULL,
+    limits = set_units(c(-180L, 180L), "degrees"),
+    breaks = (-2L:2L) * 90L
+  ) +
+  facet_wrap(~season) +
+  scale_fill_ordinal("Speed") +
+  theme_linedraw()
+
+## ---- fig.height=4, fig.width=5-----------------------------------------------
+pi_r <- set_units(pi, "rad")
+leo %>%
+  mutate(turnangle = mt_turnangle(.)) %>%
+  filter(speed > set_units(2L, "m/s") & lag(speed, 1L) > set_units(2L, "m/s")) %>%
+  ggplot() +
+  geom_histogram(
+    aes(
+      x = turnangle,
+      fill = speed_categorical
+    ),
+    position = position_stack(reverse = TRUE)
+  ) +
+  scale_fill_ordinal("Speed") +
+  coord_polar(start = pi) +
+  scale_x_units(limits = c(-pi_r, pi_r), name = NULL) +
+  scale_y_continuous(limits = c(-500L, 650L), breaks = c(0L, 250L, 500L)) +
+  theme_linedraw()
+
+## ---- fig.height=5------------------------------------------------------------
+vulture_data %<>% group_by(mt_track_id()) %>%
+  mutate(displacement = c(st_distance(
+    !!!syms(attr(., "sf_column")),
+    (!!!syms(attr(., "sf_column")))[row_number() == 1]
+  )))
+
+vulture_data %>% ggplot() +
+  geom_line(aes(
+    x = timestamp,
+    y = set_units(displacement, "km"),
+    color = individual_local_identifier
+  )) +
+  ylab("Distance from start") +
+  theme_linedraw()
+
