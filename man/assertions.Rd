@@ -28,7 +28,7 @@ mt_is_move2(x)
 if \code{FALSE} also 0 intervals are considered ordered}
 }
 \value{
-a logical value if the asserted property is true
+a logical value if the asserted property is \code{TRUE} or \code{FALSE}
 }
 \description{
 \itemize{
@@ -50,7 +50,29 @@ function is used in combination with \code{\link[assertthat]{assert_that}}. Thes
 normal logical operations as \code{TRUE} or \code{FALSE} is returned.
 }
 \examples{
+## examples of what to do if assertion if FALSE
+n <- 8
+data <- data.frame(x = cumsum(rnorm(n)), y = cumsum(rnorm(n)),
+                   time = seq(n), track = sample(c("a","b"), size=n, replace=TRUE))
+data <- rbind(data, data[sample(nrow(data),2),]) # adding duplicate timestamps
+mv <- mt_as_move2(data, coords = c("x", "y"),
+                  time_column = "time",
+                  track_id_column = "track")
+mv$geometry[c(1, 3)] <- sf::st_point() # adding empty locations
 
+mt_is_track_id_cleaved(mv)
+mv <- dplyr::arrange(mv, mt_track_id(mv))
+
+mt_is_time_ordered(mv)
+mv <- dplyr::arrange(mv, mt_track_id(mv), mt_time(mv))
+
+mt_has_unique_location_time_records(mv)
+mv <- mt_filter_unique(mv)
+
+mt_has_no_empty_points(mv)
+mv <- dplyr::filter(mv, !sf::st_is_empty(mv))
+
+## example of using the assertions with assertthat
 if (requireNamespace("assertthat")) {
   m <- mt_sim_brownian_motion(t = 1:2, tracks = 2)
   assertthat::see_if(mt_is_track_id_cleaved(m))

@@ -70,6 +70,10 @@ test_that("splitting track and assigning new id retains column and data removed 
     ))$sex,
     list(`a` = c("f", "f"), b = c("m", "m"))
   )
+
+  expect_identical(mt_set_track_id(m, gl(1, 20)) |> mt_track_data() |> class(), m |> mt_track_data() |> class())
+  m <- mt_set_track_data(m, dplyr::as_tibble(mt_track_data(m)))
+  expect_identical(mt_set_track_id(m, gl(1, 20)) |> mt_track_data() |> class(), m |> mt_track_data() |> class())
 })
 test_that("splitting track with new column", {
   m <- mt_sim_brownian_motion()
@@ -80,3 +84,12 @@ test_that("splitting track with new column", {
   expect_identical(mt_n_tracks(m), 4L)
 })
 # FIX do more tests with setting track id's and the track data
+
+test_that("Expect class of track data is retained", {
+  a <- mt_sim_brownian_motion()
+  a$new <- gl(4, 5)
+  expect_identical(mt_set_track_id(a, "new") |> mt_n_tracks(), 4L)
+  expect_identical(mt_set_track_id(a, "new") |> mt_track_data() |> class(), a |> mt_track_data() |> class())
+  a <- mt_set_track_data(a, dplyr::as_tibble(mt_track_data(a)))
+  expect_identical(mt_set_track_id(a, "new") |> mt_track_data() |> class(), a |> mt_track_data() |> class())
+})

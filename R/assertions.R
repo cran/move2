@@ -20,7 +20,7 @@ NULL
 #' @param non_zero If `TRUE` only intervals longer than 0 are considered ordered (i.e. no coinciding timestamps),
 #'  if `FALSE` also 0 intervals are considered ordered
 #'
-#' @return a logical value if the asserted property is true
+#' @return a logical value if the asserted property is `TRUE` or `FALSE`
 #'
 #' @details For these functions an \code{\link[assertthat]{on_failure}} error
 #' function is defined. This results in meaningful error messages when the
@@ -31,7 +31,29 @@ NULL
 #' @rdname assertions
 #' @export
 #' @examples
+#' ## examples of what to do if assertion if FALSE
+#' n <- 8
+#' data <- data.frame(x = cumsum(rnorm(n)), y = cumsum(rnorm(n)),
+#'                    time = seq(n), track = sample(c("a","b"), size=n, replace=TRUE))
+#' data <- rbind(data, data[sample(nrow(data),2),]) # adding duplicate timestamps
+#' mv <- mt_as_move2(data, coords = c("x", "y"),
+#'                   time_column = "time",
+#'                   track_id_column = "track")
+#' mv$geometry[c(1, 3)] <- sf::st_point() # adding empty locations
 #'
+#' mt_is_track_id_cleaved(mv)
+#' mv <- dplyr::arrange(mv, mt_track_id(mv))
+#'
+#' mt_is_time_ordered(mv)
+#' mv <- dplyr::arrange(mv, mt_track_id(mv), mt_time(mv))
+#'
+#' mt_has_unique_location_time_records(mv)
+#' mv <- mt_filter_unique(mv)
+#'
+#' mt_has_no_empty_points(mv)
+#' mv <- dplyr::filter(mv, !sf::st_is_empty(mv))
+#'
+#' ## example of using the assertions with assertthat
 #' if (requireNamespace("assertthat")) {
 #'   m <- mt_sim_brownian_motion(t = 1:2, tracks = 2)
 #'   assertthat::see_if(mt_is_track_id_cleaved(m))
@@ -53,7 +75,7 @@ on_failure(mt_is_track_id_cleaved) <- function(call, env) {
     i = "The following {qty(length(unique(x[duplicated(x)])))}track{?s} occu{?rs/r} at multiple places in
                  the data set: {.var {unique(x[duplicated(x)])}}.",
     i = "This can be resolved resolved by ordering the data e.g.:
-                 {.code {as_label(call$x)}[order(mt_track_id({as_label(call$x)})),]} "
+                 {.run {as_label(call$x)}[order(mt_track_id({as_label(call$x)})),]} "
   ))
 }
 
@@ -81,9 +103,14 @@ on_failure(mt_is_time_ordered) <- function(call, env) {
 
   i <- which(!(ifelse(non_zero, `>`, `>=`)(as.numeric(diff(t)), 0L) | # nolint
     diff(as.numeric(id)) != 0L))[1L]
-  format_error(c("Not all timestamps in {.arg {as_label(call$x)}} are ordered within track.",
+  format_error(c(
+    e = "Not all timestamps in {.arg {as_label(call$x)}} are ordered within track.",
+    i = ifelse(non_zero,
+      "It is required that all record have a positive time difference compared to the previous one.",
+      "It is required that all subsequent records have an equal or later timestamps."
+    ),
     i = " The first offending record is of track: {.val {id[i]}} at time: {.val {t[i]}}
-                 (record: {.val {i}}), the next record has an earlier timestamp."
+                 (record: {.val {i}}), the next record has an earlier {if(non_zero){'or equal'}} timestamp."
   ))
 }
 

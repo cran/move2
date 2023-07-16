@@ -102,6 +102,7 @@ test_that("Download api license acceptance message", {
     withr::with_options(list(keyring_backend = "env"), {
       expect_identical(movebank_get_study_id("Martes pennanti LaPoint") |> as.integer(), 6925808L)
       expect_error(movebank_get_study_id("LBBG"), "The argument `study_id` matches more then one study")
+      expect_error(movebank_get_study_id("LBsfwerwxczvsdfBG"), "The argument `study_id` currently does not match any study")
       expect_s3_class(a <- movebank_download_study_info(attributes = c("go_public_date", "id")), "tbl")
       expect_identical(a |> pull("go_public_date") |> lubridate::tz(), "UTC")
       expect_error(
@@ -133,6 +134,13 @@ test_that("Download deployment", {
       expect_true("deploy_on_longitude" %in% colnames(data))
       expect_true("deploy_on_latitude" %in% colnames(data))
       expect_false("deploy_on_location" %in% colnames(data))
+      show_failure(expect_error(
+        movebank_download_study(604906833),
+        paste0(
+          "by trying to retrieve a none existant ",
+          "individual. Or no data is available for download in"
+        )
+      )) # allow for failure as study might change properties
     })
   )
 })
@@ -220,11 +228,57 @@ test_that("unknown error", {
 test_that("error on wron specification of study id", {
   expect_error(
     movebank_download_deployment(letters),
-    "is not an whole number .e.g. integer or integer64., therefore it can not be interpreted as"
+    "is not an whole number .e.g. <integer> or <integer64>., therefore it can not be interpreted as"
   )
 
   expect_error(
     movebank_download_study(letters),
-    "is not an whole number .e.g. integer or integer64., therefore it can not be interpreted as"
+    "is not an whole number .e.g. <integer> or <integer64>., therefore it can not be interpreted as"
   )
+})
+test_that("Local test of argos gps study", {
+  skip_if_offline()
+  skip_on_cran()
+  skip_if_no_mbpwd()
+  skip_if(!keyring::has_keyring_support())
+  skip_if(!inherits(keyring::default_backend(), "backend_secret_service"))
+  skip_if(!keyring::default_backend()$is_available())
+  skip_if(keyring::key_list(
+    getOption("move2_movebank_key_name"),
+    keyring = getOption("move2_movebank_keyring")
+  )$username != "bart")
+  expect_message(
+    tmp <- movebank_download_study(8849883),
+    "[0-9][0-9] records were omitted as they were not deployed"
+  )
+  expect_identical(
+    tmp$event_id[2],
+    (dta <- movebank_retrieve("event",
+      study_id = 8849883, attributes = "all",
+      convert_spatial_columns = F
+    ))$event_id[2]
+  )
+  expect_equal(
+    unlist(dta[2, c("location_long", "location_lat")]),
+    sf::st_coordinates(tmp)[2, ],
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    unlist(dta[70031, c("location_long", "location_lat")]),
+    sf::st_coordinates(tmp)[tmp$event_id == dta$event_id[70031], ],
+    ignore_attr = TRUE
+  )
+  expect_s3_class(tmp$argos_location_1, "sfc")
+  expect_s3_class(tmp$argos_location_2, "sfc")
+  expect_identical(st_crs(tmp$argos_location_1), st_crs(4326))
+  expect_false("argos_location_2" %in% colnames(dta))
+  expect_false("argos_location_1" %in% colnames(dta))
+  expect_false("argos_lat2" %in% colnames(tmp))
+  expect_false("argos_lat1" %in% colnames(tmp))
+  expect_false("argos_lon2" %in% colnames(tmp))
+  expect_false("argos_lon1" %in% colnames(tmp))
+  expect_type(dta$argos_lon1, "double")
+  expect_type(dta$argos_lon2, "double")
+  expect_type(dta$argos_lat1, "double")
+  expect_type(dta$argos_lat2, "double")
 })

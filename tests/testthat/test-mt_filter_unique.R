@@ -1,3 +1,32 @@
+test_that("subset function behaves as expected", {
+  for (i in 0:2) {
+    d <- data.frame(a = 1, b = c(1, NA), d = c(NA, 1), e = 1:4, f = 1:2)
+    d <- d[c(seq_len(i), seq_len(nrow(d))), ]
+    t <- mt_sim_brownian_motion(tracks = 1, t = rep(1, 4 + i))
+    d <- bind_cols(t, d)
+
+    for (j in seq_len(nrow(d)))
+    {
+      expect_identical(slice_subsets(j, d), j)
+    }
+    expect_identical(slice_subsets(i + 1:2, d[, 3:4]), i + 1L)
+    expect_identical(slice_subsets(i + 3:4, d[, 3:4]), i + 3L)
+    expect_identical(slice_subsets(i + 1:2, d[, c(5, 3)]), i + 2L)
+    expect_identical(slice_subsets(i + 3:4, d[, c(5, 3)]), i + 4L)
+    expect_identical(slice_subsets(i + 1:2, d[, 3:5]), i + 1:2)
+    expect_identical(slice_subsets(i + 3:4, d[, 3:5]), i + 3:4)
+    expect_identical(slice_subsets(i + 1:2, d[, c(6, 3)]), i + 1:2)
+    expect_identical(slice_subsets(i + 3:4, d[, c(6, 3)]), i + 3:4)
+    expect_identical(slice_subsets(i + 1:2, d[, c(6, 7)]), i + 1:2)
+    expect_identical(slice_subsets(i + 3:4, d[, c(6, 7)]), i + 3:4)
+    expect_identical(slice_subsets(i + 1:4, d[, c(4, 7)]), i + 1:2)
+    expect_identical(slice_subsets(i + 1:4, d[, c(5, 7)]), i + 1:2)
+    expect_identical(slice_subsets(i + 1:4, d[, c(3, 6)]), i + 1:4)
+    expect_identical(slice_subsets(i + 1:4, d[, c(3, 7)]), i + 1:2)
+    expect_identical(slice_subsets(i + 1:4, d[, c(3, 4)]), i + 1L)
+    expect_identical(slice_subsets(i + 1:4, d[, c(3, 5)]), i + 2L)
+  }
+})
 test_that("Filtering with different methods", {
   m <- bind_cols(mt_sim_brownian_motion(1:3), aa = 6:1, bb = 12:7)
   rownames(m) <- NULL

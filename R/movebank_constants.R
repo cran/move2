@@ -499,7 +499,7 @@ movebank_column_types <- list(
   "modelled" = col_logical(),
   "mortality-status" = col_factor(),
   # "motus:batch-id", # not documented in mb dictionary
-  "mw:activity-count" = col_integer(),
+  "mw:activity-count" = col_double(), # in study 108391885
   "mw:show-in-KML" = col_logical(),
   "mw:show-in-kml" = col_logical(),
   "name" = col_factor(), # = study name

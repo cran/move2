@@ -124,6 +124,11 @@ mt_sim_brownian_motion <- function(t = 1L:10L, # nolint
     if (inherits(dt, "difftime")) {
       dt <- as.numeric(dt, units = "secs")
     }
+    if (!is.numeric(sigma)) {
+      cli_abort("The values of {.code sigma} should be {.cls numeric}, the current class is {.cls {class(sigma)}}.",
+        class = "move2_error_sigma_not_numeric"
+      )
+    }
     sigma <- sqrt((sigma^2) * dt)
   }
   if (length(sigma) != (n - 1)) {

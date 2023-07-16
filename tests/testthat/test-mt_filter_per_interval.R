@@ -23,8 +23,15 @@ test_that("need time input", {
     ),
     expected = c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE)
   )
+  skip_on_os("mac", arch = "x86_64")
   expect_equal(
-    mt_per_interval(mt_sim_brownian_motion(t = as.POSIXct(as.Date(0:6 * 15, "1970-1-1")), tracks = 1),
+    mt_per_interval(
+      mt_sim_brownian_motion(
+        t = as.POSIXct(as.Date((0:6 * 15) + 0, "1970-1-1"),
+          tz = "UTC"
+        ),
+        tracks = 1
+      ),
       criterion = "last", unit = "month"
     ),
     expected = c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE)

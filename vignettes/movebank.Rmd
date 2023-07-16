@@ -143,7 +143,7 @@ To deleted credentials from keyring:
 movebank_remove_credentials()
 
 ## for an account with a key name
-movebank_remove_credentials("myOtherAccount")
+movebank_remove_credentials(key_name = "myOtherAccount")
 ```
 
 Next we can check if the keys are successfully removed:
@@ -205,8 +205,19 @@ movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
 
 If only specific attributes want to be download you can state them in the argument `attributes`. The available attributes vary between studies and sensors. You can retrieve the list of available attributes for a specific sensor in given study. Note that only one sensor at a time can be stated.
 ```{r, time_it=T}
-movebank_retrieve(entity_type = "study_attribute", study_id = 2911040, sensor_type_id = "gps")$short_name
-movebank_download_study(2911040, sensor_type_id = "gps",  attributes = c("height_above_ellipsoid", "eobs_temperature"))
+movebank_retrieve(
+  entity_type = "study_attribute",
+  study_id = 2911040,
+  sensor_type_id = "gps"
+)$short_name
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = "gps",
+  attributes = c(
+    "height_above_ellipsoid",
+    "eobs_temperature"
+  )
+)
 ```
 
 
@@ -229,7 +240,7 @@ The following list of sensors is available:
 
 ```{r}
 movebank_retrieve(
-  "entity_type" = "tag_type",
+  entity_type = "tag_type",
   attributes = c("external_id", "id")
 )
 ```
@@ -272,7 +283,7 @@ records for a specific tag can be retrieved. Filtering for locations where the
 tag was not deployed. The `timestamp_start` and `timestamp_end` might be good
 argument to filter down the data even more in the call to `movebank_retrieve`.
 
-```{r}
+```{r advance, time_it=TRUE}
 movebank_retrieve("event",
   study_id = 1259686571,
   tag_local_identifier = "193967", attributes = "all"

@@ -47,7 +47,7 @@ x |> mt_set_track_id("new_id")
 mt_track_id(x) <- gl(4, 5)
 ## example of track data attributes being combined
 m <- mt_sim_brownian_motion(1:3, tracks = letters[5:8]) |>
-mutate_track_data(sex = c("f",'f','m', "m"), age=c(4,4,5,6), old_track=track)
-new_m <- m |> mt_set_track_id(c(rep("a",6), rep("b",6)))
+  mutate_track_data(sex = c("f", "f", "m", "m"), age = c(4, 4, 5, 6), old_track = track)
+new_m <- m |> mt_set_track_id(c(rep("a", 6), rep("b", 6)))
 mt_track_data(new_m)
 }

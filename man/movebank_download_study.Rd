@@ -118,22 +118,25 @@ For more elaborate usage see \code{vignette("movebank", package='move2')}
 \examples{
 \dontrun{
 ## download entire study (all data of all sensors)
-movebank_download_study_info(study_id=myStudyID)$sensor_type_ids
-movebank_download_study(2911040, sensor_type_id= c("gps", "acceleration"))
+movebank_download_study_info(study_id = myStudyID)$sensor_type_ids
+movebank_download_study(2911040, sensor_type_id = c("gps", "acceleration"))
 
 ## download data of one individual
 movebank_download_study(2911040,
   individual_local_identifier = "unbanded-160"
 )
 ## download gps data for multiple individuals
-movebank_download_study(2911040, sensor_type_id= "gps",
+movebank_download_study(2911040,
+  sensor_type_id = "gps",
   individual_local_identifier = c("1094-1094", "1103-1103")
 )
-movebank_download_study(2911040, sensor_type_id= "gps",
+movebank_download_study(2911040,
+  sensor_type_id = "gps",
   individual_id = c(2911086, 2911065)
 )
 ## download acceleration data of one or several individuals
-movebank_download_study(2911040, sensor_type_id= "acceleration",
+movebank_download_study(2911040,
+  sensor_type_id = "acceleration",
   individual_local_identifier = "1094-1094"
 )
 ## download data of a specific time window and sensor
@@ -146,7 +149,8 @@ movebank_download_study(2911040,
 ## download study filtered to one location per day
 ## (see movebank api documentation for options)
 ## also possible to add specific columns in "attributes"
-movebank_download_study(2911040, sensor_type_id = "gps",
+movebank_download_study(2911040,
+  sensor_type_id = "gps",
   event_reduction_profile = "EURING_01",
   attributes = NULL
 )

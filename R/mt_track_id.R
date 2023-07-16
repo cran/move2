@@ -93,10 +93,12 @@ mt_set_track_data <- function(x, data) {
 #'   n = dplyr::n()
 #' )
 #' ## plot of the tracks as a line
-#' mt_sim_brownian_motion(tracks=letters[1:2],
-#' start_location = list(c(0, 0), c(10, 0))) |>
-#' mt_track_lines() |>
-#' plot()
+#' mt_sim_brownian_motion(
+#'   tracks = letters[1:2],
+#'   start_location = list(c(0, 0), c(10, 0))
+#' ) |>
+#'   mt_track_lines() |>
+#'   plot()
 #'
 #' @export
 mt_track_lines <- function(x, ...) {
@@ -277,9 +279,9 @@ assert_valid_track_id <- function(track_ids) {
 #' x |> mt_set_track_id("new_id")
 #' mt_track_id(x) <- gl(4, 5)
 #' ## example of track data attributes being combined
-#'m <- mt_sim_brownian_motion(1:3, tracks = letters[5:8]) |>
-#' mutate_track_data(sex = c("f",'f','m', "m"), age=c(4,4,5,6), old_track=track)
-#' new_m <- m |> mt_set_track_id(c(rep("a",6), rep("b",6)))
+#' m <- mt_sim_brownian_motion(1:3, tracks = letters[5:8]) |>
+#'   mutate_track_data(sex = c("f", "f", "m", "m"), age = c(4, 4, 5, 6), old_track = track)
+#' new_m <- m |> mt_set_track_id(c(rep("a", 6), rep("b", 6)))
 #' mt_track_data(new_m)
 mt_set_track_id <- function(x, value) {
   if (is_scalar_character(value) && !has_name(x, value)) {
@@ -309,17 +311,18 @@ mt_set_track_id <- function(x, value) {
   }
   assert_valid_track_id(value)
   mapping <- distinct(data.frame(old = mt_track_id(x), new = value))
-
   new_track_data <- merge(mapping, mt_track_data(x),
     by.x = "old",
     by.y = mt_track_id_column(x), all.x = TRUE, suffixes = c(".x", "")
   )
+
   new_track_data[, 1] <- NULL
   # now we have matched the old name is no longer needed, by index because name might have changed in merge
-  if (new_column_name %in% colnames(new_track_data)) {
+  if (new_column_name %in% colnames(new_track_data)[-1]) {
     new_track_data[, new_column_name] <- NULL # prevent duplicated column names
   }
   colnames(new_track_data)[1] <- new_column_name
+
   if (anyDuplicated(new_track_data[, new_column_name])) {
     # some individuals combine previous data generate list columns to retain this duplicated data
     data <- unique(new_track_data[, new_column_name, drop = FALSE])
@@ -335,10 +338,16 @@ mt_set_track_id <- function(x, value) {
     }
     new_track_data <- data
   }
+
   # no valid df created therefore empty track data
   if (!all(unique(value) %in% new_track_data[, new_column_name])) {
     new_track_data <- setNames(data.frame(unique(value)), new_column_name)
   }
+  if (inherits(mt_track_data(x), "tbl")) {
+    # to ensure class of track data does not change
+    new_track_data <- dplyr::as_tibble(new_track_data)
+  }
+
   # now fit the `move2` object by adding the column setting the attributes and data (not attribute is set twice first
   # time to enable data setting), second time does some quick checks
   x[, new_column_name] <- value

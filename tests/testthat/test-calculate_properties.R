@@ -138,6 +138,15 @@ test_that("Failures correct", {
   expect_error(m[c(1, 3, 2), ] |> mt_distance(), "Not all timestamps in `x` are ordered within track.")
   expect_error(m[c(1, 3, 2), ] |> mt_time_lags(), "Not all timestamps in `x` are ordered within track.")
   expect_error(
+    m |> sf::st_set_crs(4326) |> st_transform(3857) |> mt_azimuth(),
+    "Currently the calculation of azimuths is not implemented for this projectio"
+  )
+  expect_error(
+    m |> sf::st_set_crs(4326) |> st_transform(3857) |> mt_turnangle(),
+    "Currently the calculation of azimuths is not implemented for this projectio"
+  )
+
+  expect_error(
     { # nolint
       m$geometry[2] <- st_point()
       m

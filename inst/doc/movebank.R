@@ -66,7 +66,7 @@ options("move2_movebank_key_name" = "movebank")
 movebank_remove_credentials()
 
 ## for an account with a key name
-movebank_remove_credentials("myOtherAccount")
+movebank_remove_credentials(key_name = "myOtherAccount")
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  keyring::key_list()
@@ -103,8 +103,19 @@ movebank_download_study(2911040, sensor_type_id = "gps")
 movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
 
 ## ---- time_it=T---------------------------------------------------------------
-movebank_retrieve(entity_type = "study_attribute", study_id = 2911040, sensor_type_id = "gps")$short_name
-movebank_download_study(2911040, sensor_type_id = "gps",  attributes = c("height_above_ellipsoid", "eobs_temperature"))
+movebank_retrieve(
+  entity_type = "study_attribute",
+  study_id = 2911040,
+  sensor_type_id = "gps"
+)$short_name
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = "gps",
+  attributes = c(
+    "height_above_ellipsoid",
+    "eobs_temperature"
+  )
+)
 
 ## ---- time_it=TRUE------------------------------------------------------------
 movebank_download_study(1259686571, sensor_type_id = 653)
@@ -114,7 +125,7 @@ movebank_download_study(2911040, sensor_type_id = "acceleration")
 
 ## -----------------------------------------------------------------------------
 movebank_retrieve(
-  "entity_type" = "tag_type",
+  entity_type = "tag_type",
   attributes = c("external_id", "id")
 )
 
@@ -128,7 +139,7 @@ movebank_download_study("LBBG_JUVENILE",
 ## ----galapagos_deployment, time_it=T------------------------------------------
 movebank_download_deployment("Galapagos Albatrosses")
 
-## -----------------------------------------------------------------------------
+## ----advance, time_it=TRUE----------------------------------------------------
 movebank_retrieve("event",
   study_id = 1259686571,
   tag_local_identifier = "193967", attributes = "all"

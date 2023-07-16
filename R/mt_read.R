@@ -93,6 +93,7 @@ mt_read <- function(file, ...) {
                  Note this can differ from the deployments as defined in movebank.
                  Currently downloaded csv`s do not contain deployment information.")
       data[["individual-tag-local-identifier"]] <- factor(paste(
+        sep = "_",
         data[["individual-local-identifier"]],
         data[["tag-local-identifier"]]
       ))

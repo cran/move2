@@ -35,9 +35,11 @@ x |> mt_track_lines(
   n = dplyr::n()
 )
 ## plot of the tracks as a line
-mt_sim_brownian_motion(tracks=letters[1:2],
-start_location = list(c(0, 0), c(10, 0))) |>
-mt_track_lines() |>
-plot()
+mt_sim_brownian_motion(
+  tracks = letters[1:2],
+  start_location = list(c(0, 0), c(10, 0))
+) |>
+  mt_track_lines() |>
+  plot()
 
 }

@@ -84,7 +84,7 @@ test_that("function works", {
 })
 
 test_that("sigma has same result for function or direct", {
-  expect_identical(
+  expect_equal(
     {
       set.seed(3)
       mt_sim_brownian_motion(sigma = Vectorize(function(x) 5.6), t = c(1, 6, 8))
@@ -92,7 +92,8 @@ test_that("sigma has same result for function or direct", {
     {
       set.seed(3)
       mt_sim_brownian_motion(sigma = 5.6, t = c(1, 6, 8))
-    }
+    },
+    tolerance = 10e-10
   )
 
 
@@ -119,5 +120,19 @@ test_that("sigma values are ok", {
   expect_equal(sd(apply(sf::st_coordinates(mt_sim_brownian_motion(t = 1:100000, tracks = 1, sigma = 4.3)), 2, diff)),
     4.3,
     tolerance = .005
+  )
+})
+test_that("sigma length check", {
+  expect_error(
+    mt_sim_brownian_motion(
+      sigma = list(1:10, 1:9, 1), tracks = 2
+    ),
+    "is a list the length should match the length of the number of desired tracks"
+  )
+  expect_error(
+    mt_sim_brownian_motion(
+      sigma = list("a", 1), tracks = 2
+    ),
+    "The values of `sigma` should be <numeric>, the current class is <character"
   )
 })

@@ -27,7 +27,8 @@ test_that("print line reduction works (data.frame)", {
   )
 })
 test_that("print line reduction works (tibble)", {
-  m <- mt_read(mt_example())
+  m <- mt_read(mt_example()) |> select_track_data(-`study-name`)
+  mm <- mt_set_track_data(m, dplyr::as_tibble(mt_track_data(m)))
   expect_identical(
     m |> print() |> capture_output_lines() |> length(),
     m |> print(n = 8) |> capture_output_lines() |> length() + 2L
@@ -41,10 +42,19 @@ test_that("print line reduction works (tibble)", {
     m |> print(n = 4) |> capture_output_lines() |> length() + 6
     # Printing seems dependent on interactive session therefore for flexible test
   )
-  expect_output(
-    m |> print(n = 3), "First 3 track features:"
-  )
-  expect_output(
-    m |> print(n = 8), "Track features:"
-  )
+  for (i in list(m, mm))
+  {
+    expect_output(
+      i |> print(n = 3), "First 3 track features:"
+    )
+    expect_output(
+      i |> print(n = 8), "Track features:"
+    )
+    expect_output(
+      i |> print(n = 8), "M1"
+    )
+    expect_no_match(
+      i |> print(n = 3) |> capture.output(), "M1"
+    )
+  }
 })

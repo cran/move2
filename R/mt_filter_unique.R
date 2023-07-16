@@ -59,6 +59,14 @@ NULL
 #' mt_filter_unique(m, "first")
 #' m$sensor_type[1:12] <- NA
 #' mt_filter_unique(m[, c("time", "track", "geometry", "sensor_type")])
+#' # Sometimes it is desirable to not consider specific columns for finding the unique records
+#' # For example the record identifier like `event_id` in movebank This can be done by reducing
+#' # the data.frame used to identify the unique records e.g.:
+#' if (requireNamespace("dplyr")) {
+#'   m$event_id <- seq_len(nrow(m))
+#'   m[mt_unique(m |> dplyr::select(-event_id, -ends_with("type_2"))), ]
+#'   # Note that because we subset the full original data.frame the columns are not lost
+#' }
 mt_filter_unique <- function(x, ...) {
   x[mt_unique(x, ...), ]
 }
@@ -121,21 +129,5 @@ slice_subsets <- function(rws, x) {
   r <- apply(e, 1, function(i, xx) {
     all(mapply(identical, xx[[i[1]]], xx[[i[2]]]) | is.na(xx[[i[2]]]))
   }, xx = l)
-  return(rws[!(rws %in% unique(e[r, 2]))])
-}
-slice_subsets_old <- function(rws, x) {
-  if (length(rws) == 1) {
-    return(rws)
-  }
-  rws <- rws[!duplicated(x[rws, ])]
-  if (length(rws) == 1) {
-    return(rws)
-  }
-  # now there are only rows left that differ
-  e <- expand.grid(rws, rws)
-  e <- e[e[, 1] != e[, 2], ]
-  r <- apply(e, 1, function(i, xx) { # NOTE Possibly speed up code here as it is the limiting factor
-    all(mapply(identical, xx[i[1], ], xx[i[2], ]) | is.na(xx[i[2], ]))
-  }, xx = x)
   return(rws[!(rws %in% unique(e[r, 2]))])
 }

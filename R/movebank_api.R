@@ -86,22 +86,25 @@ utils::globalVariables("where") # for tidy select
 #' @examples
 #' \dontrun{
 #' ## download entire study (all data of all sensors)
-#' movebank_download_study_info(study_id=myStudyID)$sensor_type_ids
-#' movebank_download_study(2911040, sensor_type_id= c("gps", "acceleration"))
+#' movebank_download_study_info(study_id = myStudyID)$sensor_type_ids
+#' movebank_download_study(2911040, sensor_type_id = c("gps", "acceleration"))
 #'
 #' ## download data of one individual
 #' movebank_download_study(2911040,
 #'   individual_local_identifier = "unbanded-160"
 #' )
 #' ## download gps data for multiple individuals
-#' movebank_download_study(2911040, sensor_type_id= "gps",
+#' movebank_download_study(2911040,
+#'   sensor_type_id = "gps",
 #'   individual_local_identifier = c("1094-1094", "1103-1103")
 #' )
-#' movebank_download_study(2911040, sensor_type_id= "gps",
+#' movebank_download_study(2911040,
+#'   sensor_type_id = "gps",
 #'   individual_id = c(2911086, 2911065)
 #' )
 #' ## download acceleration data of one or several individuals
-#' movebank_download_study(2911040, sensor_type_id= "acceleration",
+#' movebank_download_study(2911040,
+#'   sensor_type_id = "acceleration",
 #'   individual_local_identifier = "1094-1094"
 #' )
 #' ## download data of a specific time window and sensor
@@ -114,7 +117,8 @@ utils::globalVariables("where") # for tidy select
 #' ## download study filtered to one location per day
 #' ## (see movebank api documentation for options)
 #' ## also possible to add specific columns in "attributes"
-#' movebank_download_study(2911040, sensor_type_id = "gps",
+#' movebank_download_study(2911040,
+#'   sensor_type_id = "gps",
 #'   event_reduction_profile = "EURING_01",
 #'   attributes = NULL
 #' )
@@ -151,13 +155,14 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     data$location_lat <- NA_real_
   }
 
+  if (nrow(data) == 0) {
+    cli_abort(
+      class = "move2_error_no_data_found",
+      "The request did not result in any data, this might be caused by trying to retrieve a none existant individual.
+        Or no data is available for download in this study for your user account."
+    )
+  }
   if (all(is.na(data$deployment_id))) {
-    if (nrow(data) == 0) {
-      cli_abort(
-        class = "move2_error_no_data_found",
-        "The request did not result in any data, this might be caused by trying to retrieve a none existant individual."
-      )
-    }
     cli_abort(
       class = "move2_error_no_deployed_data",
       c(e = "Even though {sum(is.na(data$deployment_id))} event record{?s} were downloaded, none seem to be deployed
@@ -177,7 +182,8 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
   data <- data |>
     st_as_sf(
       coords = c("location_long", "location_lat"),
-      crs = st_crs(4326L), na.fail = FALSE
+      crs = st_crs(4326L), na.fail = FALSE,
+      sf_column_name = "geometry"
     )
   track_data <- movebank_download_deployment(study_id = study_id, ...) |>
     filter(.data$deployment_id %in% unique(data$deployment_id))
@@ -320,7 +326,7 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
   # We define too many columns and remove the warning about that
   issue <- catch_cnd(suppressWarnings(
     classes = c("vroom_mismatched_column_name", "vroom_parse_issue"),
-    data_dl <- vroom::vroom(con, col_types = mb_column_types_underscore, delim = ",", progress = progress)
+    data_dl <- vroom::vroom(con, col_types = mb_column_types_underscore, delim = ",", progress = progress, trim_ws = F)
   ))
   # use vroom and not readr as the later misses col_big_integer, readr cannot be silenced and reads from connections
   # Parse any issues that might have occurred
@@ -425,9 +431,9 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
     cli_warn(c("{.fun vroom} finds reading problems with the movebank specification.",
       i = "This might relate to the returned data not fitting the expectation of the movebank data format specified in
       the package.",
-      i = "For retrieving the specific problem you can enable `global_entrace` using {.code rlang::global_entrace()}
-      then run the command and use {.code rlang::last_warnings()[[1]]$problems} to retrieve the problems.",
-      i = "The requested url can then be retrieved with: {.code rlang::last_warnings()[[1]]$url}",
+      i = "For retrieving the specific problem you can enable `global_entrace` using {.run rlang::global_entrace()}
+      then run the command and use {.run rlang::last_warnings()[[1]]$problems} to retrieve the problems.",
+      i = "The requested url can then be retrieved with: {.run rlang::last_warnings()[[1]]$url}",
       i = "Alternatively in some cases you might be able to retrieve the problems calling {.fun vroom::problems} on the
       result of the function call that produced the warning."
     ), problems = p, url = url, class = "move2_warning_movebank_api_format_not_parsed")
@@ -479,9 +485,15 @@ movebank_get_study_id <- function(study_id, ...) {
       dplyr::filter(grepl(pattern = study_id, .data$name, fixed = TRUE)) |>
       pull("id")
     if (!is_scalar_vector(study_id)) {
+      if (length(study_id) < 1) {
+        cli_abort(c(
+          e = "The argument {.arg study_id} currently does not match any study.",
+          i = "Check if a correct name is provided."
+        ), class = "move2_error_movebank_api_no_study_name_match")
+      }
       cli_abort(c(
-        "The argument {.arg study_id} matches more then one study",
-        "{.arg study_id} should only match one study"
+        e = "The argument {.arg study_id} matches more then one study.",
+        i = "{.arg study_id} should only match one study. The currently matched studies are: {.arg {study_id_data$name[study_id_data$study_id %in% study_id]}}"
       ), class = "move2_error_movebank_api_name_matches_multiple_studies")
     }
   }
@@ -490,11 +502,11 @@ movebank_get_study_id <- function(study_id, ...) {
     cli_abort(
       class = "move2_error_no_valid_study_id",
       c(
-        e = "The {.arg study_id} is not an whole number (e.g. {.class integer} or {.class integer64}), therefore
-        it can not be interpreted as a {.code study_id}. Nor can it be converted to that by searching for the name of
+        e = "The {.arg study_id} is not an whole number (e.g. {.cls integer} or {.cls integer64}), therefore
+        it can not be interpreted as a {.code study_id}. Nor is it a scalar character that can be converted to a {.code study_id} by searching for the name of
         the study.",
         i = 'This error can occur because some R functions (e.g. {.fun lapply} and {.fun for}) do not retain the
-        {.class integer64} class. This can be resolved by adding the {.class integer64} again (e.g.
+        {.cls integer64} class. This can be resolved by adding the {.cls integer64} again (e.g.
         {.code class(id)<-"integer64"}). '
       )
     )
