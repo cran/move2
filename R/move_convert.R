@@ -11,9 +11,14 @@ NULL
 #' @return an object of the class `Move`/`MoveStack`
 #'
 #'  `to_move` converts back to a objects from the `move` package. When multiple individuals are provided a
-#'  \code{\link[move]{MoveStack-class}} is created otherwise a  \code{\link[move]{Move-class}} object.
+#'  \code{\link[move]{MoveStack-class}} is created otherwise a \code{\link[move]{Move-class}} object.
 #'
 #' @family move2-convert
+#'
+#' @details
+#' Note that the individuals are ordered as they occur in the event data in the created
+#' \code{\link[move]{MoveStack-class}} object as the order needs to correspond there between the event and track data
+#' for `move`.
 #'
 #' @export
 #' @examples
@@ -28,6 +33,7 @@ NULL
 to_move <- function(x) {
   check_installed(c("raster", "move"), "to convert move objects.")
   assert_that(inherits(x, "move2"), msg = "`x` should be a `move2` objects.")
+  assert_that(mt_is_time_ordered(x))
   empty <- st_is_empty(x)
   t <- mt_time(x)
   assert_that(inherits(t, "POSIXct"),
@@ -48,11 +54,12 @@ to_move <- function(x) {
   }
   levels(track_id_vector_iddata) <- raster::validNames(levels(track_id_vector_iddata))
 
+  track_id_vector <- factor(track_id_vector, levels = unique(track_id_vector))
 
   rownames(d) <- track_id_vector_iddata
   mt <- new(".MoveTrack", as_Spatial(x[!empty, ]),
     timestamps = t[!empty],
-    idData = d,
+    idData = d[levels(track_id_vector), , drop = FALSE],
     sensor = factor(rep("unknown", sum(!empty)), levels = "unknown")
   )
   u <- new(".unUsedRecords",

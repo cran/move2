@@ -7,7 +7,7 @@ test_that("Download speeds are as expected", {
     list("movebank:move2_user" = Sys.getenv("MBPWD")),
     withr::with_options(list(keyring_backend = "env"), {
       show_failure(expect_lt(system.time(
-        suppressMessages(aa <- movebank_download_study(1259686571, attributes = "all"))
+        suppressMessages(aa <- movebank_download_study(1259686571, timestamp_end = "2023-1-1", attributes = "all"))
       )["elapsed"], 78))
       expect_true(all(c(
         "taxon_canonical_name", "tag_id", "individual_id",

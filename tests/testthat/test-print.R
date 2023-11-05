@@ -58,3 +58,24 @@ test_that("print line reduction works (tibble)", {
     )
   }
 })
+test_that("check header", {
+  m <- mt_read(mt_example())
+  expect_no_match(
+    m[1:10, ] |> print(n = 3) |> capture.output(), "on averag"
+  )
+  expect_match(
+    m |> print(n = 3) |> capture.output(), "on aver",
+    all = FALSE
+  )
+  expect_match(
+    m[1:10, ] |> print(n = 3) |> capture.output(), format(diff(range(mt_time(m)[1:10])), digits = 3),
+    all = FALSE
+  )
+
+  expect_match(
+    m |> print(n = 3) |> capture.output() |> head(1), paste0("column. \"", mt_track_id_column(m))
+  )
+  expect_match(
+    m |> print(n = 3) |> capture.output() |> head(1), paste0("column. \"", mt_time_column(m))
+  )
+})

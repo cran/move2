@@ -2,7 +2,7 @@
 
 #' @importFrom rlang cnd_signal is_scalar_integerish is_scalar_character catch_cnd abort .data format_error_bullets sym
 #' @importFrom rlang syms is_scalar_vector is_scalar_logical as_label .env
-#' @importFrom sf st_geometry st_distance st_is st_is_empty st_as_sfc
+#' @importFrom sf st_geometry st_distance st_is st_is_empty st_as_sfc st_sf
 #' @importFrom assertthat assert_that is.string
 #' @importFrom dplyr filter_ rename select_if rename_with across everything
 #' @importFrom vroom vroom_lines
@@ -64,7 +64,7 @@ utils::globalVariables("where") # for tidy select
 #' integer with the tag_type. For a full list of options see: `movebank_retrieve(entity_type='tag_type')`, values from
 #' the `id` and `external_id` columns are valid.
 #' * `timestamp_start` and `timestamp_end` can be used to limit the temporal range to download.
-#' This argument can either be formatted as a `POSIXct` timestamp or a character string
+#' This argument can either be formatted as a `POSIXct` timestamp, `Date` or a character string
 #' (e.g. `"20080604133046000"`(`yyyyMMddHHmmssSSS`))
 #' * `event_reduction_profile` might be useful to reduce the data downloaded (e.g. daily locations) possible values
 #'  are character strings (e.g. `"EURING_01"`). For details see the movebank api
@@ -179,12 +179,19 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     data <- data |>
       filter(!is.na(.data$`deployment_id`))
   }
-  data <- data |>
-    st_as_sf(
-      coords = c("location_long", "location_lat"),
-      crs = st_crs(4326L), na.fail = FALSE,
-      sf_column_name = "geometry"
-    )
+  if (all(is.na(data$location_long)) && all(is.na(data$location_lat))) {
+    data$geometry <- st_as_sfc(list(st_point()), crs = st_crs(4326L))[rep(1, nrow(data))]
+    data <- st_sf(
+      data
+    ) |> dplyr::select(-any_of(c("location_long", "location_lat")))
+  } else {
+    data <- data |>
+      st_as_sf(
+        coords = c("location_long", "location_lat"),
+        crs = st_crs(4326L), na.fail = FALSE,
+        sf_column_name = "geometry"
+      )
+  }
   track_data <- movebank_download_deployment(study_id = study_id, ...) |>
     filter(.data$deployment_id %in% unique(data$deployment_id))
   dots <- rlang::list2(...)
@@ -456,6 +463,8 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
       class = "units",
       units = attr(as_units(mb_column_units_underscore[i]), "units")
     )
+    # units are always doubles see: https://github.com/r-quantities/units/issues/324
+    storage.mode(data_dl[[i]]) <- "double"
   }
   if (convert_spatial_columns) {
     data_dl <- movebank_convert_spatial_cols(data_dl)

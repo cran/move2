@@ -1,4 +1,4 @@
-#' @importFrom vroom vroom col_datetime col_double col_factor col_integer col_character col_logical col_big_integer
+#' @importFrom vroom vroom
 #' @importFrom sf st_drop_geometry
 #' @importFrom dplyr mutate bind_cols lead
 #' @importFrom assertthat has_name has_attr
@@ -34,12 +34,17 @@ NULL
 #' @export
 #' @examples
 #' path_fishers <- mt_example()
-#' mt_read(path_fishers)
+#' mt_read(path_fishers, num_threads = 2)
+#' ## Note num_threads is used to reduce the number of threads used.
+#' ## Normally it can be left untouched but here CRAN tests are
+#' ## sped up.
+#'
 #' ## Reduce the mount of data read this might provide memory advantages
 #' ## and speed up reading
 #' mt_read(path_fishers, col_select = c(
 #'   "location-long", "location-lat",
-#'   "timestamp", "individual-local-identifier"
+#'   "timestamp", "individual-local-identifier",
+#'   num_threads = 2
 #' ))
 #' \dontrun{
 #' mt_read("~/Downloads/Galapagos Albatrosses.csv")
@@ -80,13 +85,12 @@ mt_read <- function(file, ...) {
       class = "units",
       units = attr(as_units(mb_column_units[i]), "units")
     )
+    # units are always doubles see: https://github.com/r-quantities/units/issues/324
+    storage.mode(data[[i]]) <- "double"
   }
   track_id_column <- "individual-local-identifier"
   if (all(c("individual-local-identifier", "tag-local-identifier") %in% names(data))) {
-    if (anyDuplicated(unique(sf::st_drop_geometry(data)[, c(
-      "individual-local-identifier",
-      "tag-local-identifier"
-    )])[["individual-local-identifier"]])) {
+    if (any(colSums(table(data$`individual-local-identifier`, data$`tag-local-identifier`) != 0) != 1)) {
       cli_inform("There are multiple tags used for one individual,
                  therefore tracks are defined by the unique combination of tags and individuals.
                  To do so a new column is created with the name {.code individual-tag-local-identifier}.
@@ -138,7 +142,7 @@ mt_read <- function(file, ...) {
 #' * [mt_read()] to read in the file
 #' @examples
 #'
-#' # Get path to one example
+#' ## Get path to one example
 #' mt_example()
 #' mt_read(mt_example())
 mt_example <- function() {

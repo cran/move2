@@ -10,7 +10,7 @@ NULL
 #'
 #' @description
 #' * `mt_time()` retrieve timestamps
-#' * `mt_time(x) <- value` and `mt_set_time(x, value)`  replace timestamps with new values
+#' * `mt_time(x) <- value` and `mt_set_time(x, value)`  replace timestamps with new values, set new column to define time or rename time column
 #' * `mt_time_lags()` returns time lags, i.e. duration interval between consecutive locations
 #'
 #' @param x a `move2` object
@@ -30,21 +30,39 @@ NULL
 #'
 #' @family track-measures
 #' @examples
-#' ## in the simulated track, time is numeric, so the timelags are also numeric
+#' ## in the simulated track, time is numeric, so the time lags are also numeric
 #' x <- mt_sim_brownian_motion(1:3)
 #' x |> mt_time()
 #' x |> mt_time_lags()
-#' ## here the simulated track has timestamps, so the timelags have units
+#'
+#' ## here the simulated track has timestamps, so the time lags have units
 #' x <- mt_sim_brownian_motion(as.POSIXct((1:3) * 60^2, origin = "1970-1-1"), tracks = 1)
 #' x |> mt_time()
 #' x |> mt_time_lags()
 #' x <- mt_sim_brownian_motion(as.Date(1:3, "1990-1-1"), tracks = 2)
 #' x |> mt_time()
 #' x |> mt_time_lags()
-#' ## units of the timelags can also be transformed, e.g. from days to hours
+#'
+#' ## units of the time lags can also be transformed, e.g. from days to hours
 #' tl <- x |> mt_time_lags()
 #' units::set_units(tl, h)
-
+#'
+#' x <- mt_sim_brownian_motion(t = as.POSIXct(1:3), tracks = 2)
+#' ## providing a vector with new timestamps
+#' head(mt_time(x))
+#' mt_time(x) <- 1:nrow(x)
+#' head(mt_time(x))
+#'
+#' ## renaming the column defining time
+#' mt_time_column(x)
+#' mt_time(x) <- "my_new_time_name"
+#' mt_time_column(x)
+#'
+#' ## setting a new column to define time
+#' x$new_time <- as.POSIXct(1:6, origin = "2020-1-1")
+#' mt_time(x) <- "new_time"
+#' mt_time_column(x)
+#' head(mt_time(x))
 mt_time <- function(x) {
   # Thanks to Allan's suggestion:
   # https://stackoverflow.com/questions/74402744/r-dplyr-programatically-identify-column/74403687#74403687
@@ -92,8 +110,7 @@ mt_time <- function(x) {
 }
 
 #' @export
-#' @param value either the new time values or the name of the new time column as a scalar character.
-#' When the column is present then that column is used, otherwise the existing time column is renamed
+#' @param value either a vector with new timestamps, the name of the new column to define time as a scalar character (this column must be present in the event table), or a scalar character to rename the time column.
 #' @rdname mt_time
 mt_set_time <- function(x, value) {
   if (is_scalar_character(value)) {
@@ -144,7 +161,8 @@ pad_na <- function(x) {
 
 #' @export
 #' @rdname mt_time
-mt_time_lags <- function(x) {
+#' @inheritParams mt_distance
+mt_time_lags <- function(x, units) {
   assert_that(mt_is_time_ordered(x)) # this also works for empty locations
   dt <- diff(mt_time(x))
   dt[diff(as.numeric(factor(mt_track_id(x)))) != 0] <- NA
@@ -152,49 +170,5 @@ mt_time_lags <- function(x) {
     dt <- as_units(dt)
   }
   dt <- pad_na(dt)
-  return(dt)
-}
-
-
-
-#' Create a `LINESTRING` for each track segment
-#'
-#' @description
-#' Creates a `LINESTRING` for each segment between consecutive points within a track.
-#'
-#' @param x A `move2` object.
-#'
-#' @details
-#' The last location of each track is formed by a `POINT` as no segment can be formed.
-#'
-#' @return A `sfc` object containing `LINESTRING`s for each segment of a trajectory.
-#' @export
-#'
-#' @examples
-#' track <- mt_sim_brownian_motion()
-#' mt_segments(track)
-#' ## adding the segments as an attribute to the move2 object
-#' track$segments <- mt_segments(track)
-#'
-mt_segments <- function(x) {
-  assert_that(mt_is_time_ordered_non_empty_points(x))
-  sfc_segments <- x |>
-    mutate(
-      next_location = lead(
-        !!!syms(attr(x, "sf_column")) # If problem see default argument
-      ),
-      segment_column = st_sfc((!!!syms(attr(x, "sf_column")))),
-      s = c(diff(as.numeric(!!!syms(attr(x, "track_id_column")))) == 0, FALSE),
-      segment_column = replace(.data$segment_column, .data$s, st_cast(
-        do.call(st_sfc, c(
-          list(crs = st_crs(x)),
-          mapply(c, .data$segment_column[.data$s],
-            .data$next_location[.data$s],
-            SIMPLIFY = FALSE
-          )
-        )), "LINESTRING"
-      ))
-    ) |>
-    pull(.data$segment_column)
-  sfc_segments
+  return(mt_change_units(dt, units))
 }

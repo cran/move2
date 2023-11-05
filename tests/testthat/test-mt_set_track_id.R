@@ -93,3 +93,17 @@ test_that("Expect class of track data is retained", {
   a <- mt_set_track_data(a, dplyr::as_tibble(mt_track_data(a)))
   expect_identical(mt_set_track_id(a, "new") |> mt_track_data() |> class(), a |> mt_track_data() |> class())
 })
+test_that("Assing track id with track attribute", {
+  a <- mt_sim_brownian_motion(tracks = 3) |> mutate_track_data(hh = c(1L, 1L, 2L), kk = 1:3)
+  expect_identical(mt_set_track_id(a, "hh") |> mt_n_tracks(), 2L)
+  expect_identical(mt_set_track_id(a, "hh") |> mt_track_id_column(), "hh")
+  expect_identical(mt_set_track_id(a, "hh") |> mt_track_id(), c(rep(1L, 20), rep(2L, 10)))
+  expect_identical(mt_track_data(mt_set_track_id(a, "hh"))$kk, list("1" = 1:2, "2" = 3L))
+  expect_false(as.logical(anyDuplicated(colnames(mt_track_data(mt_set_track_id(a, "hh"))))))
+})
+test_that("Assing track id with track attribute", {
+  a <- mt_sim_brownian_motion(tracks = 3) |>
+    mutate_track_data(hh = c(1L, 1L, 2L), kk = 1:3) |>
+    mutate(kk = rep(1:6, 5))
+  expect_error(mt_set_track_id(a, "kk"), class = "move2_error_two_track_id_columns")
+})

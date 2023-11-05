@@ -170,7 +170,6 @@ suggestions or information what is used are welcome.
     locations
   - `filter_outlier_quick_return`: Combination of \~180 degree turns,
     high speed and comparable distances?
-- Import data from the movebank data repository
 - Import data from PostgreSQL database
 
 ## Development

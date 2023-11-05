@@ -373,27 +373,34 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <li><p><code>mt_track_id_column()</code>: returns the name of the column containing the track ids used by the <code>move2</code> object</p></li>
 </ul>
 </div>
-<div id="transforming-a-move2-object-into-other-classes" class="section level2">
-<h2>Transforming a <code>move2</code> object into other classes</h2>
-<ul>
-<li><p><code>as.data.frame()</code>: creates a <code>data.frame</code> including all information contained in the <code>move2</code>, note that for most purposes the <code>move2</code> already functions like a <code>data.frame</code></p></li>
-<li><p><code>data.table::as.data.table()</code>: creates a <code>data.table</code> including all information contained in the <code>move2</code></p></li>
-<li><p><code>to_move()</code>: converts to a object of class <code>Move</code>/<code>MoveStack</code></p></li>
-</ul>
-</div>
 <div id="transforming-other-classes-to-a-move2-object" class="section level2">
 <h2>Transforming other classes to a <code>move2</code> object</h2>
 <ul>
-<li><code>mt_as_move2()</code>: creates a <code>move2</code> object from a <code>sf</code>, <code>data.frame</code> or <code>Move</code>/<code>MoveStack</code> object</li>
+<li><code>mt_as_move2()</code>: creates a <code>move2</code> object from objects of class <code>sf</code>, <code>data.frame</code>, <code>telemetry</code>/<code>telemetry list</code> from <em>ctmm</em>, <code>track_xyt</code> from <em>amt</em> or <code>Move</code>/<code>MoveStack</code> from <em>move</em>.</li>
+</ul>
+</div>
+<div id="transforming-a-move2-object-into-other-classes" class="section level2">
+<h2>Transforming a <code>move2</code> object into other classes</h2>
+<ul>
+<li><p><code>to_move()</code>: converts to a object of class <code>Move</code>/<code>MoveStack</code></p></li>
+<li><p><code>mt_track_id(x) &lt;- NULL</code>: to remove <code>move2</code> class from the object, it will be recognized as a object of class <code>sf</code></p></li>
+<li><p><code>mt_as_event_attribute(x, names(mt_track_data(x)))</code>: join all attributes (event and track) into one table. If additionally <code>mt_track_id(x) &lt;- NULL</code> is applied, the resulting <code>sf</code> object should behave as any <code>data.frame</code></p></li>
 </ul>
 </div>
 <div id="useful-functions" class="section level2">
 <h2>Useful functions</h2>
 <ul>
+<li><p><code>mt_read()</code>: read in data downloaded from movebank, by just stating the path to the file</p></li>
 <li><p><code>mt_read(mt_example())</code>: example dataset</p></li>
-<li><p><code>split(x, mt_track_id(x))</code>: split a <code>move2</code> object into a list of single objects per track</p></li>
+<li><p><code>dplyr::filter(x, !sf::st_is_empty(x))</code>: exclude all empty locations</p></li>
+<li><p><code>filter_track_data(x, .track_id = c(&quot;nameTrack1&quot;, &quot;nameTrack3&quot;)</code>: subset to one or more tracks</p></li>
+<li><p><code>split(x, mt_track_id(x))</code>: split a <code>move2</code> object into a list of single objects per track. Alternatively see <code>dplyr::mutate()</code>, <code>dplyr::group_by()</code>, <code>group_by_track_data()</code> to apply calculations to tracks separately</p></li>
 <li><p><code>mt_stack()</code>: combine multiple <code>move2</code> objects into one</p></li>
+<li><p><code>mt_as_track_attribute()</code>/<code>mt_as_event_attribute()</code>: move columns between track and event attributes (and vv)</p></li>
+<li><p><code>mt_set_track_id()</code>: replace track ids with new values, set new column to define tracks or rename track id column</p></li>
+<li><p><code>mutate_track_data()</code>: add or modify attributes in the track data</p></li>
 <li><p><code>sf::st_transform()</code>: to reproject the <code>move2</code> into a different projection</p></li>
+<li><p><code>mt_aeqd_crs()</code>: create a AEQD coordinate reference system</p></li>
 <li><p><code>mt_track_lines()</code>: convert a trajectory into lines for plotting with e.g. <code>ggplot</code></p></li>
 <li><p>use the option <code>options(sf_max.plot=1)</code> to display a single plot of the track. The attribute that should be used to color the tracks can be specified, e.g. <code>plot(x[&quot;individual_local_identifier&quot;])</code>. <a href="https://r-spatial.github.io/sf/articles/sf5.html">Here</a> is more information on how to do simple plots.</p></li>
 </ul>

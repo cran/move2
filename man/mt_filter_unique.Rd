@@ -72,13 +72,27 @@ mt_filter_unique(m, "sample")
 mt_filter_unique(m, "first")
 m$sensor_type[1:12] <- NA
 mt_filter_unique(m[, c("time", "track", "geometry", "sensor_type")])
-# Sometimes it is desirable to not consider specific columns for finding the unique records
-# For example the record identifier like `event_id` in movebank This can be done by reducing
-# the data.frame used to identify the unique records e.g.:
+
+## Sometimes it is desirable to not consider specific columns for finding
+## the unique records. For example the record identifier like `event_id`
+## in movebank This can be done by reducing the data.frame used to identify
+## the unique records e.g.:
 if (requireNamespace("dplyr")) {
   m$event_id <- seq_len(nrow(m))
   m[mt_unique(m |> dplyr::select(-event_id, -ends_with("type_2"))), ]
-  # Note that because we subset the full original data.frame the columns are not lost
+  ## Note that because we subset the full original data.frame the
+  ## columns are not lost
+
+
+  ## This example is to retain the duplicate entry which contains the least
+  ## number of columns with NA values
+  mv <- mt_read(mt_example())
+  mv <- dplyr::bind_rows(mv, mv[1:10, ])
+  mv[, "eobs:used-time-to-get-fix"] <- NA
+  mv_no_dup <- mv |>
+    dplyr::mutate(n_na = rowSums(is.na(pick(everything())))) |>
+    dplyr::arrange(n_na) |>
+    mt_filter_unique(criterion = "first")
 }
 }
 \seealso{

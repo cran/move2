@@ -13,13 +13,14 @@ mt_time(x) <- value
 
 mt_set_time(x, value)
 
-mt_time_lags(x)
+mt_time_lags(x, units)
 }
 \arguments{
 \item{x}{a \code{move2} object}
 
-\item{value}{either the new time values or the name of the new time column as a scalar character.
-When the column is present then that column is used, otherwise the existing time column is renamed}
+\item{value}{either a vector with new timestamps, the name of the new column to define time as a scalar character (this column must be present in the event table), or a scalar character to rename the time column.}
+
+\item{units}{Optional. Valid values are \code{character}, \code{symbolic_units} or \code{units}, for more details see the \code{value} argument of \link[units:units]{units::as_units}. If no units are stated (default) the function flexibly determines the units to return. Fixing the units can be useful if specific return units are for example required for subsequent functions. This argument only takes effect if the initial return value already has units.}
 }
 \value{
 \code{mt_time()} returns a vector of timestamps, depending on the type of data these can be either \code{POSIXct},
@@ -29,7 +30,7 @@ When the column is present then that column is used, otherwise the existing time
 \description{
 \itemize{
 \item \code{mt_time()} retrieve timestamps
-\item \code{mt_time(x) <- value} and \code{mt_set_time(x, value)}  replace timestamps with new values
+\item \code{mt_time(x) <- value} and \code{mt_set_time(x, value)}  replace timestamps with new values, set new column to define time or rename time column
 \item \code{mt_time_lags()} returns time lags, i.e. duration interval between consecutive locations
 }
 }
@@ -41,20 +42,39 @@ because the interval between the last location of the previous track and first o
 sense.
 }
 \examples{
-## in the simulated track, time is numeric, so the timelags are also numeric
+## in the simulated track, time is numeric, so the time lags are also numeric
 x <- mt_sim_brownian_motion(1:3)
 x |> mt_time()
 x |> mt_time_lags()
-## here the simulated track has timestamps, so the timelags have units
+
+## here the simulated track has timestamps, so the time lags have units
 x <- mt_sim_brownian_motion(as.POSIXct((1:3) * 60^2, origin = "1970-1-1"), tracks = 1)
 x |> mt_time()
 x |> mt_time_lags()
 x <- mt_sim_brownian_motion(as.Date(1:3, "1990-1-1"), tracks = 2)
 x |> mt_time()
 x |> mt_time_lags()
-## units of the timelags can also be transformed, e.g. from days to hours
+
+## units of the time lags can also be transformed, e.g. from days to hours
 tl <- x |> mt_time_lags()
 units::set_units(tl, h)
+
+x <- mt_sim_brownian_motion(t = as.POSIXct(1:3), tracks = 2)
+## providing a vector with new timestamps
+head(mt_time(x))
+mt_time(x) <- 1:nrow(x)
+head(mt_time(x))
+
+## renaming the column defining time
+mt_time_column(x)
+mt_time(x) <- "my_new_time_name"
+mt_time_column(x)
+
+## setting a new column to define time
+x$new_time <- as.POSIXct(1:6, origin = "2020-1-1")
+mt_time(x) <- "new_time"
+mt_time_column(x)
+head(mt_time(x))
 }
 \seealso{
 Other track-measures: 

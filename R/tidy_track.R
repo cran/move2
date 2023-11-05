@@ -81,9 +81,10 @@ mutate_track_data <- function(.data, ...) {
 #' @export
 group_by_track_data <- function(.data, ..., .add = FALSE, .drop = dplyr::group_by_drop_default(.data)) {
   x <- .data
+  track_id_column <- mt_track_id_column(x)
   class(x) <- setdiff(class(x), c("move2", "sf"))
   new_df <- mt_track_data(.data) |>
-    dplyr::right_join(st_drop_geometry(x[, mt_track_id_column(.data)]), by = "track") |>
+    dplyr::right_join(st_drop_geometry(x[, mt_track_id_column(.data)]), by = track_id_column) |>
     group_by(..., .add = .add, .drop = .drop)
   new_df[, mt_track_id_column(.data)] <- NULL
   x <- bind_cols(x, ungroup(new_df)) |> group_by(..., .add = .add, .drop = .drop)

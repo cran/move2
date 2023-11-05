@@ -5,8 +5,8 @@ NULL
 
 #' Create a new move2 object
 #'
-#' @description Create a new move2 object from a `data.frame`, `sf`, `Move` or `MoveStack` object
-#' @param x A `data.frame`, `sf`, `Move` or `MoveStack` object
+#' @description Create a new move2 object from a `data.frame`, `sf`, `telemetry`, `telemetry` list, `track_xyt`, `Move` or `MoveStack` object
+#' @param x A `data.frame`, `sf`, `telemetry`, `telemetry` list, `track_xyt`, `Move` or `MoveStack` object
 #' @export
 mt_as_move2 <- function(x, ...) UseMethod("mt_as_move2")
 
@@ -70,9 +70,11 @@ mt_as_move2 <- function(x, ...) UseMethod("mt_as_move2")
 #' )
 #'
 mt_as_move2.sf <- function(x, time_column, track_id_column, track_attributes = "", ...) {
-  x |>
+  x <- x |>
     new_move(time_column = time_column, track_id_column = track_id_column) |>
     mt_as_track_attribute(any_of(track_attributes))
+  assert_valid_time(mt_time(x))
+  return(x)
 }
 #' @export
 #' @name mt_as_move2
@@ -85,6 +87,67 @@ mt_as_move2.data.frame <- function(x, time_column, track_id_column, track_attrib
     )
 }
 
+#' @export
+#' @name mt_as_move2
+mt_as_move2.track_xyt <- function(x, time_column, track_id_column, track_attributes = "", ...) {
+  if (!has_name(x, "id")) {
+    x$id <- "unnamed"
+  }
+  NextMethod(x,
+    coords = c("x_", "y_"),
+    time_column = "t_",
+    track_id_column = "id",
+    crs = if (is.null(attr(x, "crs"))) {
+      NA_crs_
+    } else {
+      attr(x, "crs")
+    }
+  )
+}
+
+
+
+#' @export
+#' @name mt_as_move2
+mt_as_move2.telemetry <- function(x, time_column, track_id_column, track_attributes = "", ...) {
+  track <- if (is.null(x@info$identity)) {
+    "unnamed"
+  } else {
+    as.factor(x@info$identity)
+  }
+  colnames_x <- colnames(x)
+  x <- x |> add_column(track = track, .name_repair = "unique")
+  track_id_column <- setdiff(colnames(x), colnames_x)
+  if ("timestamp" %in% colnames(x)) {
+    if (!all.equal(as.numeric(x$timestamp), x$t)) {
+      cli_warn(c("The ctmm contains both a `t` and `timestamp` column. The information in these columns differs,
+                 as generally the `timestamp` column contains {.cls POSIXct} this one is selected as the time column"))
+    }
+    time_column <- "timestamp"
+  } else {
+    time_column <- "t"
+  }
+  mt_as_move2(data.frame(x),
+    coords = c("x", "y"),
+    time_column = time_column,
+    track_id_column = track_id_column,
+    crs = ifelse(is.null(x@info$projection),
+      NA_crs_,
+      x@info$projection
+    )
+  )
+}
+#' @export
+#' @name mt_as_move2
+
+mt_as_move2.list <- function(x, time_column, track_id_column, track_attributes = "", ...) {
+  if (!all(unlist(lapply(x, inherits, "telemetry")))) {
+    cli_abort("Import from lists is only allowed when all objects in the list are from the type telemetry",
+      class = "move2_error_list_import_not_all_telemetry"
+    )
+  }
+  mt_stack(lapply(x, mt_as_move2), .track_combine = "rename")
+}
 
 #' @export
 #' @name mt_as_move2
@@ -143,9 +206,14 @@ new_move <- function(sf, time_column = "timestamp", track_id_column, track_attri
   return(r)
 }
 
+
 #' @export
 print.move2 <- function(x, ..., n = getOption("sf_max_print", default = 10)) {
-  cat(format_message("A {.cls move2} object containing {mt_n_tracks(x)} track{?s} consisting of:"), "\n", sep = "")
+  avgdur <- mean(do.call(c, lapply(lapply(split(mt_time(x), mt_track_id(x), drop = T), range), diff)))
+  cat(format_message(
+    "A {.cls move2} with `track_id_column` {.val {mt_track_id_column(x)}} and `time_column` {.val {mt_time_column(x)}}"
+  ), "\n", sep = "")
+  cat(format_message("Containing {mt_n_tracks(x)} track{?s} lasting {?on average} {format(avgdur, digits=3)} in a"), "\n", sep = "")
   NextMethod(n = n)
   # Print individual data
   track_data <- mt_track_data(x)

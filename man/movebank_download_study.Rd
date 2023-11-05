@@ -103,7 +103,7 @@ Here a list of a few arguments that are common for the entity_type "event":
 integer with the tag_type. For a full list of options see: \code{movebank_retrieve(entity_type='tag_type')}, values from
 the \code{id} and \code{external_id} columns are valid.
 \item \code{timestamp_start} and \code{timestamp_end} can be used to limit the temporal range to download.
-This argument can either be formatted as a \code{POSIXct} timestamp or a character string
+This argument can either be formatted as a \code{POSIXct} timestamp, \code{Date} or a character string
 (e.g. \code{"20080604133046000"}(\code{yyyyMMddHHmmssSSS}))
 \item \code{event_reduction_profile} might be useful to reduce the data downloaded (e.g. daily locations) possible values
 are character strings (e.g. \code{"EURING_01"}). For details see the movebank api

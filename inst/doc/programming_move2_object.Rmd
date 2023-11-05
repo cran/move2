@@ -45,32 +45,50 @@ knitr::opts_chunk$set(
 - `mt_track_id_column()`: returns the name of the column containing the track
   ids used by the `move2` object
 
+## Transforming other classes to a `move2` object
+
+- `mt_as_move2()`: creates a `move2` object from objects of class `sf`, 
+`data.frame`, `telemetry`/`telemetry list` from *ctmm*, `track_xyt` from *amt* 
+or `Move`/`MoveStack` from *move*. 
+  
 ## Transforming a `move2` object into other classes
-
-- `as.data.frame()`: creates a `data.frame` including all information contained
-  in the `move2`, note that for most purposes the `move2` already functions like
-  a `data.frame`
-
-- `data.table::as.data.table()`: creates a `data.table` including all
-  information contained in the `move2`
 
 - `to_move()`: converts to a object of class `Move`/`MoveStack`
 
-## Transforming other classes to a `move2` object
+- `mt_track_id(x) <- NULL`: to remove `move2` class from the object, it will 
+be recognized as a object of class `sf`
 
-- `mt_as_move2()`: creates a `move2` object from a `sf`, `data.frame` or
-  `Move`/`MoveStack` object
+- `mt_as_event_attribute(x, names(mt_track_data(x)))`: join all attributes (event and track) 
+into one table. If additionally `mt_track_id(x) <- NULL` is applied, the 
+resulting `sf` object should behave as any `data.frame`
 
 ## Useful functions
 
+- `mt_read()`: read in data downloaded from movebank, by just stating the path to the file
+
 - `mt_read(mt_example())`: example dataset
 
+- `dplyr::filter(x, !sf::st_is_empty(x))`: exclude all empty locations
+
+- `filter_track_data(x, .track_id = c("nameTrack1", "nameTrack3")`: subset to one or more tracks
+
 - `split(x, mt_track_id(x))`: split a `move2` object into a list of single
-  objects per track
+  objects per track. Alternatively see `dplyr::mutate()`, `dplyr::group_by()`, 
+  `group_by_track_data()` to apply calculations to tracks separately
 
 - `mt_stack()`: combine multiple `move2` objects into one
 
+- `mt_as_track_attribute()`/`mt_as_event_attribute()`: move columns between 
+track and event attributes (and vv)
+
+- `mt_set_track_id()`: replace track ids with new values, set new column to 
+define tracks or rename track id column
+
+- `mutate_track_data()`: add or modify attributes in the track data
+
 - `sf::st_transform()`: to reproject the `move2` into a different projection
+
+- `mt_aeqd_crs()`: create a AEQD coordinate reference system
 
 - `mt_track_lines()`: convert a trajectory into lines for plotting with e.g.
   `ggplot`

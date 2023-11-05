@@ -5,17 +5,22 @@
 \alias{mt_turnangle}
 \title{Calculate azimuths or turn angles}
 \usage{
-mt_azimuth(x)
+mt_azimuth(x, units)
 
-mt_turnangle(x)
+mt_turnangle(x, units)
 }
 \arguments{
-\item{x}{a \code{move2} object. Timestamps must be ordered within tracks and only contain location data (See 'Details').}
+\item{x}{a \code{move2} object. Timestamps must be ordered within tracks and only contain location data and
+it must be in a geographic coordinate system or without a coordinate reference system (See 'Details').}
+
+\item{units}{Optional. Valid values are \code{character}, \code{symbolic_units} or \code{units}, for more details see the \code{value} argument of \link[units:units]{units::as_units}. If no units are stated (default) the function flexibly determines the units to return. Fixing the units can be useful if specific return units are for example required for subsequent functions. This argument only takes effect if the initial return value already has units.}
 }
 \value{
-A vector of angles in radians (between \code{-pi} and \code{pi}).\cr
+A vector of angles, currently default is in radians (between \code{-pi} and \code{pi}).\cr
+
 In \code{mt_azimuth} north is represented by 0, positive values are movements towards the east, and negative values
 towards the west. The last value for each track will be \code{NA}.
+
 In \code{mt_turnangle} negative values are left turns and positive right turns. The first and the last value for each
 track will be \code{NA}.
 }

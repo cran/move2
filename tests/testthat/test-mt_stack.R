@@ -41,6 +41,43 @@ test_that("mt_stack works with lists", {
     ))
   )
 })
+test_that("mt_stack doesnt change single object", {
+  expect_identical(
+    mt_stack(
+      mt_sim_brownian_motion(tracks = c("j", "h"), sigma = 0)
+    ),
+    mt_stack(list(
+      mt_sim_brownian_motion(tracks = c("j", "h"), sigma = 0)
+    ))
+  )
+  m <- mt_read(mt_example())
+  expect_identical(
+    mt_stack(m),
+    mt_stack(list(m))
+  )
+  expect_equal(
+    mt_sim_brownian_motion(tracks = c("j", "h"), sigma = 0),
+    mt_stack(list(
+      mt_sim_brownian_motion(tracks = c("j", "h"), sigma = 0)
+    )),
+    ignore_attr = TRUE
+  )
+  expect_equal(
+    m,
+    mt_stack(list(m)),
+    ignore_attr = TRUE
+  )
+  m <- mt_set_track_data(m, tibble::as_tibble(mt_track_data(m)))
+  expect_identical(
+    mt_stack(m),
+    mt_stack(list(m))
+  )
+  expect_equal(
+    m,
+    mt_stack(list(m)),
+    ignore_attr = TRUE
+  )
+})
 test_that("mt_stack with different types", {
   suppressWarnings(expect_error(
     mt_stack(mt_sim_brownian_motion(tracks = letters), mt_read(mt_example())),
@@ -51,7 +88,7 @@ test_that("mt_stack with different types", {
       mt_sim_brownian_motion(t = as.POSIXct("1970-1-1") + 1:10),
       mt_read(mt_example())
     ),
-    "Can't combine `..1` <integer> and `..2` <factor<77451>>."
+    "arguments have different crs"
   ))
   a <- sf::st_set_crs(mt_sim_brownian_motion(
     t = as.POSIXct("1970-1-1") + 1:10,
@@ -163,4 +200,28 @@ test_that("duplicate individuals rename", {
       )
     ), row.names = c(NA, -7L), class = "data.frame")
   ))
+})
+test_that("test different track columns", {
+  a <- mt_sim_brownian_motion(tracks = factor(letters[1:3]))
+  b <- mt_sim_brownian_motion(tracks = 4:6)
+  e <- mt_sim_brownian_motion(tracks = (10:12))
+  e <- mt_set_track_id(e, as.integer64(mt_track_id(e)))
+  d <- mt_sim_brownian_motion(tracks = LETTERS[7:9])
+  expect_identical(mt_stack(a, b) |> mt_track_id(), factor(c(rep(letters[1:3], each = 10), rep(4:6, each = 10)),
+    levels = c("a", "b", "c", as.character(4:6))
+  ))
+  expect_identical(
+    mt_stack(b, a) |> mt_track_id(),
+    factor(c(rep(4:6, each = 10), rep(letters[1:3], each = 10)))
+  )
+
+  expect_identical(mt_stack(a, d) |> mt_track_id(), (c(rep(letters[1:3], each = 10), rep(LETTERS[7:9], each = 10))))
+  expect_identical(
+    mt_stack(d, a) |> mt_track_id(),
+    (c(rep(LETTERS[7:9], each = 10), rep(letters[1:3], each = 10)))
+  )
+  expect_identical(mt_stack(b, d, a) |> mt_track_id(), (c(rep(4:6, each = 10), rep(LETTERS[7:9], each = 10), rep(letters[1:3], each = 10))))
+  expect_identical(mt_stack(d, a, b) |> mt_track_id(), (c(rep(LETTERS[7:9], each = 10), rep(letters[1:3], each = 10), rep(4:6, each = 10))))
+  expect_identical(mt_stack(e, b, d, a) |> mt_track_id(), (c(rep(10:12, each = 10), rep(4:6, each = 10), rep(LETTERS[7:9], each = 10), rep(letters[1:3], each = 10))))
+  expect_identical(mt_stack(d, a, b, e) |> mt_track_id(), (c(rep(LETTERS[7:9], each = 10), rep(letters[1:3], each = 10), rep(4:6, each = 10), rep(10:12, each = 10))))
 })

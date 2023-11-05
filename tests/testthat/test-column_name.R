@@ -22,6 +22,11 @@ test_that("setting track id works as expected", {
     x |> mt_set_track_id_column("date"),
     "Track id.s. should be of the type integer, integer64, character or factor."
   )
+  m <- mt_sim_brownian_motion(t = 1:2, tracks = 3) |>
+    mutate(rr = c(1, 1, 1, 1, 2, 2)) |>
+    mt_set_track_data(data.frame(rr = c(1, 2, 2), track = 1:3))
+
+  expect_error(mt_set_track_id_column(m, "rr"), "There are duplicated track identifiers in the new `track_id` column ..rr.. of the `track_data`")
 })
 test_that("length required", {
   expect_silent(mt_set_time(x, seq_len(nrow(x))))

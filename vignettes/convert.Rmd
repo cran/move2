@@ -64,7 +64,8 @@ tribble(
   ),
   "show()", "print()", "",
   "move()", "mt_as_move2()", "",
-  "interpolateTime()", "mt_interpolate()", ""
+  "interpolateTime()", "mt_interpolate()", "",
+  "thinTrackTime()", "mt_filter_per_interval()","These two functions are not exactly doing the same, the new one subsets the data to a specified time window, but also retains segments with larger timelags"
 ) %>%
   knitr::kable()
 ```

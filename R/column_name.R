@@ -4,7 +4,7 @@
 #' * `mt_time_column()` returns the name of the column containing the timestamps
 #' * `mt_track_id_column()` returns the name of the column containing the track ids
 #' * `mt_set_time_column()` set the column that should be used as time column
-#' * `mt_set_track_id_column()` set the column that should be used as track id column
+#' * `mt_set_track_id_column()` set the column that should be used as track id column (the column has to be present in event and track table)
 #'
 #' @param x a `move2` object
 #'
@@ -14,6 +14,8 @@
 #'
 #' @details
 #' The set functions purely update the attribute containing the column name after checking the minimal requirements.
+#'
+#' For `mt_set_track_id_column()` the column has to be present in event and track table, if this is not the case consider using [mt_track_id()].
 #'
 #' @export
 #'
@@ -82,6 +84,11 @@ mt_set_track_id_column <- function(x, value) {
   assert_valid_track_id(track_ids)
   assert_that(has_name(mt_track_data(x), value),
     msg = format_error("The `track_data` does not have a column with the name {.val {value}}")
+  )
+  assert_that(!as.logical(anyDuplicated(mt_track_data(x)[, value])),
+    msg = format_error(
+      "There are duplicated track identifiers in the new `track_id` column ({.val {value}}) of the `track_data`"
+    )
   )
   attr(x, "track_id_column") <- value
   return(x)

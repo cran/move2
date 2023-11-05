@@ -13,10 +13,15 @@ to_move(x)
 an object of the class \code{Move}/\code{MoveStack}
 
 \code{to_move} converts back to a objects from the \code{move} package. When multiple individuals are provided a
-\code{\link[move]{MoveStack-class}} is created otherwise a  \code{\link[move]{Move-class}} object.
+\code{\link[move]{MoveStack-class}} is created otherwise a \code{\link[move]{Move-class}} object.
 }
 \description{
 Convert a move2 object to a move object
+}
+\details{
+Note that the individuals are ordered as they occur in the event data in the created
+\code{\link[move]{MoveStack-class}} object as the order needs to correspond there between the event and track data
+for \code{move}.
 }
 \examples{
 \donttest{

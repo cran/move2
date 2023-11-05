@@ -54,7 +54,11 @@ movebank_construct_url <- function(entity_type = NA, ...) {
     }
   }
   for (i in c("timestamp_start", "timestamp_end")) {
-    if (i %in% names(extra_args) && inherits(extra_args[[i]], "POSIXct")) {
+    if (i %in% names(extra_args) &&
+      (inherits(extra_args[[i]], "POSIXct") || inherits(extra_args[[i]], "Date"))) {
+      if (inherits(extra_args[[i]], "Date")) {
+        extra_args[[i]] <- as.POSIXct(extra_args[[i]])
+      }
       extra_args[[i]] <- sub(
         "\\.", "",
         strftime(extra_args[[i]],

@@ -64,146 +64,26 @@ mt_set_track_data <- function(x, data) {
   return(x)
 }
 
-#' Convert trajectories into lines
-#'
-#' @description
-#' Converts each track into one line
-#'
-#' @param x A move object
-#'
-#' @param ... Arguments passed on to the [summarise][dplyr::summarise] function
-#'
-#' @return A [sf::sf] object with a line representing the track as geometry for each track.
-#'
-#' @details
-#' Note that all empty points are removed before summarizing. Arguments passed with `...` thus only summarize for the
-#' non empty locations.
-#'
-#' @examples
-#' mt_sim_brownian_motion() |>
-#'   mt_track_lines(
-#'     n = dplyr::n(),
-#'     minTime = min(time),
-#'     maxTime = max(time)
-#'   )
-#' ## empty points are not counted in summary statistic
-#' x <- mt_sim_brownian_motion(1:3)
-#' x$geometry[[2]] <- sf::st_point()
-#' x |> mt_track_lines(
-#'   n = dplyr::n()
-#' )
-#' ## plot of the tracks as a line
-#' mt_sim_brownian_motion(
-#'   tracks = letters[1:2],
-#'   start_location = list(c(0, 0), c(10, 0))
-#' ) |>
-#'   mt_track_lines() |>
-#'   plot()
-#'
-#' @export
-mt_track_lines <- function(x, ...) {
-  e <- st_is_empty(x)
-  assert_that(st_geometry_type(x, FALSE) == "POINT", msg = "The geometry column needs to contain points.")
-  assert_that(mt_is_time_ordered(x))
-  if (any(e)) {
-    cli_inform("In total {sum(e)} empty location record{?s} {?is/are} removed before summarizing.")
-    x <- x |>
-      filter(!e)
-  }
-  x |>
-    group_by(!!sym(attr(x, "track_id_column"))) |>
-    summarise(do_union = FALSE, ...) |> # union F prevents point order from being mixed up
-    st_cast("LINESTRING") |>
-    left_join(mt_track_data(x))
-}
 
-
-#' Move one or more columns to track attributes or event attributes
-#' @description
-#' * `mt_as_track_attribute`: move a column from the event to the track attributes
-#' * `mt_as_event_attribute`: move a column from the track to the event attributes
-#'
-#' @param x The move2 object
-#'
-#' @param ... the names of columns to move, it is also possible to use \code{\link[tidyselect:language]{helpers}}.
-#'
-#' @details
-#'  When one or more of the selected columns contain more then one unique value per track an error is raised.
-#'
-#' @return An object of the class `move2` with the column(s) moved
-#' @export
-#' @seealso
-#' * [mt_track_data()] to retrieve the track attribute table
-#' * [mt_set_track_data()] to replace attribute table with new values
-#' @examples
-#' sim_data <- mt_sim_brownian_motion()
-#' sim_data$sex <- "female"
-#'
-#' # different ways to move column "sex" from event to track attribute
-#' sim_data |> mt_as_track_attribute(sex)
-#' sim_data |> mt_as_track_attribute(starts_with("s"))
-#' sim_data |> mt_as_track_attribute(any_of(c("sex", "age")))
-mt_as_track_attribute <- function(x, ...) {
-  expr <- rlang::expr(c(...))
-  pos <- eval_select(expr, data = x)
-  xx <- x
-  class(xx) <- setdiff(class(xx), "move2")
-  to_move <- xx |>
-    select(...) |>
-    st_drop_geometry() |>
-    mutate(!!attr(x, "track_id_column") := mt_track_id(x)) |>
-    distinct() |>
-    tibble::as_tibble()
-  assert_that(nrow(to_move) == mt_n_tracks(x), msg = "The attributes to move do not have a unique value per individual")
-  assert_that(all(to_move |> pull(!!mt_track_id_column(x)) == mt_track_id(x) |> unique()),
-    msg = "The order of tracks got mixed up"
-  )
-  if (is.integer(pos) && length(pos) == 0) {
-    # there are no columns to move
-    return(x)
-  }
-  pos <- pos[names(pos) != mt_track_id_column(x)]
-  if (is.integer(pos) && length(pos) == 0) {
-    pos <- TRUE
-  } else {
-    pos <- -pos
-  }
-  updated_data <- mt_track_data(x) |>
-    select(-!!attr(x, "track_id_column")) |>
-    #  tibble::as_tibble() |>
-    bind_cols(to_move) |>
-    mt_set_track_data(x = x[, pos])
-  return(updated_data)
-}
-
-#' @export
-#' @rdname mt_as_track_attribute
-mt_as_event_attribute <- function(x, ...) {
-  expr <- rlang::expr(c(...))
-  track_data <- mt_track_data(x)
-  pos <- eval_select(expr, data = track_data)
-  pos <- pos[names(pos) != mt_track_id_column(x)]
-  x <- x |>
-    left_join(
-      track_data[, c(mt_track_id_column(x), names(pos)), drop = FALSE],
-      mt_track_id_column(x)
-    ) |>
-    mt_set_track_data(track_data[, ifelse(length(pos) == 0, TRUE, -pos), drop = FALSE])
-  return(x)
-}
 
 #' Retrieve the column with track ids or get the number of tracks
 #' @description
 #' * `mt_track_id()` retrieve track ids
-#' * `mt_track_id(x) <- value` and `mt_set_track_id(x, value)`  replace track ids with new values
+#' * `mt_track_id(x) <- value` and `mt_set_track_id(x, value)`  replace track ids with new values, set new column to define tracks or rename track id column
 #' * `mt_n_tracks()` returns the number of tracks
 #'
 #' @param x a `move2` object
 #'
 #' @details
+#' The vector containing the new track ids must be of the same length as the event table.
+#'
+#' To set a new column defining the track ids, this column has to be present in
+#' the event table. See examples.
+#'
 #' When changing the track ids with new values that results in the combination
 #' of several tracks, the track attributes of these tracks are also combined.
 #' This is done by creating a lists within each column. See examples.
+#'
 #'
 #'
 #' @return `mt_track_id` returns a vector of the length of the number of locations that indicated the points belonging to one track. \cr
@@ -213,6 +93,7 @@ mt_as_event_attribute <- function(x, ...) {
 #' @examples
 #' x <- mt_read(mt_example())
 #' mt_n_tracks(x)
+#' unique(mt_track_id(x))
 #' mt_track_id(x) |> table()
 mt_track_id <- function(x) {
   if (missing(x)) {
@@ -270,14 +151,39 @@ assert_valid_track_id <- function(track_ids) {
 
 
 #' @export
-#' @param value either the new track id values or the name of the new track id column as a scalar character.
-#' When the column is present then that column is used, otherwise the existing track id column is renamed
+#' @param value either a vector with new track id values, the name of the new column to define track ids as a scalar
+#' character (this column must be present in either the event or track table), or a scalar character to rename the track
+#'  id column. IF `value` is `NULL` the move2 class is dropped and a object of the class `sf` is returned.
 #' @rdname mt_track_id
 #' @examples
-#' x <- mt_sim_brownian_motion()
-#' x$new_id <- gl(4, 5)
-#' x |> mt_set_track_id("new_id")
-#' mt_track_id(x) <- gl(4, 5)
+#' x <- mt_sim_brownian_motion(t = 1:10, tracks = 2) |>
+#'   dplyr::mutate(attrib_evnt = gl(4, 5, labels = c("XX", "YY", "TT", "ZZ"))) |>
+#'   mutate_track_data(attrib_trk = c("a", "b"))
+#'
+#' ## providing a vector with new track ids
+#' unique(mt_track_id(x))
+#' mt_track_id(x) <- c(rep("track_1", 10), rep("track_2", 10))
+#' unique(mt_track_id(x))
+#'
+#' ## renaming the track id column
+#' mt_track_id_column(x)
+#' mt_track_id(x) <- "my_new_track_name"
+#' mt_track_id_column(x)
+#'
+#' ## setting a new column to define track ids
+#' ## 1. when this column is present in the track table it has to be
+#' ## moved to the event table
+#' names(mt_track_data(x))
+#' x <- mt_as_event_attribute(x, "attrib_trk")
+#' mt_track_id(x) <- "attrib_trk"
+#' mt_track_id_column(x)
+#' unique(mt_track_id(x))
+#'
+#' ## 2. using an existing column in the event table
+#' mt_track_id(x) <- "attrib_evnt"
+#' mt_track_id_column(x)
+#' unique(mt_track_id(x))
+#'
 #' ## example of track data attributes being combined
 #' m <- mt_sim_brownian_motion(1:3, tracks = letters[5:8]) |>
 #'   mutate_track_data(sex = c("f", "f", "m", "m"), age = c(4, 4, 5, 6), old_track = track)
@@ -285,6 +191,12 @@ assert_valid_track_id <- function(track_ids) {
 #' mt_track_data(new_m)
 mt_set_track_id <- function(x, value) {
   if (is_scalar_character(value) && !has_name(x, value)) {
+    if (has_name(mt_track_data(x), value)) {
+      x <- x |>
+        mt_as_event_attribute(all_of(value), .keep = FALSE) |>
+        mt_set_track_id(value = value)
+      return(x)
+    }
     # Simple rename no further logic is needed
     colnames(x)[colnames(x) == mt_track_id_column(x)] <- value
     d <- mt_track_data(x)
@@ -299,6 +211,17 @@ mt_set_track_id <- function(x, value) {
     attr(x, "track_id_column") <- value
     class(x) <- setdiff(class(x), "move2")
     return(x)
+  }
+  if (has_name(mt_track_data(x), value) && value != mt_track_id_column(x)) {
+    # both the track data and event data contain the new column name.
+    cli_abort("Both the {.arg track_data} and the event data contain the column {.code {value}},
+              therefore it is unclear what are the correct track identifiers.
+              To resolve this omit one of the two {.code {value}} columns.
+              Alternatively {.fn mt_set_track_id_column} could be used
+              (e.g. {.code mt_set_track_id_column({rlang::caller_arg(x)}, {rlang::caller_arg(value)})}), this however
+              does not check if all tracks have associated {.var track_data}.",
+      class = "move2_error_two_track_id_columns"
+    )
   }
   new_column_name <- ifelse(is_scalar_character(value), value, mt_track_id_column(x))
   if (is_scalar_character(value)) {

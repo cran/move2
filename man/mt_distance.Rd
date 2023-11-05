@@ -5,12 +5,14 @@
 \alias{mt_speed}
 \title{Return distances or speeds between locations}
 \usage{
-mt_distance(x)
+mt_distance(x, units)
 
-mt_speed(x)
+mt_speed(x, units)
 }
 \arguments{
 \item{x}{a \code{move2} object. Timestamps must be ordered within tracks and only contain location data (See 'Details').}
+
+\item{units}{Optional. Valid values are \code{character}, \code{symbolic_units} or \code{units}, for more details see the \code{value} argument of \link[units:units]{units::as_units}. If no units are stated (default) the function flexibly determines the units to return. Fixing the units can be useful if specific return units are for example required for subsequent functions. This argument only takes effect if the initial return value already has units.}
 }
 \value{
 a vector of the same length as the \code{move2} object containing the distances/speeds between locations.
@@ -43,15 +45,18 @@ units::set_units(dist, km)
 ## speed between consecutive locations
 mt_sim_brownian_motion() |> mt_speed()
 ## When projections are provided units are included
-speed_calc <- mt_read(mt_example())[330:340, ] |>
+data <- mt_read(mt_example())[330:340, ]
+speed_calc <- data |>
   mt_speed()
 speed_calc
 ## transform units of output
-units::set_units(speed_calc, m/s)
+units::set_units(speed_calc, m / s)
 
-mt_read(mt_example())[330:340, ] |>
+## Different projection gives same speed
+data |>
   sf::st_transform("+proj=aeqd +units=km +lon_0=-73.9 +lat_0=42.7") |>
-  mt_speed()
+  mt_speed() |>
+  units::set_units(m / s)
 
 }
 \seealso{

@@ -20,7 +20,7 @@ For more information on the data see LaPoint et al. (2013) Landscape Ecology. do
 }
 \examples{
 
-# Get path to one example
+## Get path to one example
 mt_example()
 mt_read(mt_example())
 }

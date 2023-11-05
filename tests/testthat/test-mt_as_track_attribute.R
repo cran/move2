@@ -6,6 +6,10 @@ test_that("colum moving from events", {
     sim_data |> mt_as_track_attribute(sex),
     c("time", "track", "geometry")
   )
+  expect_named(
+    sim_data |> mt_as_track_attribute(sex, .keep = TRUE),
+    c("time", "track", "geometry", "sex")
+  )
   expect_error(
     sim_data |> mt_as_track_attribute(sex, time),
     "The attributes to move do not have a unique value per individual"
@@ -66,6 +70,11 @@ test_that("colum moving from track data", {
   )
   expect_named(
     sim_data |> mutate_track_data(age = 3:4) |>
+      mt_as_event_attribute(age, .keep = TRUE) |> mt_track_data(),
+    c("track", "age")
+  )
+  expect_named(
+    sim_data |> mutate_track_data(age = 3:4) |>
       mt_as_event_attribute(age, track) |> mt_track_data(),
     c("track")
   )
@@ -75,4 +84,25 @@ test_that("colum moving from track data", {
     c("track", "age"),
     ignore.order = TRUE
   )
+})
+test_that("columns get removed from event data", {
+  expect_true("sex" %in% colnames(sim_data))
+  expect_false("sex" %in% colnames(mt_as_track_attribute(sim_data, "sex")))
+  expect_false("sex" %in% colnames(mt_as_track_attribute(sim_data, starts_with("s"))))
+  ss <- mt_sim_brownian_motion()
+  ss$age <- 5
+  ss$sex <- "f"
+  expect_false(any(c("age", "sex") %in% colnames((mt_as_track_attribute(ss, all_of(c("age", "sex")))))))
+})
+test_that("columns get removed from track data", {
+  ss <- mt_sim_brownian_motion() |> mutate_track_data(age = 5, parent = "a")
+  expect_true("age" %in% colnames(mt_track_data(ss)))
+  expect_false("age" %in% colnames(mt_track_data(mt_as_event_attribute(ss, "age"))))
+  expect_false("age" %in% colnames(mt_track_data(mt_as_event_attribute(ss, starts_with("a")))))
+  expect_false("age" %in% colnames(mt_track_data(mt_as_event_attribute(ss, all_of("age")))))
+  expect_false(any(c("age", "parent") %in%
+    colnames(mt_track_data(mt_as_event_attribute(
+      ss,
+      all_of(c("age", "parent"))
+    )))))
 })

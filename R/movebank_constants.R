@@ -1,46 +1,79 @@
+#' @importFrom vroom col_date col_datetime col_double col_factor col_integer col_character col_logical col_big_integer
+NULL
 # dput(movebank_retrieve("entity_type"='tag_type')  ) # nolint
-movebank_tag_type_table <- structure(list(
-  description = c(
-    NA, NA, NA, NA, NA, NA, NA, NA,
-    NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
-  ), external_id = c(
-    "bird-ring",
-    "gps", "radio-transmitter", "argos-doppler-shift", "natural-mark",
-    "acceleration", "solar-geolocator", "accessory-measurements",
-    "solar-geolocator-raw", "barometer", "magnetometer", "orientation",
-    "solar-geolocator-twilight", "acoustic-telemetry", "gyroscope",
-    "heart-rate", "sigfox-geolocation", "proximity"
-  ), id = structure(c(
-    1.96144061398975e-321,
-    3.22624866734334e-321, 3.32506179651159e-321, 4.09076473443635e-319,
-    1.16880220518501e-317, 1.16880269925066e-317, 1.92011745743723e-317,
-    3.87493413331319e-317, 4.59550368042471e-317, 3.8408856487366e-316,
-    3.84088619220881e-316, 4.04676003659103e-315, 4.51624043736367e-315,
-    6.1243104547751e-315, 6.41135836580693e-315, 1.09001844591634e-314,
-    1.13629901961024e-314, 1.30684843265253e-314
-  ), class = "integer64"),
-  is_location_sensor = c(
-    TRUE, TRUE, TRUE, TRUE, TRUE, FALSE,
-    TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, TRUE, FALSE,
-    FALSE, TRUE, FALSE
-  ), name = c(
-    "Bird Ring", "GPS", "Radio Transmitter",
-    "Argos Doppler Shift", "Natural Mark", "Acceleration", "Solar Geolocator",
-    "Accessory Measurements", "Solar Geolocator Raw", "Barometer",
-    "Magnetometer", "Orientation", "Solar Geolocator Twilight",
-    "Acoustic Telemetry", "Gyroscope", "Heart Rate", "Sigfox Geolocation",
-    "Proximity"
+movebank_tag_type_table <- structure(
+  list(
+    description = c(
+      NA, NA, NA, NA, NA, NA, NA, NA,
+      NA, NA, NA, NA, NA, NA, NA, NA, NA, NA,
+      "Localize tracking devices based on approximated distance to nearby GSM cell towers, WiFi or other network connectors.",
+      "Localize devices using a global navigation satellite system",
+      "Data derived from other sensor data"
+    ),
+    external_id = c(
+      "bird-ring",
+      "gps", "radio-transmitter", "argos-doppler-shift", "natural-mark",
+      "acceleration", "solar-geolocator", "accessory-measurements",
+      "solar-geolocator-raw", "barometer", "magnetometer", "orientation",
+      "solar-geolocator-twilight", "acoustic-telemetry", "gyroscope",
+      "heart-rate", "sigfox-geolocation", "proximity", "geolocation-api",
+      "gnss", "derived"
+    ), id = structure(c(
+      1.96144061398975e-321, 3.22624866734334e-321,
+      3.32506179651159e-321, 4.09076473443635e-319, 1.16880220518501e-317,
+      1.16880269925066e-317, 1.92011745743723e-317, 3.87493413331319e-317,
+      4.59550368042471e-317, 3.8408856487366e-316, 3.84088619220881e-316,
+      4.04676003659103e-315, 4.51624043736367e-315, 6.1243104547751e-315,
+      6.41135836580693e-315, 1.09001844591634e-314, 1.13629901961024e-314,
+      1.30684843265253e-314, 1.52677095314155e-314, 1.52677095610594e-314,
+      1.52677095660001e-314
+    ), class = "integer64"), is_location_sensor = c(
+      TRUE,
+      TRUE, TRUE, TRUE, TRUE, FALSE, TRUE, FALSE, FALSE, FALSE, FALSE,
+      FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE
+    ), name = structure(1:21, levels = c(
+      "Bird Ring", "GPS", "Radio Transmitter",
+      "Argos Doppler Shift", "Natural Mark", "Acceleration", "Solar Geolocator",
+      "Accessory Measurements", "Solar Geolocator Raw", "Barometer",
+      "Magnetometer", "Orientation", "Solar Geolocator Twilight", "Acoustic Telemetry",
+      "Gyroscope", "Heart Rate", "Sigfox Geolocation", "Proximity",
+      "Geolocation API", "GNSS", "Derived"
+    ), class = "factor")
+  ),
+  row.names = c(
+    NA,
+    -21L
+  ), spec = structure(list(cols = list(description = structure(list(), class = c(
+    "collector_character",
+    "collector"
+  )), external_id = structure(list(), class = c(
+    "collector_character",
+    "collector"
+  )), id = structure(list(), class = c(
+    "collector_big_integer",
+    "collector"
+  )), is_location_sensor = structure(list(), class = c(
+    "collector_logical",
+    "collector"
+  )), name = structure(list(
+    levels = NULL, ordered = FALSE,
+    include_na = FALSE
+  ), class = c("collector_factor", "collector"))), default = structure(list(), class = c(
+    "collector_guess",
+    "collector"
+  )), delim = ","), class = "col_spec"), class = c(
+    "spec_tbl_df",
+    "tbl_df", "tbl", "data.frame"
   )
-), row.names = c(NA, -18L), class = c(
-  "spec_tbl_df",
-  "tbl_df", "tbl", "data.frame"
-))
+)
 
 
 movebank_spatial_column_pairs <- list(
   argos_location_1 = c("argos_lon1", "argos_lat1"),
   argos_location_2 = c("argos_lon2", "argos_lat2"),
   birth_location = c("birth_longitude", "birth_latitude"),
+  animal_birth_hatch_location = c("animal_birth_hatch_longitude", "animal_birth_hatch_latitude"),
+  animal_mortality_location = c("animal_mortality_longitude", "animal_mortality_latitude"),
   mortality_location = c("mortality_longitude", "mortality_latitude"),
   capture_location = c("capture_longitude", "capture_latitude"),
   location_median = c("long_median", "lat_median"),
@@ -84,13 +117,16 @@ mb_column_units <- c(
   "battery-charge-percent" = "%",
   "battery-charging-current" = "mA",
   "beacon:frequency" = "MHz",
+  "capture-handling-time" = "s",
   "compass-heading" = "degree_north",
   "cpu-temperature" = "degree_C",
   "ctt:solar-current-since-last-fix" = "mA",
-  # "deploy-off-latitude" = , # decimal degrees, WGS84 reference system
+  #  "deploy-off-latitude" = , # decimal degrees, WGS84 reference system
   #  "deploy-off-longitude" = , # decimal degrees, WGS84 reference system
   #  "deploy-on-latitude" = , # decimal degrees, WGS84 reference system
   #  "deploy-on-longitude" = , # decimal degrees, WGS84 reference system
+  "dive-duration" = "s",
+  "ecg-sampling-frequency" = "Hz",
   "eobs:acceleration-sampling-frequency-per-axis" = "Hz",
   "eobs:battery-voltage" = "mV",
   "eobs:fix-battery-voltage" = "mV",
@@ -98,6 +134,7 @@ mb_column_units <- c(
   "eobs:speed-accuracy-estimate" = "m/s",
   "eobs:temperature" = "degree_C",
   "eobs:used-time-to-get-fix" = "s",
+  "error-count" = "count",
   "external-temperature" = "degree_C",
   "geolocator-sun-elevation-angle" = "arc_degree",
   "gmatrix:gps-fix-interval" = "s",
@@ -114,6 +151,7 @@ mb_column_units <- c(
   "gps:tdop" = "1",
   "gps:vdop" = "1",
   "ground-speed" = "m/s",
+  "gsm:gsm-signal-strength" = "ASU", # arbitrary strength units
   "gt:sys-week" = "count",
   "gt:tx-count" = "count",
   "gyroscope-sampling-frequency-per-axis" = "Hz",
@@ -123,13 +161,18 @@ mb_column_units <- c(
   "heartrate:rr-interval" = "s",
   "heartrate:voltage-resolution" = "mV",
   "height-above-ellipsoid" = "m",
+  "height-above-ground-level" = "m",
+  "height-above-mean-sea-level" = "m",
   "height-above-msl" = "m",
   "icarus:solar-cell-current" = "mA",
+  "individual-count" = "count",
   "internal-temperature" = "degree_C",
-  # "lat-lower" = , # decimal degrees, WGS84 reference system
+  #  "lat-lower" = , # decimal degrees, WGS84 reference system
   #  "lat-upper" = , # decimal degrees, WGS84 reference system
+  "location-error-3d" = "m",
   "location-error-numerical" = "m",
   "location-error-percentile" = "%",
+  "lotek-eres" = "1",
   #  "long-lower" = , # decimal degrees, WGS84 reference system
   #  "long-upper" = , # decimal degrees, WGS84 reference system
   "mag:magnetic-field-sampling-frequency-per-axis" = "Hz",
@@ -143,18 +186,23 @@ mb_column_units <- c(
   "number-of-events" = "count",
   "number-of-individuals" = "count",
   "number-of-tags" = "count",
+  "odba" = "standard_free_fall",
+  "orientation-quaternions-sampling-frequency" = "Hz",
   "pitch" = "arc_degree",
   "quaternions-sampling-frequency" = "Hz",
-  "orientation-quaternions-sampling-frequency" = "Hz",
   "relative-humidity" = "%",
   "roll" = "arc_degree",
+  "rr-interval" = "s",
   "sampling-frequency" = "Hz",
   "sequence-number" = "count",
   "sigfox:computed-location-radius" = "m",
   "sigfox:tx-interval" = "min",
   "solar-cell-voltage" = "mV",
   "solar-voltage-percent" = "%",
+  "speed-accuracy" = "m",
+  "tag-backup-voltage" = "mV",
   "tag-beacon-frequency" = "MHz",
+  "tag-mass-total" = "g",
   "tag-mass" = "g",
   "tag-voltage" = "mV",
   #  "technosmart:signal-quality" = ,
@@ -179,21 +227,12 @@ mb_column_units <- c(
   "utm-northing" = "m", # Units: meters, WGS84 reference system
   "vedba" = "standard_free_fall",
   "vertical-error-numerical" = "m",
+  "vertical-speed" = "m/s",
   "voltage-resolution" = "mV",
+  "wc-residual" = "1",
   "weight" = "g",
   "wet-count" = "count",
-  "capture-handling-time" = "s",
-  "ecg-sampling-frequency" = "Hz",
-  "height-above-ground-level" = "m",
-  "height-above-mean-sea-level" = "m",
-  "individual-count" = "count",
-  "lotek-eres" = "1",
-  "odba" = "standard_free_fall",
-  "rr-interval" = "s",
-  "speed-accuracy" = "m",
-  "tag-backup-voltage" = "mV",
-  "vertical-speed" = "m/s",
-  "wc-residual" = "1",
+  "zero-crossings-steps" = "count",
   NULL
 )
 movebank_column_types <- list(
@@ -214,13 +253,16 @@ movebank_column_types <- list(
   "activity-y" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000335/
   "activity-z" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000336/
   "algorithm-marked-outlier" = col_logical(),
-  "alt-project-id" = col_factor(), ### ?
+  "alt-index-id" = col_character(),
+  "alt-project-id" = col_factor(),
   # "ambiguous-detection", # not documented in mb dictionary
   "angular-velocities-raw" = col_character(),
   "angular-velocity-x" = col_double(),
   "angular-velocity-y" = col_double(),
   "angular-velocity-z" = col_double(),
   "animal_taxon_detail" = col_factor(),
+  "animal-birth-hatch-latitude" = col_double(),
+  "animal-birth-hatch-longitude" = col_double(),
   "animal-comments" = col_character(),
   "animal-death-comments" = col_character(),
   "animal-earliest-date-born" = col_datetime(),
@@ -232,6 +274,16 @@ movebank_column_types <- list(
   "animal-marker-id" = col_factor(),
   "animal-mass" = col_double(),
   "animal-mates" = col_factor(),
+  "animal-mortality-date" = col_date(),
+  "animal-mortality-latitude" = col_double(),
+  "animal-mortality-longitude" = col_double(),
+  "animal-mortality-type" = col_factor(
+    levels = c(
+      "bycatch", "capture", "electrocution", "harvest", "disease",
+      "natural-death", "other", "parasites", "poison", "predation",
+      "starvation", "unknown", "vehicle-collision"
+    )
+  ),
   "animal-nickname" = col_factor(),
   "animal-offspring" = col_factor(),
   "animal-parents" = col_factor(),
@@ -239,28 +291,24 @@ movebank_column_types <- list(
   "animal-ring-id" = col_factor(),
   "animal-sex" = col_factor(levels = c("m", "f", "u")),
   "animal-siblings" = col_factor(),
-  "animal-taxon-detail" = col_factor(), ### ?
+  "animal-taxon-detail" = col_factor(),
   "animal-taxon" = col_factor(),
   "argos:altitude" = col_double(),
   "argos:best-level" = col_double(),
   "argos:calcul-freq" = col_double(),
   "argos:error-radius" = col_double(),
   "argos:gdop" = col_double(),
-  "argos:iq" = col_factor(levels = c(apply(expand.grid(0:6, 0:8), 1, paste0, collapse = ""), 0:8, "99")),
-  # MB argos:iq 99 is not in the documentation but does occur in study 1420256397
+  "argos:iq" = col_factor(levels = c(apply(expand.grid(0:6, 0:8), 1, paste0, collapse = ""), 0:8, "99")), # MB argos:iq 99 is not in the documentation but does occur in study 1420256397
   "argos:lat1" = col_double(),
   "argos:lat2" = col_double(),
+  "argos:lc" = col_factor(levels = c("G", 3:0, "A", "B", "Z"), ordered = TRUE),
   "argos:location-algorithm" = col_factor(levels = c("least-squares", "Kalman")),
   "argos:lon1" = col_double(),
   "argos:lon2" = col_double(),
-  "argos:lc" = col_factor(levels = c("G", 3:0, "A", "B", "Z"), ordered = TRUE),
-  "argos:nb-mes" = col_integer(),
   "argos:nb-mes-120" = col_integer(),
+  "argos:nb-mes" = col_integer(),
   # "argos:nb-mes-identical", # not documented in mb dictionary
-  "argos:nopc" = col_factor(
-    ordered = TRUE,
-    levels = as.character(c(0:4, 9))
-  ), # MB argos:nopc 9 is not in the documentation but does occur in study 1420256397
+  "argos:nopc" = col_factor(ordered = TRUE, levels = as.character(c(0:4, 9))), # MB argos:nopc 9 is not in the documentation but does occur in study 1420256397
   "argos:orientation" = col_double(),
   "argos:pass-duration" = col_double(),
   "argos:sat-id" = col_factor(),
@@ -273,10 +321,15 @@ movebank_column_types <- list(
   "argos:transmission-timestamp" = col_datetime(),
   "argos:valid-location-algorithm" = col_factor(levels = as.character(1L:2L)),
   "argos:valid-location-manual" = col_factor(levels = as.character(1L:2L)),
-  "attachment-type" = col_factor(levels = c(
-    "backpack-harness", "collar", "fin mount", "glue", "harness", "implant",
-    "leg-band", "leg-loop-harness", "none", "other", "suction-cup", "tape"
-  )),
+  "attachment-body-part" = col_factor(),
+  "attachment-comments" = col_character(),
+  "attachment-type" = col_factor(
+    levels = c(
+      "backpack-harness", "collar", "ear-tag", "fin mount", "glue",
+      "harness", "implant", "leg-band", "leg-loop-harness", "none",
+      "other", "subcutaneous-anchor", "suction-cup", "sutures", "tape"
+    )
+  ),
   "bar:barometric-depth" = col_double(),
   "bar:barometric-height" = col_double(),
   "bar:barometric-pressure" = col_double(),
@@ -293,38 +346,54 @@ movebank_column_types <- list(
   "behavior-according-to" = col_character(),
   "behavioural-classification" = col_factor(),
   "canonical-name" = col_factor(),
+  "capture-handling-time" = col_double(),
+  "capture-latitude" = col_double(),
+  "capture-longitude" = col_double(),
+  "capture-method" = col_character(),
+  "capture-timestamp" = col_datetime(),
   "citation" = col_character(),
   "comments" = col_character(),
   "compass-heading" = col_double(),
   "conductivity" = col_double(),
   "contact-person-id" = col_factor(),
   "contact-person-name" = col_factor(),
+  "contact-person" = col_character(),
   "cpu-temperature" = col_double(),
   "ctt:solar-current-since-last-fix" = col_integer(),
   "data-decoding-software" = col_factor(),
-  "data-processing-software" = col_factor(), ### ?
+  "data-processing-software" = col_factor(),
+  "dba-comments" = col_character(),
   "death-comments" = col_character(),
   "deploy-off-date" = col_datetime(),
   "deploy-off-latitude" = col_double(),
   "deploy-off-longitude" = col_double(),
+  "deploy-off-measurements" = col_character(),
   "deploy-off-person" = col_character(),
+  "deploy-off-sampling" = col_character(),
   "deploy-off-timestamp" = col_datetime(),
   "deploy-on-date" = col_datetime(),
   "deploy-on-latitude" = col_double(),
   "deploy-on-longitude" = col_double(),
+  "deploy-on-measurements" = col_character(),
   "deploy-on-person" = col_character(),
+  "deploy-on-sampling" = col_character(),
   "deploy-on-timestamp" = col_datetime(),
   "deployment-comments" = col_character(),
   "deployment-end-comments" = col_character(),
   "deployment-end-type" = col_factor(
     levels = c(
-      "captured", "dead", "equipment-failure", "fall-off",
-      "other", "released", "removal", "unknown"
+      "captured", "dead", "equipment-failure", "fall-off", "other",
+      "released", "removal", "unknown"
     )
   ),
   "deployment-id" = col_big_integer(),
+  "deployment-image" = col_character(),
+  "dive-duration" = col_integer(),
   "duty-cycle" = col_character(),
   "earliest-date-born" = col_datetime(), # seems to be undocumented api name
+  "ecg:raw" = col_double(),
+  "ecg:sampling-frequency" = col_double(),
+  "ecgs:raw" = col_character(),
   "end-timestamp" = col_datetime(),
   "eobs:acceleration-axes" = col_factor(),
   "eobs:acceleration-sampling-frequency-per-axis" = col_double(),
@@ -339,17 +408,15 @@ movebank_column_types <- list(
   "eobs:start-timestamp" = col_datetime(),
   "eobs:status" = col_factor(ordered = TRUE, levels = LETTERS[1:4]),
   "eobs:temperature" = col_integer(), ### MB for sure no decimals possible?
-  "eobs:type-of-fix" = col_factor(),
-  # MB galapagos albatrosses have a type of fix 0 for eobs:type-of-fix I expect either 2 or 3 :
-  # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000100/
+  "eobs:type-of-fix" = col_factor(), # MB galapagos albatrosses have a type of fix 0 for eobs:type-of-fix I expect either 2 or 3 : http://vocab.nerc.ac.uk/collection/MVB/current/MVB000100/
   "eobs:used-time-to-get-fix" = col_integer(),
+  "error-count" = col_integer(),
+  "event-group-id" = col_factor(),
   "event-id" = col_big_integer(),
   "exact-date-of-birth" = col_datetime(), # seems to be undocumented api name
   "external-temperature" = col_double(),
   "flt:switch" = col_factor(
-    levels = c(
-      as.character(c(0L, 6L, 48L, 49L, 64L, 69L, 72L, 77L, 112L))
-    ),
+    levels = c(as.character(c(0L, 6L, 48L, 49L, 64L, 69L, 72L, 77L, 112L))),
     ordered = TRUE
   ), # MB check if ordered
   "geolocator-calibration" = col_character(),
@@ -359,6 +426,7 @@ movebank_column_types <- list(
   "geolocator-sensor-comments" = col_character(),
   "geolocator-sun-elevation-angle" = col_double(),
   "geolocator-twilight3" = col_datetime(),
+  "georeference-protocol" = col_factor(),
   "gls:light-level" = col_double(),
   "gls:twilight" = col_integer(),
   "gmatrix:alert-message" = col_factor(),
@@ -367,10 +435,7 @@ movebank_column_types <- list(
   "gmatrix:event" = col_factor(levels = as.character(c(16L, 48L, 49L, 50L, 51L, 52L, 80L))),
   "gmatrix:firmware-version" = col_factor(),
   "gmatrix:gps-event-text" = col_factor(
-    levels = c(
-      "Unknown location", "Alert", "Panic",
-      "Timed", "Fall", "Heartbeat"
-    )
+    levels = c("Unknown location", "Alert", "Panic", "Timed", "Fall", "Heartbeat")
   ),
   "gmatrix:gps-event" = col_factor(levels = as.character(c(0:5))),
   "gmatrix:gps-fix-interval-text" = col_factor(),
@@ -384,8 +449,8 @@ movebank_column_types <- list(
   "gmatrix:last-location" = col_factor(levels = c("null", "0", "1")),
   "gmatrix:mode-text" = col_factor(
     levels = c(
-      "reserved", "help me", "press it", "track it",
-      "guard it", "monitor it", "don't lose it"
+      "reserved", "help me", "press it", "track it", "guard it",
+      "monitor it", "don't lose it"
     )
   ),
   "gmatrix:mode" = col_factor(levels = as.character(c(0:6))),
@@ -395,8 +460,7 @@ movebank_column_types <- list(
   "gps:activity-count" = col_integer(),
   "gps:dop" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000115/
   "gps:fix-type-raw" = col_factor(),
-  "gps:fix-type" = col_factor(levels = as.character(0:3), ordered = TRUE),
-  # MB 0 not in vocabulary for fix type but in study 619097045
+  "gps:fix-type" = col_factor(levels = as.character(0:3), ordered = TRUE), # MB 0 not in vocabulary for fix type but in study 619097045
   "gps:gdop" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000360/
   "gps:hdop" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000118/
   "gps:maximum-signal-strength" = col_double(),
@@ -405,7 +469,7 @@ movebank_column_types <- list(
   "gps:satellite-count" = col_integer(),
   "gps:speed-accuracy-estimate" = col_double(),
   "gps:tdop" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000361/
-  "gps:twilight" = col_factor(), ### factor?
+  "gps:twilight" = col_factor(),
   "gps:vdop" = col_double(), # http://vocab.nerc.ac.uk/collection/MVB/current/MVB000122/
   "grants-used" = col_character(),
   "ground-speed" = col_double(),
@@ -415,9 +479,10 @@ movebank_column_types <- list(
   "gt:sys-week" = col_integer(),
   "gt:tx-count" = col_integer(),
   "guaternions-raw" = col_character(),
+  "gundi-urn" = col_character(),
   "gyroscope-axes" = col_factor(),
   "gyroscope-sampling-frequency-per-axis" = col_double(),
-  "habitat-according-to" = col_character(), ## factor ??
+  "habitat-according-to" = col_character(),
   "habitat" = col_factor(),
   "heading" = col_double(),
   "heartrate:ecg-raw" = col_integer(),
@@ -427,6 +492,8 @@ movebank_column_types <- list(
   "heartrate:rr-interval" = col_double(),
   "heartrate:voltage-resolution" = col_double(),
   "height-above-ellipsoid" = col_double(),
+  "height-above-ground-level" = col_double(),
+  "height-above-mean-sea-level" = col_double(),
   "height-above-msl" = col_double(),
   "height-raw" = col_character(),
   "i-am-collaborator" = col_logical(),
@@ -436,6 +503,7 @@ movebank_column_types <- list(
   "icarus:solar-cell-current" = col_integer(),
   "id" = col_big_integer(),
   "import-marked-outlier" = col_logical(),
+  "individual-count" = col_integer(),
   "individual-id" = col_big_integer(),
   "individual-local-identifier" = col_factor(),
   "individual-taxon-canonical-name" = col_factor(),
@@ -443,25 +511,30 @@ movebank_column_types <- list(
   "is-location-sensor" = col_logical(),
   "is-test" = col_logical(),
   "lat-lower" = col_double(),
+  "lat-median" = col_double(),
+  "lat-sd" = col_double(),
   "lat-upper" = col_double(),
   "latest-date-born" = col_datetime(), # seems to be undocumented api name
   "license-terms" = col_character(),
-  "license-type" = col_factor(
-    levels = c("CC_BY", "CC_BY_NC", "CC_0", "CUSTOM")
-  ),
+  "license-type" = col_factor(levels = c("CC_BY", "CC_BY_NC", "CC_0", "CUSTOM")),
   "light-level" = col_double(),
-  "local-identifier" = col_factor(),
-  # needed because api does not append tag_ / individual_ when downloading the specific info
+  "local-identifier" = col_factor(), # needed because api does not append tag_ / individual_ when downloading the specific info
+  "locality-according-to" = col_character(),
+  "locality" = col_factor(),
   "location-accuracy-comments" = col_character(), # deployment property
+  "location-error-3d" = col_double(),
   "location-error-numerical" = col_double(),
   "location-error-percentile" = col_double(),
   "location-error-text" = col_character(),
   "location-lat" = col_double(),
   "location-long" = col_double(),
   "long-lower" = col_double(),
+  "long-median" = col_double(),
+  "long-sd" = col_double(),
   "long-upper" = col_double(),
   "lot:crc-status-text" = col_factor(levels = c("OK", "Fail", "OK(corrected)")),
   "lot:crc-status" = col_factor(levels = c("G", "E", "F")),
+  "lotek-eres" = col_double(),
   # "lotek-fix-status", # not documented in mb dictionary
   "mag:magnetic-field-axes" = col_factor(),
   "mag:magnetic-field-raw-x" = col_double(),
@@ -475,23 +548,25 @@ movebank_column_types <- list(
   "main-location-lat" = col_double(),
   "main-location-long" = col_double(),
   "manipulation-comments" = col_character(),
+  "manipulation-status" = col_factor(),
   "manipulation-type" = col_factor(
-    levels = c("confined", "domesticated", "manipulated-other", "none", "reintroduction", "relocated")
-    # MB see https://github.com/movebank/movebank-api-doc/issues/16 about manipulated-other
-  ),
+    levels = c(
+      "confined", "domesticated", "manipulated-other", "none",
+      "reintroduction", "relocated"
+    )
+  ), # MB see https://github.com/movebank/movebank-api-doc/issues/16 about manipulated-other
   "manually-marked-outlier" = col_logical(),
   "manually-marked-valid" = col_logical(),
   "manufacturer-name" = col_factor(),
   "migration-stage-standard" = col_factor(
     levels = c(
-      "altitudinal migration", "breeding grounds", "fall migration",
-      "foraging grounds", "foraging migration", "irruptive migration",
-      "latitudinal migration", "migration to molt site", "molt site",
-      "natal area", "nomadic migration", "other seasonal migration",
-      "removal migration", "reproductive migration",
-      "spawning grounds", "spring migration", "stopover",
-      "summer non-breeding", "vertical migration (aquatic)",
-      "wintering grounds"
+      "altitudinal-migration", "breeding-grounds", "fall-migration",
+      "foraging-grounds", "foraging-migration", "irruptive-migration",
+      "latitudinal-migration", "migration-to-molt-site", "molt-site",
+      "natal-area", "nomadic-migration", "other-seasonal-migration",
+      "removal-migration", "reproductive-migration", "spawning-grounds",
+      "spring-migration", "stopover", "summer-non-breeding",
+      "vertical-migration-(aquatic)", "wintering-grounds"
     )
   ),
   "migration-stage" = col_factor(),
@@ -509,6 +584,8 @@ movebank_column_types <- list(
   "number-of-events" = col_integer(),
   "number-of-individuals" = col_integer(),
   "number-of-tags" = col_integer(),
+  "observer" = col_factor(),
+  "odba" = col_double(),
   "orientation-quaternions-raw" = col_character(),
   "orientation-quaternions-sampling-frequency" = col_double(),
   "orientation:quaternion-raw-w" = col_double(),
@@ -516,6 +593,7 @@ movebank_column_types <- list(
   "orientation:quaternion-raw-y" = col_double(),
   "orientation:quaternion-raw-z" = col_double(),
   "orn:transmission-protocol" = col_factor(levels = c("GPRS", "SMS")),
+  "outlier-comments" = col_character(),
   "pitch" = col_double(),
   "principal-investigator-address" = col_character(),
   "principal-investigator-email" = col_character(),
@@ -524,44 +602,52 @@ movebank_column_types <- list(
   # "processing-type" = col_character(), # currently not used
   "proofed" = col_logical(),
   "provider-update-ts" = col_datetime(),
+  "prox-id" = col_factor(),
+  "prox-signal-strength" = col_double(),
   "quaternion-raw-w" = col_double(),
   "quaternion-raw-x" = col_double(),
   "quaternion-raw-y" = col_double(),
   "quaternion-raw-z" = col_double(),
   "quaternions-sampling-frequency" = col_double(),
-  "raptor-workshop:behaviour" = col_factor(),
-  "raptor-workshop:deployment-special-event" = col_character(),
-  "raptor-workshop:migration-state" = col_factor(),
+  "raptor-workshop:behaviour" = col_factor(levels = c("Nesting", "Roosting")),
+  "raptor-workshop:deployment-special-event" = col_factor(
+    levels = c("BiologicallyIrrelecant", "Death", "ReleaseSite", "TagFailure")
+  ),
+  "raptor-workshop:migration-state" = col_factor(
+    levels = c(
+      "BreedingGrounds", "FallMigration", "Migration", "NatalArea",
+      "NonBreedingGrounds", "SpringMigration", "StopOver", "SummerNonBreeding"
+    )
+  ),
   "receiver-deployment-id" = col_factor(),
   "receiver-detector-id" = col_factor(),
   "receiver-id" = col_factor(),
+  "receiver-latitude" = col_double(),
+  "receiver-longitude" = col_double(),
   "relative-humidity" = col_double(),
   "roll" = col_double(),
+  "rr-interval" = col_double(),
   "sampling-frequency" = col_double(),
   "savannah:alarm-type" = col_factor(),
   "savannah:record-type" = col_factor(levels = c("P", "A")),
+  "scheduled-detachment-date" = col_date(),
   "sensor-type-id" = col_big_integer(),
   "sensor-type-ids" = col_character(),
   "sensor-type" = col_factor(levels = movebank_tag_type_table$`external_id`),
+  "sequence-number-burst" = col_character(),
   "sequence-number" = col_integer(),
-  "serial_no" = col_factor(), ### ?
+  "serial_no" = col_factor(),
   "sigfox:computed-location-radius" = col_double(),
-  "sigfox:computed-location-source" = col_factor(
-    levels = as.character(c(1L, 2L, 6L))
-  ),
-  "sigfox:computed-location-status" = col_factor(
-    levels = c("00", "01", "02", "20")
-  ),
+  "sigfox:computed-location-source" = col_factor(levels = as.character(c(1L, 2L, 6L))),
+  "sigfox:computed-location-status" = col_factor(levels = c("00", "01", "02", "20")),
   "sigfox:country" = col_factor(),
   "sigfox:device-type" = col_factor(),
   "sigfox:duplicates" = col_character(),
   "sigfox:link-quality" = col_factor(
-    levels = as.character(c(0L:4L)),
-    ordered = TRUE
+    levels = as.character(c(0L:4L)), ordered = TRUE
   ),
   "sigfox:lqi" = col_factor(
-    levels = c("Limit", "Average", "Good", "Excellent", "NA"),
-    ordered = TRUE
+    levels = c("Limit", "Average", "Good", "Excellent", "NA"), ordered = TRUE
   ),
   "sigfox:operator" = col_factor(),
   "sigfox:payload" = col_character(),
@@ -570,6 +656,7 @@ movebank_column_types <- list(
   "sigfox:tx-interval" = col_double(), ### MB integer?
   "solar-cell-voltage" = col_double(),
   "solar-voltage-percent" = col_double(),
+  "speed-accuracy" = col_double(),
   "start-timestamp" = col_datetime(),
   "study-id" = col_big_integer(),
   "study-local-timestamp" = col_datetime(),
@@ -580,17 +667,22 @@ movebank_column_types <- list(
   ),
   "study-site" = col_character(),
   "study-specific-measurement" = col_character(),
+  "study-summary" = col_character(),
   "study-timezone" = col_factor(),
   "study-type" = col_factor(),
   "suspend-license-terms" = col_logical(),
   "tag_serial_no" = col_factor(),
+  "tag-backup-voltage" = col_double(),
   # "tag-battery-voltage",# not documented in mb dictionary
   "tag-beacon-frequency" = col_double(),
+  "tag-calibration" = col_character(),
   "tag-comments" = col_character(),
   "tag-failure-comments" = col_character(),
+  "tag-firmware" = col_factor(),
   "tag-id" = col_big_integer(),
   "tag-local-identifier" = col_factor(),
   "tag-manufacturer-name" = col_factor(),
+  "tag-mass-total" = col_double(),
   "tag-mass" = col_double(),
   "tag-model" = col_factor(),
   # "tag-processing-type" = col_character(), ## currently not used
@@ -602,7 +694,9 @@ movebank_column_types <- list(
       "telemetry-network", "Wi-Fi/Bluetooth"
     )
   ),
+  "tag-retrieval-date" = col_date(),
   "tag-serial-no" = col_factor(),
+  "tag-settings" = col_character(),
   "tag-tech-spec" = col_character(),
   "tag-voltage" = col_double(),
   "taxon_detail" = col_factor(),
@@ -611,7 +705,7 @@ movebank_column_types <- list(
   "technosmart:activity" = col_factor(levels = c("active", "inactive")),
   "technosmart:signal-quality" = col_double(),
   "telemetry-detection-count" = col_integer(),
-  "telemetry-run-id" = col_integer(), ### ?
+  "telemetry-run-id" = col_integer(),
   "temperature-max" = col_double(),
   "temperature-min" = col_double(),
   "there-are-data-which-i-cannot-see" = col_logical(),
@@ -622,18 +716,20 @@ movebank_column_types <- list(
   "timestamp-end" = col_datetime(),
   "timestamp-first-deployed-location" = col_datetime(),
   "timestamp-last-deployed-location" = col_datetime(),
+  "timestamp-of-first-deployed-location" = col_datetime(),
+  "timestamp-of-last-deployed-location" = col_datetime(),
   "timestamp-start" = col_datetime(),
   "timestamp" = col_datetime(),
   "tinyfox:last-error" = col_factor(levels = as.character(c(1, 2, 4, 5, 6, 7))),
   "tinyfox:max-movement-index" = col_factor(
-    levels = as.character(c(0:3)),
-    ordered = TRUE
+    levels = as.character(c(0:3)), ordered = TRUE
   ),
   "tinyfox:sunny-index-start-voltage" = col_integer(),
   "tinyfox:sunny-index-voltage-increase" = col_integer(),
   "tinyfox:total-vedba-count" = col_integer(),
   "tinyfox:total-vedba" = col_double(),
   "tinyfox:vedba-burst-sum" = col_double(),
+  "track-segment-id" = col_factor(),
   "transmission-protocol" = col_factor(),
   "transmission-timestamp" = col_datetime(),
   "tsn" = col_integer(),
@@ -646,71 +742,37 @@ movebank_column_types <- list(
   "utm-easting" = col_double(),
   "utm-northing" = col_double(),
   "utm-zone" = col_factor(),
+  "vectronics-activity-mode" = col_factor(levels = as.character(c(1:7))),
   "vedba" = col_double(),
   "vertical-error-numerical" = col_double(),
+  "vertical-speed" = col_double(),
   "visible" = col_logical(),
   "voltage-resolution" = col_double(),
-  "waterbird-workshop:behaviour" = col_factor(),
-  "waterbird-workshop:deployment-special-event" = col_character(),
-  "waterbird-workshop:migration-state" = col_factor(),
+  "waterbird-workshop:behaviour" = col_factor(levels = c("Nesting", "Roosting")),
+  "waterbird-workshop:deployment-special-event" = col_factor(
+    levels = c("BiologicallyIrrelevant", "Death", "ReleaseSite", "TagFailure")
+  ),
+  "waterbird-workshop:migration-state" = col_factor(
+    levels = c(
+      "BreedingGrounds", "FallMigration", "MigrationOther", "MigrationToMolt",
+      "MoltSite", "SpringMigration", "StopOver", "SummerNonBreedingAdult",
+      "SummerNonBreedingImmature", "WinterGrounds"
+    )
+  ),
+  "wc-residual" = col_double(),
   "weight" = col_double(),
   "wet-count" = col_integer(),
   "wet" = col_logical(),
+  "wildfi-acc-conversion-factor" = col_double(),
+  "wildfi-gyro-conversion-factor" = col_double(),
+  "wildfi-hall-burst" = col_character(),
+  "wildfi-last-error" = col_factor(),
+  "wildfi-mag-conversion-factor" = col_double(),
+  "wildfi-prox-id-burst" = col_character(),
+  "wildfi-prox-rssi-burst" = col_character(),
+  "wildfi-record-type" = col_factor(),
   "zero-crossings-amplitude" = col_double(),
   "zero-crossings-steps" = col_integer(),
-  "alt-index-id" = col_character(),
-  "animal-birth-hatch-latitude" = col_double(),
-  "animal-birth-hatch-longitude" = col_double(),
-  "animal-mortality-latitude" = col_double(),
-  "animal-mortality-longitude" = col_double(),
-  "animal-mortality-type" = col_factor(
-    levels = c(
-      "bycatch", "capture", "electrocution", "harvest", "disease",
-      "natural-death", "other", "parasites", "poison", "predation",
-      "starvation", "unknown", "vehicle-collision"
-    )
-  ),
-  "capture-handling-time" = col_double(),
-  "capture-latitude" = col_double(),
-  "capture-longitude" = col_double(),
-  "capture-timestamp" = col_datetime(),
-  "contact-person" = col_character(),
-  "dba-comments" = col_character(),
-  "deploy-off-measurements" = col_character(),
-  "deploy-off-sampling" = col_character(),
-  "deploy-on-measurements" = col_character(),
-  "deploy-on-sampling" = col_character(),
-  "ecg:raw" = col_double(),
-  "ecg:sampling-frequency" = col_double(),
-  "ecgs:raw" = col_character(),
-  "event-group-id" = col_factor(),
-  "georeference-protocol" = col_factor(),
-  "height-above-ground-level" = col_double(),
-  "height-above-mean-sea-level" = col_double(),
-  "individual-count" = col_integer(),
-  "lat-median" = col_double(),
-  "lat-sd" = col_double(),
-  "locality-according-to" = col_character(),
-  "locality" = col_factor(),
-  "long-median" = col_double(),
-  "long-sd" = col_double(),
-  "lotek-eres" = col_double(),
-  "manipulation-status" = col_factor(),
-  "observer" = col_factor(),
-  "odba" = col_double(),
-  "outlier-comments" = col_character(),
-  "receiver-latitude" = col_double(),
-  "receiver-longitude" = col_double(),
-  "rr-interval" = col_double(),
-  "speed-accuracy" = col_double(),
-  "study-summary" = col_character(),
-  "tag-backup-voltage" = col_double(),
-  "tag-firmware" = col_factor(),
-  "timestamp-of-first-deployed-location" = col_datetime(),
-  "timestamp-of-last-deployed-location" = col_datetime(),
-  "track-segment-id" = col_factor(),
-  "vertical-speed" = col_double(),
-  "wc-residual" = col_double(),
   NULL
 ) # add null so it is easy to sort the list (all have comma at end)
 

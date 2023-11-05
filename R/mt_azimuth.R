@@ -6,7 +6,10 @@
 #'
 #' @family track-measures
 #'
-#' @param x a `move2` object. Timestamps must be ordered within tracks and only contain location data (See 'Details').
+#' @param x a `move2` object. Timestamps must be ordered within tracks and only contain location data and
+#' it must be in a geographic coordinate system or without a coordinate reference system (See 'Details').
+#'
+#' @inheritParams mt_distance
 #'
 #' @details
 #' `mt_is_time_ordered_non_empty_points` can be used to check if the timestamps are ordered and if the object only
@@ -19,9 +22,11 @@
 #' Azimuths for geographic coordinates are calculated using [lwgeom::st_geod_azimuth()]. The angles are relative to
 #'  the North pole.
 #'
-#' @return A vector of angles in radians (between `-pi` and `pi`).\cr
+#' @return A vector of angles, currently default is in radians (between `-pi` and `pi`).\cr
+#'
 #' In `mt_azimuth` north is represented by 0, positive values are movements towards the east, and negative values
 #' towards the west. The last value for each track will be `NA`.
+#'
 #' In `mt_turnangle` negative values are left turns and positive right turns. The first and the last value for each
 #' track will be `NA`.
 #'
@@ -31,7 +36,7 @@
 #' x <- mt_read(mt_example())[330:340, ]
 #' mt_azimuth(x)
 #' mt_turnangle(x)
-mt_azimuth <- function(x) {
+mt_azimuth <- function(x, units) {
   assert_that(mt_is_time_ordered_non_empty_points(x))
   if (isTRUE(st_is_longlat(x)) || st_crs(x) == st_crs(NA)) {
     if (isTRUE(st_is_longlat(x))) {
@@ -50,8 +55,8 @@ mt_azimuth <- function(x) {
     } else {
       ids
     })) != 0L] <- NA
-    az <- c(az, as_units(NA, units(az)))
-    return(az)
+    az <- c(az, as_units(NA, base::units(az)))
+    return(mt_change_units(az, units))
   }
   cli_abort(
     c("Currently the calculation of azimuths is not implemented for this projection.",
@@ -64,15 +69,17 @@ mt_azimuth <- function(x) {
 
 #' @export
 #' @rdname mt_azimuth
-mt_turnangle <- function(x) {
+mt_turnangle <- function(x, units) {
   az <- mt_azimuth(x)
   az <- az |> diff()
   if (inherits(az, "units")) {
-    az <- c(as_units(NA, units(az)), az)
+    az <- c(as_units(NA, base::units(az)), az)
     pi_r <- set_units(pi, "rad")
   } else {
     az <- c(NA, az)
     pi_r <- pi
   }
-  return(((((az) + pi_r) %% (pi_r * 2)) - pi_r) %% (pi_r * 2))
+  ta <- ((((az) + pi_r) %% (pi_r * 2)) - pi_r) %% (pi_r * 2)
+
+  return(mt_change_units(ta, units))
 }

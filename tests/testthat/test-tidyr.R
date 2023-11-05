@@ -1,4 +1,6 @@
 m <- mt_sim_brownian_motion(tracks = letters[2:3], t = 1:10)
+mt <- mt_read(mt_example())[7:60, ]
+
 test_that("testing tidy functions", {
   skip_if_not_installed("dplyr")
   expect_s3_class(m, "move2")
@@ -15,10 +17,25 @@ test_that("slice", {
   expect_s3_class(m |> slice(1:4), "move2")
   expect_s3_class(m |> slice(1:4) |> mt_track_data(), "data.frame")
 })
+test_that("rowwise", {
+  skip_if_not_installed("dplyr")
+  expect_identical(m |> mutate(mt = mean(time)) |> pull(mt), rep(mean(m$time), nrow(m)))
+  expect_identical(
+    m |> dplyr::rowwise() |> mutate(mt = mean(time)) |> pull(mt),
+    as.double(m$time)
+  )
+  expect_identical(
+    m |> dplyr::rowwise() |> mutate(mt = sum(time, time)) |> pull(mt),
+    m$time * 2L
+  )
+  expect_s3_class(m |> dplyr::rowwise() |> mutate(mt = sum(time, time)), class = "move2")
+})
 test_that("grouped_df class is retained on row slice", {
   skip_if_not_installed("dplyr")
   expect_true(m %>% group_by(track) %>% slice(1) %>% inherits("grouped_df"))
   expect_true(m %>% group_by(track) %>% filter(time < 3) %>% inherits("grouped_df"))
+  expect_true(mt %>% group_by(visible) %>% slice(1) %>% inherits("grouped_df"))
+  expect_true(mt %>% group_by(visible) %>% filter(timestamp < 3) %>% inherits("grouped_df"))
 })
 test_that("select retains columns", {
   skip_if_not_installed("dplyr")
@@ -126,4 +143,25 @@ test_that("grouping corresponds", {
     m |> group_by(tt) |> group_by_track_data(sex, .add = FALSE),
     (m |> group_by(sex = sort(rep(letters[1:2], 10))))
   )
+})
+test_that("bind_cols and st_join return correct", {
+  m <- mt_read(mt_example())[1000:1010, ]
+  class(m) <- setdiff(class(m), "spec_tbl_df") # remove "spec_tbl_df" class
+  dfa <- data.frame(x = sf::st_coordinates(m)[, 1], y = sf::st_coordinates(m)[, 2], new_colA = (letters[1:nrow(m)]))
+  df <- dfa[-c(1, 4, 7), ]
+  df <- df[sample(1:nrow(df)), ]
+  dfsf <- sf::st_as_sf(df, coords = c("x", "y"), crs = st_crs(m))
+  mdf <- mt_as_move2(data.frame(m), time_column = "timestamp", track_id_column = "individual.local.identifier")
+
+  expect_s3_class(dplyr::bind_cols(mdf, dfa), class(mdf), exact = TRUE)
+  expect_s3_class(dplyr::bind_cols(m, dfa), class(m), exact = TRUE)
+  # expect_identical(class(cbind(mdf,dfa)),class(mdf))
+  # expect_identical(class(cbind(m,dfa)),class(m))
+
+  expect_s3_class((sf::st_join(mdf, dfsf)), class(mdf), exact = TRUE)
+  expect_s3_class((sf::st_join(m, dfsf)), class(m), exact = TRUE)
+  e <- letters[1:11]
+  e[c(1, 4, 7)] <- NA
+  expect_identical(sf::st_join(mdf, dfsf)$new_colA, e)
+  expect_identical(sf::st_join(m, dfsf)$new_colA, e)
 })

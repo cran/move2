@@ -76,6 +76,42 @@ test_that("Test url construction", {
     )
   )
   expect_identical(
+    movebank_construct_url("event",
+      timestamp_start = as.POSIXct("2018-1-1 01:13:23", tz = "UTC-1"),
+      timestamp_end = as.POSIXct("2018-1-1 03:13:23", tz = "UTC-2")
+    ),
+    paste0(
+      "https://www.movebank.org/movebank/service/direct-read?entity_type=event&",
+      "timestamp_start=20180101001323000&timestamp_end=20180101011323000"
+    )
+  )
+  expect_identical(
+    movebank_construct_url("event",
+      timestamp_start = as.POSIXct("2018-1-1 00:13:23", tz = "UTC"),
+      timestamp_end = as.POSIXct("2018-1-1 01:13:23", tz = "UTC")
+    ),
+    paste0(
+      "https://www.movebank.org/movebank/service/direct-read?entity_type=event&",
+      "timestamp_start=20180101001323000&timestamp_end=20180101011323000"
+    )
+  )
+
+
+  expect_error(movebank_download_study(2911040,
+    `individual_id` = c(2911086, 2911065),
+    sensor_type_id = "accelerometer"
+  ), class = "move2_error_movebank_api_not_valid_sensor_type_id")
+  expect_identical(
+    movebank_construct_url("event",
+      timestamp_start = as.POSIXct("2018-1-1 00:00:00", tz = "UTC"),
+      timestamp_end = as.POSIXct("2018-1-2 00:00:00", tz = "UTC")
+    ),
+    movebank_construct_url("event",
+      timestamp_start = as.Date("2018-1-1"),
+      timestamp_end = as.Date("2018-1-2")
+    )
+  )
+  expect_identical(
     movebank_construct_url("event", sensor_type_id = "gps"),
     "https://www.movebank.org/movebank/service/direct-read?entity_type=event&sensor_type_id=653"
   )
@@ -87,6 +123,21 @@ test_that("Test url construction", {
     movebank_construct_url("event", sensor_type_id = c("gps", "acceleration", "asdf")),
     "The character string for sensor type id is not a valid movebank sensor type"
   )
+  expect_identical(
+    movebank_construct_url("event",
+      study_id = 22,
+      sensor_type_id = "gps"
+    ),
+    paste0(
+      "https://www.movebank.org/movebank/service/direct-read?entity_type=event&",
+      "study_id=22&sensor_type_id=",
+      movebank_tag_type_table$id[movebank_tag_type_table$external_id == "gps"]
+    )
+  )
+  expect_error(movebank_construct_url("event",
+    study_id = 22,
+    sensor_type_id = "accelerometer"
+  ), class = "move2_error_movebank_api_not_valid_sensor_type_id")
 })
 test_that("no login", {
   withr::with_options(c(keyring_backend = "env"), {
@@ -109,10 +160,29 @@ test_that("Download api license acceptance message", {
         movebank_download_study(1245488040),
         "An attempt is made to download a study without having accepted the study specific license terms"
       )
+      expect_no_warning(
+        m <- movebank_download_study(2911040,
+          `individual_id` = c(2911086, 2911065),
+          sensor_type_id = "acceleration"
+        )
+      )
+      expect_s3_class(m, "tbl")
+      expect_true(has_name(m, "geometry"))
+      expect_false(has_name(m, "location_long"))
+      expect_false(has_name(m, "location_lat"))
     })
   )
 })
-
+test_that("Test if workaround for NA coordinates can be omitted (#63)", {
+  show_failure(expect_warning(expect_warning(
+    expect_warning(expect_warning(st_as_sf(
+      data.frame(location_long = NA_real_, location_lat = NA_real_, a = letters),
+      coords = c("location_long", "location_lat"),
+      crs = st_crs(4326L), na.fail = FALSE,
+      sf_column_name = "geometry"
+    )))
+  )))
+})
 test_that("Download deployment", {
   skip_if_offline()
   skip_on_cran()

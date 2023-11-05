@@ -4,6 +4,9 @@
 \alias{mt_as_move2}
 \alias{mt_as_move2.sf}
 \alias{mt_as_move2.data.frame}
+\alias{mt_as_move2.track_xyt}
+\alias{mt_as_move2.telemetry}
+\alias{mt_as_move2.list}
 \alias{mt_as_move2..MoveTrack}
 \title{Create a new move2 object}
 \usage{
@@ -13,10 +16,16 @@ mt_as_move2(x, ...)
 
 \method{mt_as_move2}{data.frame}(x, time_column, track_id_column, track_attributes = "", ...)
 
+\method{mt_as_move2}{track_xyt}(x, time_column, track_id_column, track_attributes = "", ...)
+
+\method{mt_as_move2}{telemetry}(x, time_column, track_id_column, track_attributes = "", ...)
+
+\method{mt_as_move2}{list}(x, time_column, track_id_column, track_attributes = "", ...)
+
 \method{mt_as_move2}{.MoveTrack}(x, ...)
 }
 \arguments{
-\item{x}{A \code{data.frame}, \code{sf}, \code{Move} or \code{MoveStack} object}
+\item{x}{A \code{data.frame}, \code{sf}, \code{telemetry}, \code{telemetry} list, \code{track_xyt}, \code{Move} or \code{MoveStack} object}
 
 \item{...}{Additional arguments passed to \code{\link[sf]{st_as_sf}} if \code{x} is a \code{data.frame}, see the details below
 for more information}
@@ -31,7 +40,7 @@ for more information}
 A \code{move2} object
 }
 \description{
-Create a new move2 object from a \code{data.frame}, \code{sf}, \code{Move} or \code{MoveStack} object
+Create a new move2 object from a \code{data.frame}, \code{sf}, \code{telemetry}, \code{telemetry} list, \code{track_xyt}, \code{Move} or \code{MoveStack} object
 }
 \details{
 Frequently used arguments to \code{\link[sf]{st_as_sf}} are:

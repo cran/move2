@@ -84,6 +84,22 @@ mt_stack <- function(..., # nolint cyclo complexity to reduce
   assert_that(all(unlist(lapply(dots, inherits, "move2"))),
     msg = "Not all objects inherit the `move2` class."
   )
+  if (inherits(
+    tryCatch(do.call(vctrs::vec_ptype_common, lapply(dots, mt_track_id)),
+      error = function(c) {
+        msg <- conditionMessage(c)
+        invisible(structure(msg, class = "try-error"))
+      }
+    ), "try-error"
+  )) {
+    dots <- lapply(dots, function(x) {
+      if (is_bare_integerish(mt_track_id(x)) |
+        inherits(mt_track_id(x), "integer64")) {
+        x <- mt_set_track_id(x, as.factor(mt_track_id(x)))
+      }
+      return(x)
+    })
+  }
   track_ids <- do.call(vctrs::vec_c, lapply(lapply(dots, mt_track_id), unique))
   .track_combine <- rlang::arg_match(.track_combine)
   assert_that(!is.na(.track_combine))
@@ -122,7 +138,8 @@ mt_stack <- function(..., # nolint cyclo complexity to reduce
       )[track_id_column_name != track_id_column_name[1]]
     )
     if (track_id_column_name[1] %in% all_col_names) {
-      cli_abort("The {.code track_id_column} differs between the objects to stack and renaming would overwrite
+      cli_abort(
+        x = "The {.code track_id_column} differs between the objects to stack and renaming would overwrite
                 existing data.",
         class = "move2_error_no_unique_track_id_column"
       )
@@ -153,6 +170,7 @@ mt_stack <- function(..., # nolint cyclo complexity to reduce
     class(x) <- setdiff(class(x), "move2")
     x
   })
+
   stacked <- dplyr::bind_rows(dots)
   new_track_data <- dplyr::bind_rows(lapply(dots, mt_track_data))
   if (.track_combine == "merge" && anyDuplicated(new_track_data[, track_id_column_name[1]])) {

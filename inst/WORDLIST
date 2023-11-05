@@ -1,10 +1,12 @@
 aa
 accelerometer
 addins
+AEQD
 Affero
 al
 Altmann
 Analysing
+anneks
 api
 argos
 arXiv
@@ -18,6 +20,7 @@ behavioural
 brownian
 BugReports
 CentOS
+centroid
 cli
 CMD
 cms
@@ -30,7 +33,9 @@ covr
 cran
 cre
 CRS
+crs
 csv's
+ctmm
 da
 days’
 de
@@ -40,11 +45,13 @@ doi
 dontrun
 donttest
 dplyr
+durations
 ecc
 eobs
 et
 familyName
 fd
+fdefe
 febe
 ffc
 fileSize
@@ -80,6 +87,7 @@ Lifecycle
 lifecycle
 lubridate
 lwgeom
+macbuilder
 macOS
 magrittr
 Martes
@@ -110,6 +118,7 @@ purrr
 quaternion
 readr
 RedHat
+relatedLink
 relicensing
 reproject
 rlang

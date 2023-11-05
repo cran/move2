@@ -29,11 +29,13 @@ mt_set_track_id_column(x, value)
 \item \code{mt_time_column()} returns the name of the column containing the timestamps
 \item \code{mt_track_id_column()} returns the name of the column containing the track ids
 \item \code{mt_set_time_column()} set the column that should be used as time column
-\item \code{mt_set_track_id_column()} set the column that should be used as track id column
+\item \code{mt_set_track_id_column()} set the column that should be used as track id column (the column has to be present in event and track table)
 }
 }
 \details{
 The set functions purely update the attribute containing the column name after checking the minimal requirements.
+
+For \code{mt_set_track_id_column()} the column has to be present in event and track table, if this is not the case consider using \code{\link[=mt_track_id]{mt_track_id()}}.
 }
 \examples{
 ## getting the column names

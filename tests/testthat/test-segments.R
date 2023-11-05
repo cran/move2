@@ -49,3 +49,10 @@ test_that("segment locations are first", {
   )
   expect_identical(st_crs(m), st_crs(mt_segments(m)))
 })
+test_that("track column type does not matter", {
+  m <- mt_sim_brownian_motion()
+  expect_identical(mt_segments(m), mt_segments(mt_set_track_id(m, as.character(m$track))))
+  expect_identical(mt_segments(m), mt_segments(mt_set_track_id(m, as.factor(m$track))))
+  expect_identical(mt_segments(m), mt_segments(mt_set_track_id(m, letters[m$track])))
+  expect_identical(mt_segments(m), mt_segments(mt_set_track_id(m, factor(letters[m$track]))))
+})

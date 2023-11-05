@@ -160,3 +160,40 @@ test_that("mt_azimuth with different types of track ids", {
   expect_identical(mt_azimuth(a), mt_azimuth(mt_set_track_id(a, as.character(mt_track_id(a)))))
   expect_identical(mt_azimuth(a), mt_azimuth(mt_set_track_id(a, factor(mt_track_id(a)))))
 })
+
+
+
+test_that("sim data no units", {
+  a <- mt_sim_brownian_motion()
+  expect_false(inherits(mt_speed(a), "units"))
+  expect_false(inherits(mt_distance(a), "units"))
+  expect_s3_class(mt_turnangle(a), "units")
+  expect_s3_class(mt_azimuth(a), "units")
+  expect_false(inherits(mt_time_lags(a), "units"))
+  expect_false(inherits(mt_speed(a, "m/s"), "units"))
+  expect_false(inherits(mt_distance(a, "km"), "units"))
+  expect_s3_class(mt_turnangle(a, "degree"), "units")
+  expect_s3_class(mt_azimuth(a, "degree"), "units")
+  expect_false(inherits(mt_time_lags(a, "s"), "units"))
+  expect_identical(units(mt_turnangle(a, "degree")), units(as_units("degree")))
+  expect_identical(units(mt_azimuth(a, "degree")), units(as_units("degree")))
+})
+test_that("units handling spatial dat", {
+  a <- mt_read(mt_example())[1:100, ]
+  a <- a[!st_is_empty(a), ]
+  expect_s3_class(mt_speed(a), "units")
+  expect_s3_class(mt_distance(a), "units")
+  expect_s3_class(mt_turnangle(a), "units")
+  expect_s3_class(mt_azimuth(a), "units")
+  expect_s3_class(mt_time_lags(a), "units")
+  expect_identical(units(mt_speed(a, "km/ms")), units(as_units("km/ms")))
+  expect_identical(units(mt_distance(a, "hm")), units(as_units("hm")))
+  expect_identical(units(mt_time_lags(a, "ms")), units(as_units("ms")))
+  expect_identical(units(mt_turnangle(a, "degree")), units(as_units("degree")))
+  expect_identical(units(mt_azimuth(a, "degree")), units(as_units("degree")))
+  expect_error(mt_speed(a, "km"))
+  expect_error(mt_distance(a, "hm/s"))
+  expect_error(mt_time_lags(a, "ms^2"))
+  expect_error(mt_turnangle(a, "degree/s"))
+  expect_error(mt_azimuth(a, "degree/s"))
+})

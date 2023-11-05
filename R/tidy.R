@@ -54,6 +54,17 @@ ungroup.move2 <- function(x, ...) { # nolint
   x <- NextMethod()
   dplyr_reconstruct.move2(x, template)
 }
+
+
+rowwise.move2 <- function(x, ...) {
+  template <- x
+  class(x) <- setdiff(class(x), "move2")
+  x <- NextMethod()
+  dplyr_reconstruct.move2(x, template)
+}
+
+
+
 arrange.move2 <- function(.data, ..., .dots) { # nolint
   template <- .data
   class(.data) <- setdiff(class(.data), "move2")
@@ -78,6 +89,9 @@ dplyr_row_slice.move2 <- function(data, i, ...) { # nolint
 
 # #' @export
 dplyr_reconstruct.move2 <- function(data, template) { # nolint
+  if (inherits(template, "tbl_df") && !inherits(data, "tbl_df")) {
+    data <- dplyr::as_tibble(data)
+  }
   if (!inherits(data, "sf") && inherits(template, "sf")) {
     assert_that(has_attr(template, "sf_column"))
     data <- st_as_sf(data, sf_column_name = attr(template, "sf_column"), agr = if (has_attr(template, "agr")) {
@@ -100,6 +114,7 @@ dplyr_reconstruct.move2 <- function(data, template) { # nolint
   if (!inherits(data, "move2")) {
     class(data) <- unique(c("move2", class(data)))
   }
+
   # ensuring filtered tracks do get omitted from track data
   tracks <- data |>
     mt_track_id() |>
@@ -136,11 +151,14 @@ register_all_s3_methods <- function() {
   register_s3_method("dplyr", "arrange", "move2")
   register_s3_method("dplyr", "group_by", "move2")
   register_s3_method("dplyr", "ungroup", "move2")
+  register_s3_method("dplyr", "rowwise", "move2")
   register_s3_method("dplyr", "group_split", "move2")
   register_s3_method("dplyr", "mutate", "move2")
   register_s3_method("dplyr", "slice", "move2")
   register_s3_method("dplyr", "select", "move2")
   register_s3_method("dplyr", "left_join", "move2")
+  register_s3_method("sf", "st_intersection", "move2")
+  register_s3_method("sf", "st_join", "move2")
 }
 
 # from: https://github.com/tidyverse/hms/blob/master/R/zzz.R

@@ -42,9 +42,9 @@ This function can return data in several formats (see \code{return_type} argumen
 }
 \examples{
 \donttest{
-# list of all terms used in movebank
+## list of all terms used in movebank
 movebank_get_vocabulary()
-# Count the units used in movebank
+## Count the units used in movebank
 movebank_get_vocabulary() |>
   unlist() |>
   grep(pattern = "Units:", value = TRUE) |>
@@ -52,12 +52,12 @@ movebank_get_vocabulary() |>
   sub(replacement = "", pattern = "; .*") |>
   table() |>
   sort()
-# different return types
+## different return types:
 movebank_get_vocabulary("light-level", return_type = "definition")
 movebank_get_vocabulary("light-level", return_type = "xml")
 movebank_get_vocabulary("light-level", return_type = "uri")
 movebank_get_vocabulary("light-level", return_type = "list")
-# get definitions of all column names of a move2 object
+## get definitions of all column names of a move2 object
 data <- mt_read(mt_example())
 movebank_get_vocabulary(data)
 }

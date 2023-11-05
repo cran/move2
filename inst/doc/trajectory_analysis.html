@@ -362,39 +362,41 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a>vulture_data &lt;-</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="st">  </span><span class="kw">movebank_download_study</span>(<span class="st">&quot;Turkey vultures in North and South America&quot;</span>)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a>vulture_data</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co">#&gt; A &lt;move2&gt; object containing 19 tracks consisting of:</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="co">#&gt; Simple feature collection with 215719 features and 6 fields</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="co">#&gt; Geometry type: POINT</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="co">#&gt; Bounding box:  xmin: -123.9255 ymin: -39.8214 xmax: -48.5788 ymax: 54.01817</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="co">#&gt; # A tibble: 215,719 × 7</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="co">#&gt;   sensor_type_id individual_local_identifier manually_marked_outlier</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                       &lt;lgl&gt;                  </span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="co">#&gt; 1            653 Irma                        FALSE                  </span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="co">#&gt; 2            653 Irma                        FALSE                  </span></span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="co">#&gt; 3            653 Irma                        FALSE                  </span></span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="co">#&gt; 4            653 Irma                        FALSE                  </span></span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="co">#&gt; 5            653 Irma                        FALSE                  </span></span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="co">#&gt; # ℹ 215,714 more rows</span></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="co">#&gt; # ℹ 4 more variables: timestamp &lt;dttm&gt;, event_id &lt;int64&gt;, visible &lt;lgl&gt;,</span></span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="co">#&gt; #   geometry &lt;POINT [°]&gt;</span></span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="co">#&gt; First 5 track features:</span></span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="co">#&gt; # A tibble: 19 × 54</span></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a><span class="co">#&gt;   deployment_id   tag_id individual_id animal_life_stage animal_mass</span></span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="co">#&gt;         &lt;int64&gt;  &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;                     [g]</span></span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a><span class="co">#&gt; 1      17225120 16883951      17002744 adult                    2372</span></span>
-<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="co">#&gt; 2      17225134 16883951      17002745 adult                    1951</span></span>
-<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a><span class="co">#&gt; 3      17225131 16883928      17002732 adult                    2012</span></span>
-<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a><span class="co">#&gt; 4      17225133 16883937      17002737 adult                    2108</span></span>
-<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a><span class="co">#&gt; 5      17225122 16883967      17002753 adult                      NA</span></span>
-<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a><span class="co">#&gt; # ℹ 14 more rows</span></span>
-<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="co">#&gt; # ℹ 49 more variables: attachment_type &lt;fct&gt;, deployment_comments &lt;chr&gt;,</span></span>
-<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a><span class="co">#&gt; #   deploy_off_timestamp &lt;dttm&gt;, deploy_on_timestamp &lt;dttm&gt;, duty_cycle &lt;chr&gt;,</span></span>
-<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a><span class="co">#&gt; #   deployment_local_identifier &lt;fct&gt;, study_site &lt;chr&gt;, sensor_type_ids &lt;chr&gt;,</span></span>
-<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a><span class="co">#&gt; #   capture_location &lt;POINT [°]&gt;, deploy_on_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a><span class="co">#&gt; #   deploy_off_location &lt;POINT [°]&gt;, individual_comments &lt;chr&gt;,</span></span>
-<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="co">#&gt; #   individual_local_identifier &lt;fct&gt;, sex &lt;fct&gt;, taxon_canonical_name &lt;fct&gt;, …</span></span></code></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="co">#&gt; `time_column` &quot;timestamp&quot;</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="co">#&gt; Containing 19 tracks lasting on average 1083 days in a</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="co">#&gt; Simple feature collection with 215719 features and 6 fields</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="co">#&gt; Geometry type: POINT</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="co">#&gt; Dimension:     XY</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="co">#&gt; Bounding box:  xmin: -123.9255 ymin: -39.8214 xmax: -48.5788 ymax: 54.01817</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="co">#&gt; # A tibble: 215,719 × 7</span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="co">#&gt;   sensor_type_id individual_local_identifier manually_marked_outlier</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                       &lt;lgl&gt;                  </span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true"></a><span class="co">#&gt; 1            653 Irma                        FALSE                  </span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true"></a><span class="co">#&gt; 2            653 Irma                        FALSE                  </span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true"></a><span class="co">#&gt; 3            653 Irma                        FALSE                  </span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true"></a><span class="co">#&gt; 4            653 Irma                        FALSE                  </span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true"></a><span class="co">#&gt; 5            653 Irma                        FALSE                  </span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true"></a><span class="co">#&gt; # ℹ 215,714 more rows</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true"></a><span class="co">#&gt; # ℹ 4 more variables: timestamp &lt;dttm&gt;, event_id &lt;int64&gt;, visible &lt;lgl&gt;,</span></span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true"></a><span class="co">#&gt; #   geometry &lt;POINT [°]&gt;</span></span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true"></a><span class="co">#&gt; First 5 track features:</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true"></a><span class="co">#&gt; # A tibble: 19 × 54</span></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true"></a><span class="co">#&gt;   deployment_id   tag_id individual_id animal_life_stage animal_mass</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true"></a><span class="co">#&gt;         &lt;int64&gt;  &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;                     [g]</span></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true"></a><span class="co">#&gt; 1      17225120 16883951      17002744 adult                    2372</span></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true"></a><span class="co">#&gt; 2      17225134 16883951      17002745 adult                    1951</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true"></a><span class="co">#&gt; 3      17225131 16883928      17002732 adult                    2012</span></span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true"></a><span class="co">#&gt; 4      17225133 16883937      17002737 adult                    2108</span></span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true"></a><span class="co">#&gt; 5      17225122 16883967      17002753 adult                      NA</span></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true"></a><span class="co">#&gt; # ℹ 14 more rows</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true"></a><span class="co">#&gt; # ℹ 49 more variables: attachment_type &lt;fct&gt;, deployment_comments &lt;chr&gt;,</span></span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true"></a><span class="co">#&gt; #   deploy_off_timestamp &lt;dttm&gt;, deploy_on_timestamp &lt;dttm&gt;, duty_cycle &lt;chr&gt;,</span></span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true"></a><span class="co">#&gt; #   deployment_local_identifier &lt;fct&gt;, study_site &lt;chr&gt;, sensor_type_ids &lt;chr&gt;,</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true"></a><span class="co">#&gt; #   capture_location &lt;POINT [°]&gt;, deploy_on_location &lt;POINT [°]&gt;,</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true"></a><span class="co">#&gt; #   deploy_off_location &lt;POINT [°]&gt;, individual_comments &lt;chr&gt;,</span></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true"></a><span class="co">#&gt; #   individual_local_identifier &lt;fct&gt;, sex &lt;fct&gt;, taxon_canonical_name &lt;fct&gt;, …</span></span></code></pre></div>
 <p>In this case some tracks have very long time gaps, to prevent distant points to be connected by a line we split those tracks by creating a new id.</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="kw">library</span>(dplyr, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="kw">library</span>(ggplot2, <span class="dt">quietly =</span> <span class="ot">TRUE</span>)</span>

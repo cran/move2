@@ -18,8 +18,9 @@ mt_n_tracks(x)
 \arguments{
 \item{x}{a \code{move2} object}
 
-\item{value}{either the new track id values or the name of the new track id column as a scalar character.
-When the column is present then that column is used, otherwise the existing track id column is renamed}
+\item{value}{either a vector with new track id values, the name of the new column to define track ids as a scalar
+character (this column must be present in either the event or track table), or a scalar character to rename the track
+id column. IF \code{value} is \code{NULL} the move2 class is dropped and a object of the class \code{sf} is returned.}
 }
 \value{
 \code{mt_track_id} returns a vector of the length of the number of locations that indicated the points belonging to one track. \cr
@@ -28,11 +29,16 @@ When the column is present then that column is used, otherwise the existing trac
 \description{
 \itemize{
 \item \code{mt_track_id()} retrieve track ids
-\item \code{mt_track_id(x) <- value} and \code{mt_set_track_id(x, value)}  replace track ids with new values
+\item \code{mt_track_id(x) <- value} and \code{mt_set_track_id(x, value)}  replace track ids with new values, set new column to define tracks or rename track id column
 \item \code{mt_n_tracks()} returns the number of tracks
 }
 }
 \details{
+The vector containing the new track ids must be of the same length as the event table.
+
+To set a new column defining the track ids, this column has to be present in
+the event table. See examples.
+
 When changing the track ids with new values that results in the combination
 of several tracks, the track attributes of these tracks are also combined.
 This is done by creating a lists within each column. See examples.
@@ -40,11 +46,36 @@ This is done by creating a lists within each column. See examples.
 \examples{
 x <- mt_read(mt_example())
 mt_n_tracks(x)
+unique(mt_track_id(x))
 mt_track_id(x) |> table()
-x <- mt_sim_brownian_motion()
-x$new_id <- gl(4, 5)
-x |> mt_set_track_id("new_id")
-mt_track_id(x) <- gl(4, 5)
+x <- mt_sim_brownian_motion(t = 1:10, tracks = 2) |>
+  dplyr::mutate(attrib_evnt = gl(4, 5, labels = c("XX", "YY", "TT", "ZZ"))) |>
+  mutate_track_data(attrib_trk = c("a", "b"))
+
+## providing a vector with new track ids
+unique(mt_track_id(x))
+mt_track_id(x) <- c(rep("track_1", 10), rep("track_2", 10))
+unique(mt_track_id(x))
+
+## renaming the track id column
+mt_track_id_column(x)
+mt_track_id(x) <- "my_new_track_name"
+mt_track_id_column(x)
+
+## setting a new column to define track ids
+## 1. when this column is present in the track table it has to be
+## moved to the event table
+names(mt_track_data(x))
+x <- mt_as_event_attribute(x, "attrib_trk")
+mt_track_id(x) <- "attrib_trk"
+mt_track_id_column(x)
+unique(mt_track_id(x))
+
+## 2. using an existing column in the event table
+mt_track_id(x) <- "attrib_evnt"
+mt_track_id_column(x)
+unique(mt_track_id(x))
+
 ## example of track data attributes being combined
 m <- mt_sim_brownian_motion(1:3, tracks = letters[5:8]) |>
   mutate_track_data(sex = c("f", "f", "m", "m"), age = c(4, 4, 5, 6), old_track = track)
