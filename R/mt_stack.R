@@ -34,6 +34,7 @@
 #' a$extra_data <- 1:nrow(a)
 #' mt_stack(list(a, b))
 #'
+#' @examplesIf parallel::detectCores() < 9
 #' ## Combining different datasets works
 #' fishers <- mt_read(mt_example(), n_max = 100, col_select = c(
 #'   "eobs:used-time-to-get-fix",

@@ -73,6 +73,27 @@ test_that("works on long lat", {
   expect_true(all(sf::st_distance(st_transform(mt_interpolate(st_transform(mm, 3857)), 4326), m,
     by_element = TRUE
   ) < set_units(1, "m")))
+  mmm <- m
+  mmm$x <- 1
+  expect_identical(
+    mt_interpolate(m, mt_time(m)[2:3], omit = T),
+    mt_interpolate(mmm, mt_time(mmm)[2:3], omit = T)[, 1:3]
+  )
+  expect_identical(
+    mmm$x,
+    mt_interpolate(mmm, mt_time(mmm)[2:3])$x
+  )
+  mmm$x <- NULL
+  mmm$time <- 1
+
+  expect_identical(
+    mt_interpolate(m, mt_time(m)[2:3] + 2, omit = T),
+    mt_interpolate(mmm, mt_time(mmm)[2:3] + 2, omit = T)[, 1:3]
+  )
+  expect_identical(
+    c(1, 1, NA, 1, NA, 1),
+    mt_interpolate(mmm, mt_time(mmm)[2:3] + 2)$time
+  )
 })
 
 test_that("time_gap", {
@@ -105,6 +126,15 @@ test_that("time_gap with posixct", {
   expect_identical(
     mt_interpolate(m, "2 mins", omit = TRUE) |> mt_time(),
     as.POSIXct("1980-1-1", tz = "UTC") + c(2, 4, 6) * 60
+  )
+  t <- mt_time(m)[2:3]
+  expect_identical(
+    mt_interpolate(m, t, omit = T),
+    mt_interpolate(m, lubridate::with_tz(t, "EST"), omit = T)
+  )
+  expect_identical(
+    mt_interpolate(m, t, omit = F),
+    mt_interpolate(m, lubridate::with_tz(t, "EST"), omit = F)
   )
 })
 

@@ -67,6 +67,7 @@ mt_change_units <- function(x, units) {
 #' @examples
 #' ## speed between consecutive locations
 #' mt_sim_brownian_motion() |> mt_speed()
+#' @examplesIf parallel::detectCores() < 9
 #' ## When projections are provided units are included
 #' data <- mt_read(mt_example())[330:340, ]
 #' speed_calc <- data |>

@@ -44,6 +44,7 @@ units::set_units(dist, km)
 
 ## speed between consecutive locations
 mt_sim_brownian_motion() |> mt_speed()
+\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 ## When projections are provided units are included
 data <- mt_read(mt_example())[330:340, ]
 speed_calc <- data |>
@@ -57,7 +58,7 @@ data |>
   sf::st_transform("+proj=aeqd +units=km +lon_0=-73.9 +lat_0=42.7") |>
   mt_speed() |>
   units::set_units(m / s)
-
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other track-measures: 

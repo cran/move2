@@ -18,7 +18,7 @@
 #' `mt_filter_movebank_visible` returns a filtered `move2` object
 #' @export
 #' @family filter
-#' @examples
+#' @examplesIf parallel::detectCores() < 9
 #' m <- mt_read(mt_example())
 #' table(mt_movebank_visible(m))
 #' mt_filter_movebank_visible(m)

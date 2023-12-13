@@ -27,46 +27,31 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
-<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
-// v0.0.1
-// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
-
-document.addEventListener('DOMContentLoaded', function() {
-  const codeList = document.getElementsByClassName("sourceCode");
-  for (var i = 0; i < codeList.length; i++) {
-    var linkList = codeList[i].getElementsByTagName('a');
-    for (var j = 0; j < linkList.length; j++) {
-      if (linkList[j].innerHTML === "") {
-        linkList[j].setAttribute('aria-hidden', 'true');
-      }
-    }
-  }
-});
-</script>
 
 <style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
 
 
 
 <style type="text/css">
-  code {
-    white-space: pre;
-  }
-  .sourceCode {
-    overflow: visible;
-  }
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -78,55 +63,54 @@ pre > code.sourceCode { white-space: pre-wrap; }
 pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
-  { counter-reset: source-line 0; }
+{ counter-reset: source-line 0; }
 pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
+{ position: relative; left: -4em; counter-increment: source-line; }
 pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
 div.sourceCode
-  {   }
+{ }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
 </style>
 <script>
 // apply pandoc div.sourceCode style to pre.sourceCode instead
@@ -361,48 +345,88 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="extracting-information-from-a-move2-object" class="section level2">
 <h2>Extracting information from a <code>move2</code> object</h2>
 <ul>
-<li><p><code>sf::st_coordinates()</code>: returns the coordinates from the the events in the track(s)</p></li>
-<li><p><code>sf::st_crs()</code>: returns the projection of the tracks(s)</p></li>
-<li><p><code>mt_time()</code>: returns the timestamps for each event in the track</p></li>
-<li><p><code>mt_track_data()</code>: returns the table containing the information associated to the tracks</p></li>
-<li><p><code>mt_track_id()</code>: returns a vector of the track id associated to each event</p></li>
-<li><p><code>unique(mt_track_id())</code>: returns the names of the tracks</p></li>
-<li><p><code>mt_n_tracks()</code>: returns the number of the tracks</p></li>
-<li><p><code>nrow()/table(mt_track_id())</code>: returns the number of events in total and per track respectively</p></li>
-<li><p><code>mt_time_column()</code>: returns the name of the column containing the timestamps used by the <code>move2</code> object</p></li>
-<li><p><code>mt_track_id_column()</code>: returns the name of the column containing the track ids used by the <code>move2</code> object</p></li>
+<li><p><code>sf::st_coordinates()</code>: returns the coordinates from
+the the events in the track(s)</p></li>
+<li><p><code>sf::st_crs()</code>: returns the projection of the
+tracks(s)</p></li>
+<li><p><code>mt_time()</code>: returns the timestamps for each event in
+the track</p></li>
+<li><p><code>mt_track_data()</code>: returns the table containing the
+information associated to the tracks</p></li>
+<li><p><code>mt_track_id()</code>: returns a vector of the track id
+associated to each event</p></li>
+<li><p><code>unique(mt_track_id())</code>: returns the names of the
+tracks</p></li>
+<li><p><code>mt_n_tracks()</code>: returns the number of the
+tracks</p></li>
+<li><p><code>nrow()/table(mt_track_id())</code>: returns the number of
+events in total and per track respectively</p></li>
+<li><p><code>mt_time_column()</code>: returns the name of the column
+containing the timestamps used by the <code>move2</code> object</p></li>
+<li><p><code>mt_track_id_column()</code>: returns the name of the column
+containing the track ids used by the <code>move2</code> object</p></li>
 </ul>
 </div>
 <div id="transforming-other-classes-to-a-move2-object" class="section level2">
 <h2>Transforming other classes to a <code>move2</code> object</h2>
 <ul>
-<li><code>mt_as_move2()</code>: creates a <code>move2</code> object from objects of class <code>sf</code>, <code>data.frame</code>, <code>telemetry</code>/<code>telemetry list</code> from <em>ctmm</em>, <code>track_xyt</code> from <em>amt</em> or <code>Move</code>/<code>MoveStack</code> from <em>move</em>.</li>
+<li><code>mt_as_move2()</code>: creates a <code>move2</code> object from
+objects of class <code>sf</code>, <code>data.frame</code>,
+<code>telemetry</code>/<code>telemetry list</code> from <em>ctmm</em>,
+<code>track_xyt</code> from <em>amt</em> or
+<code>Move</code>/<code>MoveStack</code> from <em>move</em>.</li>
 </ul>
 </div>
 <div id="transforming-a-move2-object-into-other-classes" class="section level2">
 <h2>Transforming a <code>move2</code> object into other classes</h2>
 <ul>
-<li><p><code>to_move()</code>: converts to a object of class <code>Move</code>/<code>MoveStack</code></p></li>
-<li><p><code>mt_track_id(x) &lt;- NULL</code>: to remove <code>move2</code> class from the object, it will be recognized as a object of class <code>sf</code></p></li>
-<li><p><code>mt_as_event_attribute(x, names(mt_track_data(x)))</code>: join all attributes (event and track) into one table. If additionally <code>mt_track_id(x) &lt;- NULL</code> is applied, the resulting <code>sf</code> object should behave as any <code>data.frame</code></p></li>
+<li><p><code>to_move()</code>: converts to a object of class
+<code>Move</code>/<code>MoveStack</code></p></li>
+<li><p><code>mt_track_id(x) &lt;- NULL</code>: to remove
+<code>move2</code> class from the object, it will be recognized as a
+object of class <code>sf</code></p></li>
+<li><p><code>mt_as_event_attribute(x, names(mt_track_data(x)))</code>:
+join all attributes (event and track) into one table. If additionally
+<code>mt_track_id(x) &lt;- NULL</code> is applied, the resulting
+<code>sf</code> object should behave as any
+<code>data.frame</code></p></li>
 </ul>
 </div>
 <div id="useful-functions" class="section level2">
 <h2>Useful functions</h2>
 <ul>
-<li><p><code>mt_read()</code>: read in data downloaded from movebank, by just stating the path to the file</p></li>
+<li><p><code>mt_read()</code>: read in data downloaded from movebank, by
+just stating the path to the file</p></li>
 <li><p><code>mt_read(mt_example())</code>: example dataset</p></li>
-<li><p><code>dplyr::filter(x, !sf::st_is_empty(x))</code>: exclude all empty locations</p></li>
-<li><p><code>filter_track_data(x, .track_id = c(&quot;nameTrack1&quot;, &quot;nameTrack3&quot;)</code>: subset to one or more tracks</p></li>
-<li><p><code>split(x, mt_track_id(x))</code>: split a <code>move2</code> object into a list of single objects per track. Alternatively see <code>dplyr::mutate()</code>, <code>dplyr::group_by()</code>, <code>group_by_track_data()</code> to apply calculations to tracks separately</p></li>
-<li><p><code>mt_stack()</code>: combine multiple <code>move2</code> objects into one</p></li>
-<li><p><code>mt_as_track_attribute()</code>/<code>mt_as_event_attribute()</code>: move columns between track and event attributes (and vv)</p></li>
-<li><p><code>mt_set_track_id()</code>: replace track ids with new values, set new column to define tracks or rename track id column</p></li>
-<li><p><code>mutate_track_data()</code>: add or modify attributes in the track data</p></li>
-<li><p><code>sf::st_transform()</code>: to reproject the <code>move2</code> into a different projection</p></li>
-<li><p><code>mt_aeqd_crs()</code>: create a AEQD coordinate reference system</p></li>
-<li><p><code>mt_track_lines()</code>: convert a trajectory into lines for plotting with e.g. <code>ggplot</code></p></li>
-<li><p>use the option <code>options(sf_max.plot=1)</code> to display a single plot of the track. The attribute that should be used to color the tracks can be specified, e.g. <code>plot(x[&quot;individual_local_identifier&quot;])</code>. <a href="https://r-spatial.github.io/sf/articles/sf5.html">Here</a> is more information on how to do simple plots.</p></li>
+<li><p><code>dplyr::filter(x, !sf::st_is_empty(x))</code>: exclude all
+empty locations</p></li>
+<li><p><code>filter_track_data(x, .track_id = c(&quot;nameTrack1&quot;, &quot;nameTrack3&quot;)</code>:
+subset to one or more tracks</p></li>
+<li><p><code>split(x, mt_track_id(x))</code>: split a <code>move2</code>
+object into a list of single objects per track. Alternatively see
+<code>dplyr::mutate()</code>, <code>dplyr::group_by()</code>,
+<code>group_by_track_data()</code> to apply calculations to tracks
+separately</p></li>
+<li><p><code>mt_stack()</code>: combine multiple <code>move2</code>
+objects into one</p></li>
+<li><p><code>mt_as_track_attribute()</code>/<code>mt_as_event_attribute()</code>:
+move columns between track and event attributes (and vv)</p></li>
+<li><p><code>mt_set_track_id()</code>: replace track ids with new
+values, set new column to define tracks or rename track id
+column</p></li>
+<li><p><code>mutate_track_data()</code>: add or modify attributes in the
+track data</p></li>
+<li><p><code>sf::st_transform()</code>: to reproject the
+<code>move2</code> into a different projection</p></li>
+<li><p><code>mt_aeqd_crs()</code>: create a AEQD coordinate reference
+system</p></li>
+<li><p><code>mt_track_lines()</code>: convert a trajectory into lines
+for plotting with e.g. <code>ggplot</code></p></li>
+<li><p>use the option <code>options(sf_max.plot=1)</code> to display a
+single plot of the track. The attribute that should be used to color the
+tracks can be specified, e.g.
+<code>plot(x[&quot;individual_local_identifier&quot;])</code>. <a href="https://r-spatial.github.io/sf/articles/sf5.html">Here</a> is more
+information on how to do simple plots.</p></li>
 </ul>
 <p>All functions of the <code>move2</code> package are described <a href="https://bartk.gitlab.io/move2/reference/index.html">here.</a></p>
 </div>
@@ -410,85 +434,209 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="structure-of-the-move2-object" class="section level1">
 <h1>Structure of the <code>move2</code> object</h1>
 <ul>
-<li><p>it is based on the <code>sf</code> objects and compatible with a lot of <code>dplyr</code>/<code>tidyverse</code> based functionality</p></li>
-<li><p>information of non location data (other sensors as e.g. acceleration, magnetometer,etc) are associated to an empty locations.</p></li>
-<li><p><em>track attributes</em> and <em>event attributes</em> are distinguished. <em>event attributes</em> are attributes associated to each recorded event (location or non location), these will at least have a time and track id associated to them. <em>track attributes</em> are attributes associated to each track (e.g. individual, species, sex, etc), these will at least contain the track id, and can be retrieved with the function <code>mt_track_data()</code></p></li>
+<li><p>it is based on the <code>sf</code> objects and compatible with a
+lot of <code>dplyr</code>/<code>tidyverse</code> based
+functionality</p></li>
+<li><p>information of non location data (other sensors as
+e.g. acceleration, magnetometer,etc) are associated to an empty
+locations.</p></li>
+<li><p><em>track attributes</em> and <em>event attributes</em> are
+distinguished. <em>event attributes</em> are attributes associated to
+each recorded event (location or non location), these will at least have
+a time and track id associated to them. <em>track attributes</em> are
+attributes associated to each track (e.g. individual, species, sex,
+etc), these will at least contain the track id, and can be retrieved
+with the function <code>mt_track_data()</code></p></li>
 </ul>
 <div id="explanation" class="section level2">
 <h2>Explanation</h2>
-<p>To be able to expand and use the object in <code>move2</code> it is important to understand how the objects is structured. Here we explain some of the choices and explain the requirements.</p>
-<p>A move object in <code>move2</code> uses the <code>S3</code> class system, this is less rigors then the <code>S4</code> system that was used in the original <code>move</code> package. The objects are based on the <code>sf</code> objects from the <code>sf</code> package. This change is inspired by several factors, first by basing on <code>sf</code> we are able to profit from the speed and improvements that went into that package, second it makes it directly compatible with a lot of <code>dplyr</code>/<code>tidyverse</code> based functionality. To ensure information specific to movement is retrained we use attributes. This is in a fairly similar style to <code>sf</code>.</p>
-<p>To facilitate working with the associated sensor data we store other records with an empty point. This means, for example, acceleration and activity measurements can be part of the same <code>tbl</code>/<code>data.frame</code>.</p>
-<p>The <code>sf</code> package and <code>sf</code> in general allow to store coordinates as three dimensional records. As the altitude of tracking devices is typically much less accurate, few functions actually support this functionality we do not use it at this time.</p>
-<p>In the <code>move</code> package we implemented separate objects for one single individuals (<code>Move</code>) and multiple individuals (<code>MoveStack</code>). Here we choose to not do this. This reduces complexity. If functions require single individuals to work it is easy enough to split these of.</p>
+<p>To be able to expand and use the object in <code>move2</code> it is
+important to understand how the objects is structured. Here we explain
+some of the choices and explain the requirements.</p>
+<p>A move object in <code>move2</code> uses the <code>S3</code> class
+system, this is less rigors then the <code>S4</code> system that was
+used in the original <code>move</code> package. The objects are based on
+the <code>sf</code> objects from the <code>sf</code> package. This
+change is inspired by several factors, first by basing on
+<code>sf</code> we are able to profit from the speed and improvements
+that went into that package, second it makes it directly compatible with
+a lot of <code>dplyr</code>/<code>tidyverse</code> based functionality.
+To ensure information specific to movement is retrained we use
+attributes. This is in a fairly similar style to <code>sf</code>.</p>
+<p>To facilitate working with the associated sensor data we store other
+records with an empty point. This means, for example, acceleration and
+activity measurements can be part of the same
+<code>tbl</code>/<code>data.frame</code>.</p>
+<p>The <code>sf</code> package and <code>sf</code> in general allow to
+store coordinates as three dimensional records. As the altitude of
+tracking devices is typically much less accurate, few functions actually
+support this functionality we do not use it at this time.</p>
+<p>In the <code>move</code> package we implemented separate objects for
+one single individuals (<code>Move</code>) and multiple individuals
+(<code>MoveStack</code>). Here we choose to not do this. This reduces
+complexity. If functions require single individuals to work it is easy
+enough to split these of.</p>
 <div id="event-data" class="section level3">
 <h3>Event data</h3>
-<p>Tracking data generally consists of a time series of observations from a range of “sensors”. Each of these observation or events at least have a time and a sensor associated with them. Some have a location recorded by, for example, a gps sensor other have non locations data like acceleration or gyroscope measurements. All events are combined in one large dataset, this facilitates combined analysis between them (e.g. interpolation to the position of an acceleration measurement). However for some analysis specific sensors or data types will be needed therefore filtering functions are available that subset the data to, for example, all location data.</p>
+<p>Tracking data generally consists of a time series of observations
+from a range of “sensors”. Each of these observation or events at least
+have a time and a sensor associated with them. Some have a location
+recorded by, for example, a gps sensor other have non locations data
+like acceleration or gyroscope measurements. All events are combined in
+one large dataset, this facilitates combined analysis between them
+(e.g. interpolation to the position of an acceleration measurement).
+However for some analysis specific sensors or data types will be needed
+therefore filtering functions are available that subset the data to, for
+example, all location data.</p>
 </div>
 <div id="separating-track-attributes" class="section level3">
 <h3>Separating track attributes</h3>
-<p>To facilitate working with the trajectories we distinguish between track attributes and event attributes. Track level data could be individual and species names, sex and age. This can furthermore greatly facilitate object sizes as that is not duplicated. Keeping track attributes separate also contributes to data integrity as ensures track level attributes are consistent within a track.</p>
+<p>To facilitate working with the trajectories we distinguish between
+track attributes and event attributes. Track level data could be
+individual and species names, sex and age. This can furthermore greatly
+facilitate object sizes as that is not duplicated. Keeping track
+attributes separate also contributes to data integrity as ensures track
+level attributes are consistent within a track.</p>
 </div>
 </div>
 <div id="attributes" class="section level2">
 <h2>Attributes</h2>
-<p>In this section we go through the attributes that <code>move2</code> uses.</p>
+<p>In this section we go through the attributes that <code>move2</code>
+uses.</p>
 <div id="time_column" class="section level3">
 <h3><code>time_column</code></h3>
-<p>This attributes should contain a string with a length of <code>1</code>. This string indicates in which column the timestamp information of the locations in it. The string should thus be an existing column. The time column in most cases will contain timestamps in the <code>POSIXct</code> format. In some cases timestamps will not be referring to an exact time point. For example when simulating movement data or analysis from a video. In these cases times can also be stored as <code>integer</code> or <code>numeric</code> values.</p>
+<p>This attributes should contain a string with a length of
+<code>1</code>. This string indicates in which column the timestamp
+information of the locations in it. The string should thus be an
+existing column. The time column in most cases will contain timestamps
+in the <code>POSIXct</code> format. In some cases timestamps will not be
+referring to an exact time point. For example when simulating movement
+data or analysis from a video. In these cases times can also be stored
+as <code>integer</code> or <code>numeric</code> values.</p>
 </div>
 <div id="track_id_column" class="section level3">
 <h3><code>track_id_column</code></h3>
-<p>This attribute should contain a string of length <code>1</code>. A column with this name should be contained both in the <code>track_data</code> attribute and in the main dataset. This column also functions as the link between the <code>track_data</code> and the main data, linking the individual attributes to the individual data.</p>
+<p>This attribute should contain a string of length <code>1</code>. A
+column with this name should be contained both in the
+<code>track_data</code> attribute and in the main dataset. This column
+also functions as the link between the <code>track_data</code> and the
+main data, linking the individual attributes to the individual data.</p>
 </div>
 <div id="track_data" class="section level3">
 <h3><code>track_data</code></h3>
-<p>This dataset contains the track level data. Properties of the individual follows (e.g. sex, age and name) can be stored here. Additionally other deployment level information can be contained. As the move2 package does not separate individuals, tags and deployments. All information from these 3 entities in movebank are combined here.</p>
+<p>This dataset contains the track level data. Properties of the
+individual follows (e.g. sex, age and name) can be stored here.
+Additionally other deployment level information can be contained. As the
+move2 package does not separate individuals, tags and deployments. All
+information from these 3 entities in movebank are combined here.</p>
 </div>
 </div>
 <div id="special-columns" class="section level2">
 <h2>Special columns</h2>
 <div id="time_column-1" class="section level3">
 <h3><code>time_column</code></h3>
-<p>Using the <code>time_column</code> attribute this column can be identified, for quick retrieval there is the <code>mt_time</code> function. Values should be either timestamps (e.g. <code>POSIXct</code>, <code>Date</code>) or <code>numeric</code>. Numeric values are facilitated as it can be useful for simulation, videos and laboratory experiments were absolute time reference is not available or relevant.</p>
+<p>Using the <code>time_column</code> attribute this column can be
+identified, for quick retrieval there is the <code>mt_time</code>
+function. Values should be either timestamps (e.g. <code>POSIXct</code>,
+<code>Date</code>) or <code>numeric</code>. Numeric values are
+facilitated as it can be useful for simulation, videos and laboratory
+experiments were absolute time reference is not available or
+relevant.</p>
 </div>
 <div id="track_id_column-1" class="section level3">
 <h3><code>track_id_column</code></h3>
-<p>This column is identified by the <code>track_id_column</code> attributes, values can either be a <code>character</code>, <code>factor</code> or <code>integer</code> like values. For retrieval there is the <code>mt_track_id</code> function.</p>
+<p>This column is identified by the <code>track_id_column</code>
+attributes, values can either be a <code>character</code>,
+<code>factor</code> or <code>integer</code> like values. For retrieval
+there is the <code>mt_track_id</code> function.</p>
 </div>
 </div>
 <div id="general-considerations" class="section level2">
 <h2>General considerations</h2>
 <div id="quality-checking" class="section level3">
 <h3>Quality checking</h3>
-<p>In <code>move</code> relatively stringent quality checking was done on the object. This enforced certain attributes for a trajectory that are sensible but in practice are not always adhered to. Some of these properties are:</p>
+<p>In <code>move</code> relatively stringent quality checking was done
+on the object. This enforced certain attributes for a trajectory that
+are sensible but in practice are not always adhered to. Some of these
+properties are:</p>
 <ul>
-<li><p>Every record had a valid location (except for <code>unUsedRecords</code> but those were rarely used)</p></li>
+<li><p>Every record had a valid location (except for
+<code>unUsedRecords</code> but those were rarely used)</p></li>
 <li><p>Records were time ordered within individual</p></li>
 <li><p>All individuals were ordered</p></li>
 <li><p>Timestamps could not be duplicated.</p></li>
 </ul>
-<p>Even though these are some useful properties for subsequent work when reading not all data adheres to these standards. To solve this there were options to remove duplicated records but these simply took the first record. Here we take a more permissive approach where less stringent checking is done on the input side. This means functions working with <code>move2</code> need to ensure input data adheres to their expectations. To facilitate that several assertion functions are provided that can quickly check data. Taking this approach gives the users more flexibility in resolving inconsistencies within R. We provide several functions to make this work quick. For specific use cases more informed functions can be developed.</p>
-<p>If you are writing functions based on the <code>move2</code> package and your function assumes a specific data structure this can best be checked with <code>assert_that</code> in combination with one of the assertion functions. This construct results in informative error messages:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a>data &lt;-<span class="st"> </span><span class="kw">mt_sim_brownian_motion</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>)[<span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), ]</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">assert_that</span>(<span class="kw">mt_is_time_ordered</span>(data))</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a><span class="co">#&gt; Error: Not all timestamps in `data` are ordered within track.</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a><span class="co">#&gt; ℹ It is required that all subsequent records have an equal or later timestamps.</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co">#&gt; ℹ The first offending record is of track: 1 at time: 3 (record: 2), the next</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="co">#&gt;   record has an earlier timestamp.</span></span></code></pre></div>
+<p>Even though these are some useful properties for subsequent work when
+reading not all data adheres to these standards. To solve this there
+were options to remove duplicated records but these simply took the
+first record. Here we take a more permissive approach where less
+stringent checking is done on the input side. This means functions
+working with <code>move2</code> need to ensure input data adheres to
+their expectations. To facilitate that several assertion functions are
+provided that can quickly check data. Taking this approach gives the
+users more flexibility in resolving inconsistencies within R. We provide
+several functions to make this work quick. For specific use cases more
+informed functions can be developed.</p>
+<p>If you are writing functions based on the <code>move2</code> package
+and your function assumes a specific data structure this can best be
+checked with <code>assert_that</code> in combination with one of the
+assertion functions. This construct results in informative error
+messages:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>data <span class="ot">&lt;-</span> <span class="fu">mt_sim_brownian_motion</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>)[<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">3</span>, <span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">4</span>, <span class="dv">5</span>), ]</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">assert_that</span>(<span class="fu">mt_is_time_ordered</span>(data))</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Error: Not all timestamps in `data` are ordered within track.</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ℹ It is required that all subsequent records have an equal or later timestamps.</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ℹ The first offending record is of track: 1 at time: 3 (record: 2), the next</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;   record has an earlier timestamp.</span></span></code></pre></div>
 </div>
 <div id="function-naming-schemes" class="section level3">
 <h3>Function naming schemes</h3>
-<p>To facilitate finding functions and assist in recognizably we use a prefix. For functions relating to movement trajectories we use <code>mt_</code>, similar to how the <code>sf</code> package uses <code>st_</code> for spatial type. This prefix has the advantage of being short compared to <code>move_</code>. Functions for accessing data from <a href="https://www.movebank.org">movebank</a> use the prefix <code>movebank_</code>. Furthermore do all assertions functions start with either <code>mt_is_</code> or <code>mt_has_</code>.</p>
+<p>To facilitate finding functions and assist in recognizably we use a
+prefix. For functions relating to movement trajectories we use
+<code>mt_</code>, similar to how the <code>sf</code> package uses
+<code>st_</code> for spatial type. This prefix has the advantage of
+being short compared to <code>move_</code>. Functions for accessing data
+from <a href="https://www.movebank.org">movebank</a> use the prefix
+<code>movebank_</code>. Furthermore do all assertions functions start
+with either <code>mt_is_</code> or <code>mt_has_</code>.</p>
 </div>
 <div id="return-type-segment-wise-properties" class="section level3">
 <h3>Return type segment wise properties</h3>
-<p>When analyzing trajectories frequently metrics are calculated that are properties of the time period in between two observations. Prime examples are the distance and speed between locations. This means that for each track with a length of <span class="math inline">\(n\)</span> locations there are <span class="math inline">\(n-1\)</span> measurements. To facilitate storing and processing this data we pad each track with a <code>NA</code> value at the end. This ensured that return vectors from functions like <code>mt_distance</code>, <code>mt_speed</code> and <code>mt_azimuth</code> return vectors with the same length of as the number of rows in the <code>move2</code> object. If the return values from these kind of functions are assigned to the <code>move2</code> object the properties stored in the first row reflect the value for the interval between the first and second row.</p>
-<p>Some metrics are calculated as a function of the segment before and after a segment (e.g. turn angles). In these cases the return vectors still have the same length however they are padded by a <code>NA</code> value at the beginning and end of each track so that the metric is stored with the location it is representative for.</p>
+<p>When analyzing trajectories frequently metrics are calculated that
+are properties of the time period in between two observations. Prime
+examples are the distance and speed between locations. This means that
+for each track with a length of <span class="math inline">\(n\)</span>
+locations there are <span class="math inline">\(n-1\)</span>
+measurements. To facilitate storing and processing this data we pad each
+track with a <code>NA</code> value at the end. This ensured that return
+vectors from functions like <code>mt_distance</code>,
+<code>mt_speed</code> and <code>mt_azimuth</code> return vectors with
+the same length of as the number of rows in the <code>move2</code>
+object. If the return values from these kind of functions are assigned
+to the <code>move2</code> object the properties stored in the first row
+reflect the value for the interval between the first and second row.</p>
+<p>Some metrics are calculated as a function of the segment before and
+after a segment (e.g. turn angles). In these cases the return vectors
+still have the same length however they are padded by a <code>NA</code>
+value at the beginning and end of each track so that the metric is
+stored with the location it is representative for.</p>
 </div>
 <div id="data-size" class="section level3">
 <h3>Data size</h3>
-<p>Data sets have been growing considerably over the past decade since <code>move</code> was written. The ambition with <code>move2</code> is to facilitate this trend. It should work smoothly with trajectories of more then a million records. We have successfully loaded up to 30 million events into R, however at some stage memory limitations of the host computer start being a concern. This can to some extent be alleviated by omitting unnecessary columns from the data set, either at download or when reading the data. An alternative approach would be to facilitate working with trajectories on disk or within a database (alike <code>dbplyr</code>). However since many functions and packages we rely on do not support this, we opt not to do this. Therefore, if reducing the data loaded does not solve the problem, it can be advisable to use a computer with more memory or when possible split up analysis per track.</p>
+<p>Data sets have been growing considerably over the past decade since
+<code>move</code> was written. The ambition with <code>move2</code> is
+to facilitate this trend. It should work smoothly with trajectories of
+more then a million records. We have successfully loaded up to 30
+million events into R, however at some stage memory limitations of the
+host computer start being a concern. This can to some extent be
+alleviated by omitting unnecessary columns from the data set, either at
+download or when reading the data. An alternative approach would be to
+facilitate working with trajectories on disk or within a database (alike
+<code>dbplyr</code>). However since many functions and packages we rely
+on do not support this, we opt not to do this. Therefore, if reducing
+the data loaded does not solve the problem, it can be advisable to use a
+computer with more memory or when possible split up analysis per
+track.</p>
 </div>
 </div>
 </div>

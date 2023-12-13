@@ -49,7 +49,7 @@ test_that("error on wrong column values", {
   expect_error(mt_as_move2(
     st_as_sf(data.frame(
       x = c(0, 0, 1, 0),
-      y = c(1:4), timestamp = 1:4, track = rep(as.Date(1), 4)
+      y = c(1:4), timestamp = 1:4, track = rep(as.Date(1, origin = "1970-1-1"), 4)
     ), coords = 1:2),
     track_id_column = "track", time_column = "timestamp"
   ), "should be of the type integer, in")

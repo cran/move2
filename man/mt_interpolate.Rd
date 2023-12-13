@@ -35,8 +35,10 @@ mt_interpolate(data, c(.5, 1.5, 2.5))
 ## interpolating to empty locations
 data$geometry[c(1, 3)] <- sf::st_point() ## creating empty locations
 mt_interpolate(data)
+\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 fishers <- mt_read(mt_example())[1:200, ]
 mt_interpolate(fishers, "2 hours")
 ## omit the original records
 mt_interpolate(fishers, "2 hours", omit = TRUE)
+\dontshow{\}) # examplesIf}
 }

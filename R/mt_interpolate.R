@@ -33,6 +33,7 @@ NULL
 #' ## interpolating to empty locations
 #' data$geometry[c(1, 3)] <- sf::st_point() ## creating empty locations
 #' mt_interpolate(data)
+#' @examplesIf parallel::detectCores() < 9
 #' fishers <- mt_read(mt_example())[1:200, ]
 #' mt_interpolate(fishers, "2 hours")
 #' ## omit the original records
@@ -64,7 +65,12 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
         class = "move2_error_interpolate_time_does_not_correspond"
       )
     }
+    if (inherits(time, "POSIXt") && inherits(mt_time(x), "POSIXt") &&
+      lubridate::tz(time) != lubridate::tz(mt_time(x))) {
+      time <- lubridate::with_tz(time, lubridate::tz(mt_time(x)))
+    }
     class(x) <- setdiff(class(x), "move2")
+
     x <- x |> # adding rows for times that need interpolation
       group_by(!!!syms(attr(x, "track_id_column"))) |>
       group_modify(.keep = TRUE, ~ {
@@ -97,9 +103,10 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
     check_installed("s2")
   }
   res <- x |>
+    select(-any_of("time")) |>
     mt_set_time("time") |>
     mutate(
-      i = if_else(st_is_empty(x), NA_integer_, seq_len(n())),
+      i = if_else(st_is_empty(!!!syms(attr(x, "sf_column"))), NA_integer_, seq_len(n())),
       t = if_else(is.na(.data$i), if (inherits(time, "POSIXct")) {
         as.POSIXct(NA)
       } else {
@@ -116,8 +123,8 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
       time_interval = (vec_fill_missing(t, "up") - .data$prv_t),
       prop_t = as.numeric(time - .data$prv_t, units = "mins") /
         as.numeric(.data$time_interval, units = "mins"),
-      nxt_loc = st_geometry(x)[vec_fill_missing(.data$i, "up")],
-      prv_loc = st_geometry(x)[vec_fill_missing(.data$i, "down")],
+      nxt_loc = st_geometry(!!x)[vec_fill_missing(.data$i, "up")],
+      prv_loc = st_geometry(!!x)[vec_fill_missing(.data$i, "down")],
       time_interval = if (inherits(.data$time_interval, "difftime")) {
         as_units(.data$time_interval)
       } else {
@@ -131,15 +138,17 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
     ) |>
     ungroup() |>
     mutate(
-      new = st_sfc(st_point(), crs = st_crs(x)),
+      new = st_sfc(st_point(), crs = st_crs(!!!syms(attr(x, "sf_column")))),
       prop_s = !is.na(.data$prop_t) &
         to_interpolate & .data$time_interval_in_max_time_lag,
       new = replace(
         .data$new, .data$prop_s,
-        if (st_crs(x) == NA_crs_) {
+        if (st_crs(!!!syms(attr(x, "sf_column"))) == NA_crs_) {
           st_cast(st_sfc(mapply(st_line_sample,
             st_sfc(lapply(
-              FUN = st_cast,
+              FUN = function(...) {
+                st_cast(...)
+              },
               mapply(c, .data$prv_loc[.data$prop_s],
                 .data$nxt_loc[.data$prop_s],
                 SIMPLIFY = FALSE
@@ -152,7 +161,7 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
             st_as_sfc(s2::s2_interpolate_normalized(
               st_cast(
                 do.call(st_sfc, c(
-                  list(crs = st_crs(x)),
+                  list(crs = st_crs(!!!syms(attr(x, "sf_column")))),
                   mapply(c, .data$prv_loc[.data$prop_s],
                     .data$nxt_loc[.data$prop_s],
                     SIMPLIFY = FALSE
@@ -161,7 +170,7 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
               ),
               .data$prop_t[.data$prop_s]
             )),
-            crs = st_crs(x)
+            crs = st_crs(!!!syms(attr(x, "sf_column")))
           )
         }
       )

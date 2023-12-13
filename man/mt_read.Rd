@@ -33,18 +33,16 @@ not necessarily correspond to the deployments in movebank as this information is
 }
 \examples{
 path_fishers <- mt_example()
-mt_read(path_fishers, num_threads = 2)
-## Note num_threads is used to reduce the number of threads used.
-## Normally it can be left untouched but here CRAN tests are
-## sped up.
+\dontshow{if (vroom:::vroom_threads() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+mt_read(path_fishers)
 
 ## Reduce the mount of data read this might provide memory advantages
 ## and speed up reading
 mt_read(path_fishers, col_select = c(
   "location-long", "location-lat",
-  "timestamp", "individual-local-identifier",
-  num_threads = 2
+  "timestamp", "individual-local-identifier"
 ))
+
 \dontrun{
 mt_read("~/Downloads/Galapagos Albatrosses.csv")
 ## Exclude the column 'eobs:accelerations-raw'
@@ -55,6 +53,7 @@ mt_read("~/Downloads/Galapagos Albatrosses.csv",
 ## is already filtered before reading into R
 mt_read(pipe('cat "~/Downloads/Galapagos Albatrosses.csv" | grep "2008-07\\\\|time"'))
 }
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 \itemize{

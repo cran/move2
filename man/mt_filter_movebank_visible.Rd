@@ -30,9 +30,11 @@ These functions rely on the columns 'visible', 'algorithm_marked_outlier', 'impo
 can be found in the \href{http://vocab.nerc.ac.uk/collection/MVB/current/MVB000209/}{movebank vocabulary}
 }
 \examples{
+\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 m <- mt_read(mt_example())
 table(mt_movebank_visible(m))
 mt_filter_movebank_visible(m)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other filter: 

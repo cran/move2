@@ -96,7 +96,7 @@ movebank_store_credentials("myUserName", "myPassword")
 movebank_store_credentials("myUserName_2", "myPassword_2", key_name = "myOtherAccount")
 ```
 
-```{r, eval=TRUE, echo=FALSE}
+```{r credentials, eval=TRUE, echo=FALSE}
 movebank_store_credentials("myUserName", "myPassword", force = TRUE)
 movebank_store_credentials("myUserName_2", "myPassword_2",
   key_name = "myOtherAccount", force = TRUE
@@ -109,14 +109,14 @@ download from Movebank with another account, than you should execute the line
 below, specifying the key name of the account to use, before the download
 functions are executed.
 
-```{r}
+```{r option_setting}
 options("move2_movebank_key_name" = "myOtherAccount")
 ```
 
 If in one script/Rsession you are using several accounts, to use the credentials
 of the default account execute the line below:
 
-```{r}
+```{r options_setting_2}
 options("move2_movebank_key_name" = "movebank")
 ```
 
@@ -138,7 +138,7 @@ same key name (service), it will cause an error.
 
 To deleted credentials from keyring:
 
-```{r}
+```{r remove_credentials}
 ## for the default account
 movebank_remove_credentials()
 
@@ -151,9 +151,9 @@ Next we can check if the keys are successfully removed:
 ```{r, eval=FALSE}
 keyring::key_list()
 ```
-```{r, echo=FALSE}
-# the previous statement can't be evaluated as the keyring is env which needs a service
-```
+
+Here you can check if the `movebank` service is successfully removed.
+
 # Downloading data
 
 ```{r, echo=FALSE}
@@ -176,7 +176,7 @@ Using the `movebank_retrieve` function it is possible to directly access the
 API, here all studies with a creative commons 0 license are returned. These are
 a good candidate for exploration and testing
 
-```{r, time_it=TRUE}
+```{r cc_studies, time_it=TRUE}
 movebank_retrieve(entity_type = "study", license_type = "CC_0") |>
   select(id, name, number_of_deployed_locations) |>
   filter(!is.na(number_of_deployed_locations))
@@ -185,13 +185,13 @@ movebank_retrieve(entity_type = "study", license_type = "CC_0") |>
 A more quick way to retrieve the information is the following (the selection is
 performed on movebank and not all data is downloaded):
 
-```{r, eval=FALSE}
+```{r studies, eval=FALSE}
 movebank_download_study_info(license_type = "CC_0")
 ```
 
 By default all attributes are downloaded:
 
-```{r, time_it=TRUE}
+```{r full_dl, time_it=TRUE}
 movebank_download_study(2911040, sensor_type_id = "gps")
 ```
 
@@ -199,12 +199,12 @@ For speed of download you might want to add the argument `attributes = NULL` as
 it reduces the columns to download to the bare minimum. Note still all
 individual attributes are downloaded as this does not take much time.
 
-```{r, time_it=TRUE}
+```{r quick_download, time_it=TRUE}
 movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
 ```
 
 If only specific attributes want to be download you can state them in the argument `attributes`. The available attributes vary between studies and sensors. You can retrieve the list of available attributes for a specific sensor in given study. Note that only one sensor at a time can be stated.
-```{r, time_it=T}
+```{r study_attrs, time_it=T}
 movebank_retrieve(
   entity_type = "study_attribute",
   study_id = 2911040,
@@ -223,7 +223,7 @@ movebank_download_study(
 
 Only load gps records:
 
-```{r, time_it=TRUE}
+```{r gps_sensor, time_it=TRUE}
 movebank_download_study(1259686571, sensor_type_id = 653)
 ```
 
@@ -232,13 +232,13 @@ Note that the `sensor_type_id` can either be specified either of an `integer` or
 additional data is added is downloaded if a specific sensor is selected. For
 example the column `eobs_acceleration_raw`:
 
-```{r, time_it=TRUE}
+```{r acc_study_download, time_it=TRUE}
 movebank_download_study(2911040, sensor_type_id = "acceleration")
 ```
 
 The following list of sensors is available:
 
-```{r}
+```{r retrieve_sensors}
 movebank_retrieve(
   entity_type = "tag_type",
   attributes = c("external_id", "id")
@@ -249,7 +249,7 @@ Alternatively more informative names can be used for some arguments. For example
 you can use a `character` string to identify a study or a timestamp as a
 `POSIXct`:
 
-```{r, time_it=TRUE}
+```{r download_lbbg, time_it=TRUE}
 movebank_download_study("LBBG_JUVENILE",
   sensor_type_id = "gps",
   timestamp_start = as.POSIXct("2021-02-03 00:00:00"),

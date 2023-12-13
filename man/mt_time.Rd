@@ -59,7 +59,7 @@ x |> mt_time_lags()
 tl <- x |> mt_time_lags()
 units::set_units(tl, h)
 
-x <- mt_sim_brownian_motion(t = as.POSIXct(1:3), tracks = 2)
+x <- mt_sim_brownian_motion(t = as.POSIXct(1:3, , origin = "1970-1-1"), tracks = 2)
 ## providing a vector with new timestamps
 head(mt_time(x))
 mt_time(x) <- 1:nrow(x)

@@ -382,8 +382,8 @@ movebank_column_types <- list(
   "deployment-end-comments" = col_character(),
   "deployment-end-type" = col_factor(
     levels = c(
-      "captured", "dead", "equipment-failure", "fall-off", "other",
-      "released", "removal", "unknown"
+      "captured", "dead", "dead/fall-off", "equipment-failure", "fall-off", "other",
+      "released", "removal", "transmission-end", "unknown"
     )
   ),
   "deployment-id" = col_big_integer(),

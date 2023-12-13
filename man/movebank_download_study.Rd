@@ -165,6 +165,13 @@ movebank_download_study_info(i_have_download_access = TRUE)
 movebank_download_study_info(id = 2911040)
 ## get study id
 movebank_get_study_id(study_id = "Galapagos Albatrosses")
+## Find studies you can download and have a creative commons zero license
+## Note "CC_BY" is also frequently used
+movebank_download_study_info(
+  license_type = "CC_0",
+  i_have_download_access = TRUE,
+  attributes = c("name", "id")
+)
 }
 
 }

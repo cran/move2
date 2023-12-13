@@ -43,16 +43,16 @@ movebank_remove_credentials()
 #  ## store credentials for another movebank account
 #  movebank_store_credentials("myUserName_2", "myPassword_2", key_name = "myOtherAccount")
 
-## ---- eval=TRUE, echo=FALSE---------------------------------------------------
+## ----credentials, eval=TRUE, echo=FALSE---------------------------------------
 movebank_store_credentials("myUserName", "myPassword", force = TRUE)
 movebank_store_credentials("myUserName_2", "myPassword_2",
   key_name = "myOtherAccount", force = TRUE
 )
 
-## -----------------------------------------------------------------------------
+## ----option_setting-----------------------------------------------------------
 options("move2_movebank_key_name" = "myOtherAccount")
 
-## -----------------------------------------------------------------------------
+## ----options_setting_2--------------------------------------------------------
 options("move2_movebank_key_name" = "movebank")
 
 ## ---- eval=FALSE--------------------------------------------------------------
@@ -61,7 +61,7 @@ options("move2_movebank_key_name" = "movebank")
 #  # 1 movebank          myUserName
 #  # 2 myOtherAccount    myUserName_2
 
-## -----------------------------------------------------------------------------
+## ----remove_credentials-------------------------------------------------------
 ## for the default account
 movebank_remove_credentials()
 
@@ -70,9 +70,6 @@ movebank_remove_credentials(key_name = "myOtherAccount")
 
 ## ---- eval=FALSE--------------------------------------------------------------
 #  keyring::key_list()
-
-## ---- echo=FALSE--------------------------------------------------------------
-# the previous statement can't be evaluated as the keyring is env which needs a service
 
 ## ---- echo=FALSE--------------------------------------------------------------
 options("keyring_backend" = krba)
@@ -88,21 +85,21 @@ if (Sys.info()["user"] != "bart") {
 ## -----------------------------------------------------------------------------
 library(dplyr, quietly = TRUE)
 
-## ---- time_it=TRUE------------------------------------------------------------
+## ----cc_studies, time_it=TRUE-------------------------------------------------
 movebank_retrieve(entity_type = "study", license_type = "CC_0") |>
   select(id, name, number_of_deployed_locations) |>
   filter(!is.na(number_of_deployed_locations))
 
-## ---- eval=FALSE--------------------------------------------------------------
+## ----studies, eval=FALSE------------------------------------------------------
 #  movebank_download_study_info(license_type = "CC_0")
 
-## ---- time_it=TRUE------------------------------------------------------------
+## ----full_dl, time_it=TRUE----------------------------------------------------
 movebank_download_study(2911040, sensor_type_id = "gps")
 
-## ---- time_it=TRUE------------------------------------------------------------
+## ----quick_download, time_it=TRUE---------------------------------------------
 movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
 
-## ---- time_it=T---------------------------------------------------------------
+## ----study_attrs, time_it=T---------------------------------------------------
 movebank_retrieve(
   entity_type = "study_attribute",
   study_id = 2911040,
@@ -117,19 +114,19 @@ movebank_download_study(
   )
 )
 
-## ---- time_it=TRUE------------------------------------------------------------
+## ----gps_sensor, time_it=TRUE-------------------------------------------------
 movebank_download_study(1259686571, sensor_type_id = 653)
 
-## ---- time_it=TRUE------------------------------------------------------------
+## ----acc_study_download, time_it=TRUE-----------------------------------------
 movebank_download_study(2911040, sensor_type_id = "acceleration")
 
-## -----------------------------------------------------------------------------
+## ----retrieve_sensors---------------------------------------------------------
 movebank_retrieve(
   entity_type = "tag_type",
   attributes = c("external_id", "id")
 )
 
-## ---- time_it=TRUE------------------------------------------------------------
+## ----download_lbbg, time_it=TRUE----------------------------------------------
 movebank_download_study("LBBG_JUVENILE",
   sensor_type_id = "gps",
   timestamp_start = as.POSIXct("2021-02-03 00:00:00"),

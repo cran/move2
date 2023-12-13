@@ -33,6 +33,10 @@
 #' @export
 #'
 #' @examples
+#' data <- mt_sim_brownian_motion()
+#' mt_azimuth(data)
+#' mt_turnangle(data)
+#' @examplesIf parallel::detectCores() < 9
 #' x <- mt_read(mt_example())[330:340, ]
 #' mt_azimuth(x)
 #' mt_turnangle(x)

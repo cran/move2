@@ -112,19 +112,20 @@ movebank_get_vocabulary <-
     l <- unlist(lapply(xml_descriptions, length))
 
     if (any(l > 2L)) {
-      cli_abort("For some terms duplicate vocabulary terms are retrieved. This is an error that needs to be
+      cli_abort( # nocov start
+        "For some terms duplicate vocabulary terms are retrieved. This is an error that needs to be
                 investegated, please submit an issue.",
         class = "move2_error_duplicate_vocabulary"
-      )
+      ) # nocov end
     }
     xml_descriptions <- xml_descriptions[l != 0L]
     xml_descriptions <- lapply(xml_descriptions, "[[", 1L)
     if (anyDuplicated(names(xml_descriptions)) && omit_deprecated) {
-      cli_abort(
+      cli_abort( # nocov start
         class = "move2_error_duplicated_vocabulary_entries",
         "There are duplicated entries in the returned vocabulary list, they should not occur if since deprecated values
         are omitted. Please submit an issue to investigate"
-      )
+      ) # nocov end
     }
     return(switch(return_type,
       list = lapply(xml_descriptions, xml2::as_list),

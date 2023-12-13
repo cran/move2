@@ -1,9 +1,17 @@
+# move2 0.2.7
+
+* Add "transmission-end" & "dead/fall-off" to deployment end type to read data correctly
+* `mt_interpolate` works when column named `x` or `time` is present
+* `mt_interpolate` works when timezone of `time` is different
+
 # move2 0.2.6
 
 * `bind_cols` and `st_join` retains class for `tbl` by fixing reconstruct function
 * `st_join` works for data.frame based `move2`
 
 # move2 0.2.4
+
+This release was not published on CRAN
 
 * Update vocabulary handling with new movebank vocabulary
 * Correct reading of `migration_stage_standard`

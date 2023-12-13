@@ -133,6 +133,13 @@ utils::globalVariables("where") # for tidy select
 #' movebank_download_study_info(id = 2911040)
 #' ## get study id
 #' movebank_get_study_id(study_id = "Galapagos Albatrosses")
+#' ## Find studies you can download and have a creative commons zero license
+#' ## Note "CC_BY" is also frequently used
+#' movebank_download_study_info(
+#'   license_type = "CC_0",
+#'   i_have_download_access = TRUE,
+#'   attributes = c("name", "id")
+#' )
 #' }
 #'
 movebank_download_study <- function(study_id, attributes = "all", # nolint
@@ -439,8 +446,8 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
       i = "This might relate to the returned data not fitting the expectation of the movebank data format specified in
       the package.",
       i = "For retrieving the specific problem you can enable `global_entrace` using {.run rlang::global_entrace()}
-      then run the command and use {.run rlang::last_warnings()[[1]]$problems} to retrieve the problems.",
-      i = "The requested url can then be retrieved with: {.run rlang::last_warnings()[[1]]$url}",
+      then run the command and use {.code rlang::last_warnings()[[1]]$problems} to retrieve the problems.",
+      i = "The requested url can then be retrieved with: {.code rlang::last_warnings()[[1]]$url}",
       i = "Alternatively in some cases you might be able to retrieve the problems calling {.fun vroom::problems} on the
       result of the function call that produced the warning."
     ), problems = p, url = url, class = "move2_warning_movebank_api_format_not_parsed")

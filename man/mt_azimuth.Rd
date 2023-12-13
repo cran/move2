@@ -43,9 +43,14 @@ Azimuths for geographic coordinates are calculated using \code{\link[lwgeom:st_g
 the North pole.
 }
 \examples{
+data <- mt_sim_brownian_motion()
+mt_azimuth(data)
+mt_turnangle(data)
+\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 x <- mt_read(mt_example())[330:340, ]
 mt_azimuth(x)
 mt_turnangle(x)
+\dontshow{\}) # examplesIf}
 }
 \seealso{
 Other track-measures: 
