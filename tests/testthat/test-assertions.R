@@ -52,3 +52,22 @@ test_that("Proper failure message ordered assertions", {
   expect_true(mt_sim_brownian_motion(c(1, 1)) |> mt_is_time_ordered_non_empty_points(non_zero = FALSE))
   expect_false(mt_sim_brownian_motion(c(1, 1)) |> mt_is_time_ordered_non_empty_points(non_zero = TRUE))
 })
+test_that("column incompatablity", {
+  m <- mt_read(mt_example())
+  expect_true(mt_has_unique_location_time_records(m))
+  expect_false(mt_has_unique_location_time_records(m[c(1, 5, 5, 6, 6), ]))
+  expect_error(assert_that(mt_has_unique_location_time_records(m[c(1, 5, 5, 6, 6), ])), "In total there are 2 duplicate timestamps")
+  expect_error(
+    assert_that(mt_has_unique_location_time_records(m[c(1, 5, 5, 6, 6), ])),
+    "is from track F1 at time 2011-02-11 18:06:13.999 .record: 3"
+  )
+  mm <- m %>%
+    mutate("individual_int64" = as.integer64(`individual-local-identifier`)) %>%
+    mt_set_track_id("individual_int64")
+  expect_true(mt_has_unique_location_time_records(mm))
+  expect_false(mt_has_unique_location_time_records(mm[c(1, 5, 5, 6, 6), ]))
+  mm <- m %>%
+    mutate("date" = as.Date(timestamp)) %>%
+    mt_set_time("date")
+  expect_false(mt_has_unique_location_time_records(mm))
+})

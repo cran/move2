@@ -10,6 +10,10 @@ test_that("colum moving from events", {
     sim_data |> mt_as_track_attribute(sex, .keep = TRUE),
     c("time", "track", "geometry", "sex")
   )
+  expect_named(
+    sim_data |> mt_as_track_attribute(sex, .keep = TRUE) |> mt_track_data(),
+    c("track", "sex")
+  )
   expect_error(
     sim_data |> mt_as_track_attribute(sex, time),
     "The attributes to move do not have a unique value per individual"
@@ -26,7 +30,7 @@ test_that("colum moving from events", {
   expect_named(
     sim_data |> mt_as_track_attribute(sex) |>
       mt_track_data(),
-    c("sex", "track")
+    c("track", "sex")
   )
 })
 test_that("round trip", {
@@ -40,8 +44,16 @@ test_that("round trip", {
       mutate_track_data(name = letters[seq_len(mt_n_tracks(sim_data))]) |>
       mt_as_event_attribute(name) |> mt_as_track_attribute(name),
     sim_data[, c(1, 2, 4, 3)] |>
-      mutate_track_data(name = letters[seq_len(mt_n_tracks(sim_data))]) |>
-      select_track_data(name, track)
+      mutate_track_data(name = letters[seq_len(mt_n_tracks(sim_data))])
+  )
+})
+test_that("mt_as_track_attribute is order resistant", {
+  dat <- mt_sim_brownian_motion(1:3, tracks = letters[1:3]) |>
+    mutate_track_data(d = 3:5, b = c(4, 7, 8))
+  dat2 <- dat |> mt_as_event_attribute("b")
+  expect_identical(
+    mt_track_data(dat),
+    dat2[nrow(dat2):1, ] |> mt_as_track_attribute("b") |> mt_track_data()
   )
 })
 test_that("colum moving from track data", {
@@ -72,6 +84,11 @@ test_that("colum moving from track data", {
     sim_data |> mutate_track_data(age = 3:4) |>
       mt_as_event_attribute(age, .keep = TRUE) |> mt_track_data(),
     c("track", "age")
+  )
+  expect_named(
+    sim_data |> mutate_track_data(age = 3:4) |>
+      mt_as_event_attribute(age, .keep = TRUE),
+    c("time", "track", "sex", "age", "geometry")
   )
   expect_named(
     sim_data |> mutate_track_data(age = 3:4) |>

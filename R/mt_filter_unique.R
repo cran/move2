@@ -17,7 +17,8 @@ NULL
 #' This argument can be used to indicate additional column to include in the grouping
 #' within which the records should not be duplicated.
 #' See the examples below for its usage.
-#' @param ... Arguments passed on to the `mt_unique` function
+#' @param ... Arguments passed on to the `mt_unique` function like `criterion` and arguments to the equivalence function
+#' when one of the `"subsets"` criteria is use, this allows for example controlling the `tolerance` ([base::all.equal()])
 #'
 #'
 #' @details
@@ -32,6 +33,9 @@ NULL
 #' records may be the same as others only containing additional `NA` values.
 #' This strategy only omits those (duplicated) records. As a result duplicates that contain unique information are
 #' retained, the dataset is thus not guaranteed to not have unique records afterwards.
+#' * `"subsets_equal"`: The same as `"subsets"` however not exact equivalence is tested using [base::identical()] but
+#'  rather [base::all.equal()] is used. This makes it possible to allow for small numeric differences to be considered
+#'  equal. This can however reduce speed considerably.
 #' * `"sample"`: In this case one record is randomly selected from the duplicated records.
 #' * `"first"`: Select the first location from a set of duplicated locations. Note that reordering the data will affect
 #'  which record is selected. For movebank data no specific order is enforced, ensure that the order of the locations is like you expect (same goes for `"last"`).
@@ -87,7 +91,7 @@ mt_filter_unique <- function(x, ...) {
 # COMBAK remove as.character if this fix is propagated: https://github.com/r-spatial/sf/issues/2138
 #' @export
 #' @rdname mt_filter_unique
-mt_unique <- function(x, criterion = c("subsets", "sample", "first", "last"), additional_columns = NULL) {
+mt_unique <- function(x, criterion = c("subsets", "subsets_equal", "sample", "first", "last"), additional_columns = NULL, ...) {
   criterion <- rlang::arg_match(criterion)
   assert_that(inherits(x, "move2"))
   additional_columns <- enquo(additional_columns)
@@ -113,6 +117,21 @@ mt_unique <- function(x, criterion = c("subsets", "sample", "first", "last"), ad
         )
       }
       return(seq_len(nrow(x)) %in% rws)
+    },
+    subsets_equal = {
+      d <- group_data(x_grp)$.rows
+      rws <- (l <- lapply(d, slice_subsets, x = x, equivalance_fun = function(...) {
+        isTRUE(all.equal(...))
+      }, ...)) |>
+        unlist() |>
+        sort()
+      if (any(unlist(lapply(l, length)) != 1)) {
+        rlang::warn(
+          "After removing all records that are subsets of other records there are still remaining duplicates.",
+          class = "move2_warning_duplicates_remaining"
+        )
+      }
+      return(seq_len(nrow(x)) %in% rws)
     }
   )
 }
@@ -122,7 +141,7 @@ mt_unique <- function(x, criterion = c("subsets", "sample", "first", "last"), ad
 resample <- function(x) x[sample.int(length(x), size = 1)]
 
 
-slice_subsets <- function(rws, x) {
+slice_subsets <- function(rws, x, equivalance_fun = identical, ...) {
   if (length(rws) == 1) {
     return(rws)
   }
@@ -139,8 +158,11 @@ slice_subsets <- function(rws, x) {
     x[i, TRUE]
   }, x = x)
   names(l) <- rws
-  r <- apply(e, 1, function(i, xx) {
-    all(mapply(identical, xx[[i[1]]], xx[[i[2]]]) | is.na(xx[[i[2]]]))
-  }, xx = l)
+  r <- apply(e, 1, function(i, xx, ...) {
+    all(mapply(equivalance_fun, xx[[i[1]]], xx[[i[2]]], ...) | is.na(xx[[i[2]]]))
+  }, xx = l, ...) # true when second record is equal or NA compared to first
+  # remove records that are duplicated (in case using all.equal and pass first duplication test)
+  r[duplicated(cbind(t(apply(e, 1, sort)), r)) & r] <- F
+  # omit all records that are subset of other
   return(rws[!(rws %in% unique(e[r, 2]))])
 }

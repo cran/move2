@@ -83,8 +83,37 @@ test_that("first and last work", {
 
 test_that("criterion errors", {
   m <- mt_sim_brownian_motion(1:2)[rep(1:4, 4), ]
-  expect_error(mt_filter_unique(m, "asdf"), '`criterion` must be one of "subsets", "sample", "first", or "last", not "asdf".')
-  expect_error(mt_filter_unique(m, "s"), '`criterion` must be one of "subsets", "sample", "first", or "last", not "s".')
+  expect_error(mt_filter_unique(m, "asdf"), '`criterion` must be one of "subsets", "subsets_equal", "sample", "first", or "last", not "asdf".')
+  expect_error(mt_filter_unique(m, "s"), '`criterion` must be one of "subsets", "subsets_equal", "sample", "first", or "last", not "s".')
   expect_error(mt_filter_unique(m, "sa"), 'Did you mean "sample"')
   expect_error(mt_filter_unique(m, 1L), "`criterion` must be a character vector, not the number 1.")
+})
+
+
+test_that("equivalance fun", {
+  m <- mt_sim_brownian_motion(1:2, tracks = 1)[c(1, 1:2), ]
+  m$g <- c(1, NA, 1)
+  expect_identical(nrow(mt_filter_unique(m, "subsets")), 2L)
+  expect_identical(nrow(mt_filter_unique(m, "subsets_equal")), 2L)
+
+  m$geometry[[1]] <- sf::st_point(c(0, .00000000001))
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets")), 3L))
+  expect_identical(nrow(mt_filter_unique(m, "subsets_equal")), 2L)
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets_equal", tolerance = 10^-19)), 3L))
+
+  m <- mt_sim_brownian_motion(1:2, tracks = 1)[c(1, 1:2), ]
+  m$g <- c(1, 1.00000000001, 1)
+
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets")), 3L))
+  expect_identical(nrow(mt_filter_unique(m, "subsets_equal")), 2L)
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets_equal", tolerance = 10^-19)), 3L))
+
+
+  m <- mt_sim_brownian_motion(1:2, tracks = 1)[c(1, 1, 1:2), ]
+  m$g <- c(1, 1 - .00000001, 1.000000000001, 1)
+
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets")), 4L))
+  expect_identical(nrow(mt_filter_unique(m, "subsets_equal")), 2L)
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets_equal", tolerance = 10^-19)), 4L))
+  expect_warning(expect_identical(nrow(mt_filter_unique(m, "subsets_equal", tolerance = 10^-10)), 3L))
 })

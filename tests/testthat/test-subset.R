@@ -36,3 +36,24 @@ test_that("indexing columns one bracket", {
   )
   expect_named(m["track"], c("track", "time", "geometry"), ignore.order = TRUE)
 })
+
+test_that("assigning new column in grouped df retains class", {
+  m <- mt_sim_brownian_motion(1:3, tracks = letters[5:8]) |> dplyr::group_by(track)
+  old_m <- m
+  m[, "test"] <- seq_len(nrow(m))
+  expect_s3_class(m, class(old_m))
+  expect_identical(dplyr::select(m, -test), old_m)
+  expect_identical(m[, -which(names(m) == "test")], old_m)
+  m[1:3, "test"] <- 3:1
+  expect_s3_class(m, class(old_m))
+  expect_identical(m$test, c(3:1, 4:12))
+})
+test_that("check against double class assignment", {
+  m <- mt_sim_brownian_motion()
+  m[, "id"] <- gl(4, 5)
+  expect_s3_class(mt_set_track_id(m, "id"), class(m), exact = TRUE)
+  expect_s3_class(mt_set_track_id(dplyr::group_by(m, ("id")), "id"),
+    class(group_by(m, "id")),
+    exact = TRUE
+  )
+})

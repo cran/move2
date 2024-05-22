@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -424,7 +424,7 @@ successfully removed.</p>
 </div>
 <div id="downloading-data" class="section level1">
 <h1>Downloading data</h1>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(dplyr, <span class="at">quietly =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div>
 <p>Using the <code>movebank_retrieve</code> function it is possible to
 directly access the API, here all studies with a creative commons 0
 license are returned. These are a good candidate for exploration and
@@ -432,86 +432,80 @@ testing</p>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">movebank_retrieve</span>(<span class="at">entity_type =</span> <span class="st">&quot;study&quot;</span>, <span class="at">license_type =</span> <span class="st">&quot;CC_0&quot;</span>) <span class="sc">|&gt;</span></span>
 <span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>  <span class="fu">select</span>(id, name, number_of_deployed_locations) <span class="sc">|&gt;</span></span>
 <span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(number_of_deployed_locations))</span>
-<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 301 × 3</span></span>
-<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;            id name                                        number_of_deployed_l…¹</span></span>
-<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;       &lt;int64&gt; &lt;fct&gt;                                                      [count]</span></span>
-<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;  1 1169957016 spectacledEider_USGS_ASC_argos                               61299</span></span>
-<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt;  2 1199929756 Spatial ecology of urban copperheads                          2031</span></span>
-<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;  3 1605798640 O_BALGZAND - Eurasian oystercatchers (Haem…                 165891</span></span>
-<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;  4 1605803389 O_AMELAND - Eurasian oystercatchers (Haema…                 216108</span></span>
-<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt;  5 1605797471 O_ASSEN - Eurasian oystercatchers (Haemato…                  20152</span></span>
-<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt;  6 1605799506 O_SCHIERMONNIKOOG - Eurasian oystercatcher…                 602380</span></span>
-<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;  7 1605802367 O_VLIELAND - Eurasian oystercatchers (Haem…                4908942</span></span>
-<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt;  8 1402467516 Black kites of different age and sex show …                 231193</span></span>
-<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt;  9    7249090 Peregrine Falcon, High Arctic Institute, n…                   3004</span></span>
-<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; 10  920008781 Ringed seals Igloolik                                         9519</span></span>
-<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 291 more rows</span></span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a><span class="co">#&gt; # A tibble: 326 × 3</span></span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a><span class="co">#&gt;            id name                                            number_of_deployed_l…¹</span></span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a><span class="co">#&gt;       &lt;int64&gt; &lt;fct&gt;                                                          [count]</span></span>
+<span id="cb11-7"><a href="#cb11-7" tabindex="-1"></a><span class="co">#&gt;  1 1169957016 spectacledEider_USGS_ASC_argos                                   61299</span></span>
+<span id="cb11-8"><a href="#cb11-8" tabindex="-1"></a><span class="co">#&gt;  2 1199929756 Spatial ecology of urban copperheads                              2031</span></span>
+<span id="cb11-9"><a href="#cb11-9" tabindex="-1"></a><span class="co">#&gt;  3 1605798640 O_BALGZAND - Eurasian oystercatchers (Haematop…                 165891</span></span>
+<span id="cb11-10"><a href="#cb11-10" tabindex="-1"></a><span class="co">#&gt;  4 1605803389 O_AMELAND - Eurasian oystercatchers (Haematopu…                 216108</span></span>
+<span id="cb11-11"><a href="#cb11-11" tabindex="-1"></a><span class="co">#&gt;  5 1605797471 O_ASSEN - Eurasian oystercatchers (Haematopus …                  20152</span></span>
+<span id="cb11-12"><a href="#cb11-12" tabindex="-1"></a><span class="co">#&gt;  6 1605799506 O_SCHIERMONNIKOOG - Eurasian oystercatchers (H…                 602380</span></span>
+<span id="cb11-13"><a href="#cb11-13" tabindex="-1"></a><span class="co">#&gt;  7 1605802367 O_VLIELAND - Eurasian oystercatchers (Haematop…                4908942</span></span>
+<span id="cb11-14"><a href="#cb11-14" tabindex="-1"></a><span class="co">#&gt;  8 1402467516 Black kites of different age and sex show simi…                 231193</span></span>
+<span id="cb11-15"><a href="#cb11-15" tabindex="-1"></a><span class="co">#&gt;  9    7249090 Peregrine Falcon, High Arctic Institute, north…                   3004</span></span>
+<span id="cb11-16"><a href="#cb11-16" tabindex="-1"></a><span class="co">#&gt; 10  920008781 Ringed seals Igloolik                                             9519</span></span>
+<span id="cb11-17"><a href="#cb11-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 316 more rows</span></span>
 <span id="cb11-18"><a href="#cb11-18" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated name: ¹​number_of_deployed_locations</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 0.78 [s] </font>
+<font size="-3">This code took: 0.712 [s] </font>
 </div>
 <p>A more quick way to retrieve the information is the following (the
 selection is performed on movebank and not all data is downloaded):</p>
 <div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">movebank_download_study_info</span>(<span class="at">license_type =</span> <span class="st">&quot;CC_0&quot;</span>)</span></code></pre></div>
 <p>By default all attributes are downloaded:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">movebank_download_study</span>(<span class="dv">2911040</span>, <span class="at">sensor_type_id =</span> <span class="st">&quot;gps&quot;</span>)</span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; `time_column` &quot;timestamp&quot;</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 3202499 secs in a</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and `time_column`</span></span>
+<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
+<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 37.1 days in a</span></span>
 <span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 16414 features and 18 fields (with 386 geometries empty)</span></span>
 <span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
 <span id="cb13-8"><a href="#cb13-8" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -91.3732 ymin: -12.79464 xmax: -77.51874 ymax: 0.1821983</span></span>
 <span id="cb13-9"><a href="#cb13-9" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
 <span id="cb13-10"><a href="#cb13-10" tabindex="-1"></a><span class="co">#&gt; # A tibble: 16,414 × 19</span></span>
-<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;   sensor_type_id individual_local_identifier eobs_battery_voltage</span></span>
-<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                                       [mV]</span></span>
-<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; 1            653 4264-84830852                               3686</span></span>
-<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; 2            653 4264-84830852                               3701</span></span>
-<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; 3            653 4264-84830852                               3701</span></span>
-<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; 4            653 4264-84830852                               3691</span></span>
-<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; 5            653 4264-84830852                               3691</span></span>
+<span id="cb13-11"><a href="#cb13-11" tabindex="-1"></a><span class="co">#&gt;   sensor_type_id individual_local_iden…¹ eobs_battery_voltage eobs_fix_battery_vol…²</span></span>
+<span id="cb13-12"><a href="#cb13-12" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                                   [mV]                   [mV]</span></span>
+<span id="cb13-13"><a href="#cb13-13" tabindex="-1"></a><span class="co">#&gt; 1            653 4264-84830852                           3686                   3437</span></span>
+<span id="cb13-14"><a href="#cb13-14" tabindex="-1"></a><span class="co">#&gt; 2            653 4264-84830852                           3701                   3452</span></span>
+<span id="cb13-15"><a href="#cb13-15" tabindex="-1"></a><span class="co">#&gt; 3            653 4264-84830852                           3701                   3482</span></span>
+<span id="cb13-16"><a href="#cb13-16" tabindex="-1"></a><span class="co">#&gt; 4            653 4264-84830852                           3691                   3476</span></span>
+<span id="cb13-17"><a href="#cb13-17" tabindex="-1"></a><span class="co">#&gt; 5            653 4264-84830852                           3691                   3541</span></span>
 <span id="cb13-18"><a href="#cb13-18" tabindex="-1"></a><span class="co">#&gt; # ℹ 16,409 more rows</span></span>
-<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; # ℹ 16 more variables: eobs_fix_battery_voltage [mV],</span></span>
-<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; #   eobs_horizontal_accuracy_estimate [m], eobs_key_bin_checksum &lt;int64&gt;,</span></span>
-<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt; #   eobs_speed_accuracy_estimate [m/s], eobs_start_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt; #   eobs_status &lt;ord&gt;, eobs_temperature [°C], eobs_type_of_fix &lt;fct&gt;,</span></span>
-<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt; #   eobs_used_time_to_get_fix [s], ground_speed [m/s], heading [°],</span></span>
-<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; #   height_above_ellipsoid [m], timestamp &lt;dttm&gt;, visible &lt;lgl&gt;, …</span></span>
-<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
-<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt; # A tibble: 28 × 52</span></span>
-<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt;   deployment_id  tag_id individual_id animal_life_stage attachment_type</span></span>
-<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt; &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;             &lt;fct&gt;          </span></span>
-<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="co">#&gt; 1       2911170 2911124       2911090 adult             tape           </span></span>
-<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="co">#&gt; 2       2911150 2911126       2911091 adult             tape           </span></span>
-<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="co">#&gt; 3       2911167 2911127       2911092 adult             tape           </span></span>
-<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt; 4       2911168 2911129       2911093 adult             tape           </span></span>
-<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="co">#&gt; 5       2911178 2911132       2911094 adult             tape           </span></span>
-<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co">#&gt; # ℹ 23 more rows</span></span>
-<span id="cb13-35"><a href="#cb13-35" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more variables: deployment_comments &lt;chr&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb13-36"><a href="#cb13-36" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;,</span></span>
-<span id="cb13-37"><a href="#cb13-37" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb13-38"><a href="#cb13-38" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb13-39"><a href="#cb13-39" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb13-40"><a href="#cb13-40" tabindex="-1"></a><span class="co">#&gt; #   individual_comments &lt;chr&gt;, individual_local_identifier &lt;fct&gt;, …</span></span></code></pre></div>
+<span id="cb13-19"><a href="#cb13-19" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated names: ¹​individual_local_identifier, ²​eobs_fix_battery_voltage</span></span>
+<span id="cb13-20"><a href="#cb13-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 15 more variables: eobs_horizontal_accuracy_estimate [m],</span></span>
+<span id="cb13-21"><a href="#cb13-21" tabindex="-1"></a><span class="co">#&gt; #   eobs_key_bin_checksum &lt;int64&gt;, eobs_speed_accuracy_estimate [m/s],</span></span>
+<span id="cb13-22"><a href="#cb13-22" tabindex="-1"></a><span class="co">#&gt; #   eobs_start_timestamp &lt;dttm&gt;, eobs_status &lt;ord&gt;, …</span></span>
+<span id="cb13-23"><a href="#cb13-23" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
+<span id="cb13-24"><a href="#cb13-24" tabindex="-1"></a><span class="co">#&gt; # A tibble: 28 × 52</span></span>
+<span id="cb13-25"><a href="#cb13-25" tabindex="-1"></a><span class="co">#&gt;   deployment_id  tag_id individual_id animal_life_stage attachment_type</span></span>
+<span id="cb13-26"><a href="#cb13-26" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt; &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;             &lt;fct&gt;          </span></span>
+<span id="cb13-27"><a href="#cb13-27" tabindex="-1"></a><span class="co">#&gt; 1       2911170 2911124       2911090 adult             tape           </span></span>
+<span id="cb13-28"><a href="#cb13-28" tabindex="-1"></a><span class="co">#&gt; 2       2911150 2911126       2911091 adult             tape           </span></span>
+<span id="cb13-29"><a href="#cb13-29" tabindex="-1"></a><span class="co">#&gt; 3       2911167 2911127       2911092 adult             tape           </span></span>
+<span id="cb13-30"><a href="#cb13-30" tabindex="-1"></a><span class="co">#&gt; 4       2911168 2911129       2911093 adult             tape           </span></span>
+<span id="cb13-31"><a href="#cb13-31" tabindex="-1"></a><span class="co">#&gt; 5       2911178 2911132       2911094 adult             tape           </span></span>
+<span id="cb13-32"><a href="#cb13-32" tabindex="-1"></a><span class="co">#&gt; # ℹ 23 more rows</span></span>
+<span id="cb13-33"><a href="#cb13-33" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more variables: deployment_comments &lt;chr&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
+<span id="cb13-34"><a href="#cb13-34" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;, manipulation_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 4.07 [s] </font>
+<font size="-3">This code took: 3.93 [s] </font>
 </div>
 <p>For speed of download you might want to add the argument
 <code>attributes = NULL</code> as it reduces the columns to download to
 the bare minimum. Note still all individual attributes are downloaded as
 this does not take much time.</p>
 <div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">movebank_download_study</span>(<span class="dv">1259686571</span>, <span class="at">sensor_type_id =</span> <span class="st">&quot;gps&quot;</span>, <span class="at">attributes =</span> <span class="cn">NULL</span>)</span>
-<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; ℹ In total 293323 records were omitted as they were not deployed (the</span></span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a><span class="co">#&gt; ℹ In total 299228 records were omitted as they were not deployed (the</span></span>
 <span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a><span class="co">#&gt;   `deployment_id` was `NA`).</span></span>
 <span id="cb14-4"><a href="#cb14-4" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;deployment_id&quot; and `time_column` &quot;timestamp&quot;</span></span>
-<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; Containing 92 tracks lasting on average 11637519 secs in a</span></span>
-<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 809090 features and 2 fields</span></span>
+<span id="cb14-5"><a href="#cb14-5" tabindex="-1"></a><span class="co">#&gt; Containing 92 tracks lasting on average 146 days in a</span></span>
+<span id="cb14-6"><a href="#cb14-6" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 845865 features and 2 fields</span></span>
 <span id="cb14-7"><a href="#cb14-7" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb14-8"><a href="#cb14-8" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
 <span id="cb14-9"><a href="#cb14-9" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -9.097052 ymin: 34.82506 xmax: 10.34339 ymax: 52.88891</span></span>
 <span id="cb14-10"><a href="#cb14-10" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
-<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; # A tibble: 809,090 × 3</span></span>
+<span id="cb14-11"><a href="#cb14-11" tabindex="-1"></a><span class="co">#&gt; # A tibble: 845,865 × 3</span></span>
 <span id="cb14-12"><a href="#cb14-12" tabindex="-1"></a><span class="co">#&gt;   deployment_id timestamp                      geometry</span></span>
 <span id="cb14-13"><a href="#cb14-13" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt; &lt;dttm&gt;                      &lt;POINT [°]&gt;</span></span>
 <span id="cb14-14"><a href="#cb14-14" tabindex="-1"></a><span class="co">#&gt; 1    3029108353 2021-08-19 21:16:35  (2.84631 51.19662)</span></span>
@@ -519,25 +513,22 @@ this does not take much time.</p>
 <span id="cb14-16"><a href="#cb14-16" tabindex="-1"></a><span class="co">#&gt; 3    3029108353 2021-08-20 21:16:29 (2.847637 51.20317)</span></span>
 <span id="cb14-17"><a href="#cb14-17" tabindex="-1"></a><span class="co">#&gt; 4    3029108353 2021-08-21 09:16:35 (2.849055 51.20314)</span></span>
 <span id="cb14-18"><a href="#cb14-18" tabindex="-1"></a><span class="co">#&gt; 5    3029108353 2021-08-21 21:16:35  (2.846533 51.2034)</span></span>
-<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; # ℹ 809,085 more rows</span></span>
+<span id="cb14-19"><a href="#cb14-19" tabindex="-1"></a><span class="co">#&gt; # ℹ 845,860 more rows</span></span>
 <span id="cb14-20"><a href="#cb14-20" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
 <span id="cb14-21"><a href="#cb14-21" tabindex="-1"></a><span class="co">#&gt; # A tibble: 92 × 56</span></span>
-<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt;   deployment_id     tag_id individual_id alt_project_id animal_life_stage</span></span>
-<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt;    &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;          &lt;fct&gt;            </span></span>
-<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; 1    3029108356 3029107937    3029107890 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; 2    3029108353 3029107972    3029107816 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; 3    3029108347 3029107959    3029107819 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; 4    3029108346 3029107996    3029107822 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt; 5    3029108345 3029107925    3029107891 LBBG_JUVENILE  juvenile         </span></span>
+<span id="cb14-22"><a href="#cb14-22" tabindex="-1"></a><span class="co">#&gt;   deployment_id    tag_id individual_id alt_project_id animal_life_stage animal_mass</span></span>
+<span id="cb14-23"><a href="#cb14-23" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt;   &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;          &lt;fct&gt;                     [g]</span></span>
+<span id="cb14-24"><a href="#cb14-24" tabindex="-1"></a><span class="co">#&gt; 1    3029108356       3e9    3029107890 LBBG_JUVENILE  juvenile                  693</span></span>
+<span id="cb14-25"><a href="#cb14-25" tabindex="-1"></a><span class="co">#&gt; 2    3029108353       3e9    3029107816 LBBG_JUVENILE  juvenile                   NA</span></span>
+<span id="cb14-26"><a href="#cb14-26" tabindex="-1"></a><span class="co">#&gt; 3    3029108347       3e9    3029107819 LBBG_JUVENILE  juvenile                  883</span></span>
+<span id="cb14-27"><a href="#cb14-27" tabindex="-1"></a><span class="co">#&gt; 4    3029108346       3e9    3029107822 LBBG_JUVENILE  juvenile                  726</span></span>
+<span id="cb14-28"><a href="#cb14-28" tabindex="-1"></a><span class="co">#&gt; 5    3029108345       3e9    3029107891 LBBG_JUVENILE  juvenile                  816</span></span>
 <span id="cb14-29"><a href="#cb14-29" tabindex="-1"></a><span class="co">#&gt; # ℹ 87 more rows</span></span>
-<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; # ℹ 51 more variables: animal_mass [g], attachment_type &lt;fct&gt;,</span></span>
-<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; #   deployment_comments &lt;chr&gt;, deploy_off_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_timestamp &lt;dttm&gt;, deployment_end_type &lt;fct&gt;,</span></span>
-<span id="cb14-33"><a href="#cb14-33" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb14-34"><a href="#cb14-34" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb14-35"><a href="#cb14-35" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;, …</span></span></code></pre></div>
+<span id="cb14-30"><a href="#cb14-30" tabindex="-1"></a><span class="co">#&gt; # ℹ 50 more variables: attachment_type &lt;fct&gt;, deployment_comments &lt;chr&gt;,</span></span>
+<span id="cb14-31"><a href="#cb14-31" tabindex="-1"></a><span class="co">#&gt; #   deploy_off_timestamp &lt;dttm&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
+<span id="cb14-32"><a href="#cb14-32" tabindex="-1"></a><span class="co">#&gt; #   deployment_end_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 30.4 [s] </font>
+<font size="-3">This code took: 26.2 [s] </font>
 </div>
 <p>If only specific attributes want to be download you can state them in
 the argument <code>attributes</code>. The available attributes vary
@@ -567,7 +558,7 @@ sensor at a time can be stated.</p>
 <span id="cb15-21"><a href="#cb15-21" tabindex="-1"></a>  )</span>
 <span id="cb15-22"><a href="#cb15-22" tabindex="-1"></a>)</span>
 <span id="cb15-23"><a href="#cb15-23" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;deployment_id&quot; and `time_column` &quot;timestamp&quot;</span></span>
-<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 3202499 secs in a</span></span>
+<span id="cb15-24"><a href="#cb15-24" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 37.1 days in a</span></span>
 <span id="cb15-25"><a href="#cb15-25" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 16414 features and 4 fields (with 386 geometries empty)</span></span>
 <span id="cb15-26"><a href="#cb15-26" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb15-27"><a href="#cb15-27" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
@@ -594,59 +585,49 @@ sensor at a time can be stated.</p>
 <span id="cb15-48"><a href="#cb15-48" tabindex="-1"></a><span class="co">#&gt; 5       2911178 2911132       2911094 adult             tape           </span></span>
 <span id="cb15-49"><a href="#cb15-49" tabindex="-1"></a><span class="co">#&gt; # ℹ 23 more rows</span></span>
 <span id="cb15-50"><a href="#cb15-50" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more variables: deployment_comments &lt;chr&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb15-51"><a href="#cb15-51" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;,</span></span>
-<span id="cb15-52"><a href="#cb15-52" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb15-53"><a href="#cb15-53" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb15-54"><a href="#cb15-54" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb15-55"><a href="#cb15-55" tabindex="-1"></a><span class="co">#&gt; #   individual_comments &lt;chr&gt;, individual_local_identifier &lt;fct&gt;, …</span></span></code></pre></div>
+<span id="cb15-51"><a href="#cb15-51" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;, manipulation_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 4.32 [s] </font>
+<font size="-3">This code took: 3.92 [s] </font>
 </div>
 <p>Only load gps records:</p>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">movebank_download_study</span>(<span class="dv">1259686571</span>, <span class="at">sensor_type_id =</span> <span class="dv">653</span>)</span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt; ℹ In total 293323 records were omitted as they were not deployed (the</span></span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a><span class="co">#&gt; ℹ In total 299228 records were omitted as they were not deployed (the</span></span>
 <span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a><span class="co">#&gt;   `deployment_id` was `NA`).</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and</span></span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; `time_column` &quot;timestamp&quot;</span></span>
-<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; Containing 92 tracks lasting on average 11637519 secs in a</span></span>
-<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 809090 features and 25 fields</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and `time_column`</span></span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a><span class="co">#&gt; Containing 92 tracks lasting on average 146 days in a</span></span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 845865 features and 25 fields</span></span>
 <span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
 <span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -9.097052 ymin: 34.82506 xmax: 10.34339 ymax: 52.88891</span></span>
 <span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
-<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 809,090 × 26</span></span>
-<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt;   sensor_type_id individual_local_identi…¹ acceleration_raw_x acceleration_raw_y</span></span>
-<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                                  &lt;dbl&gt;              &lt;dbl&gt;</span></span>
-<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="co">#&gt; 1            653 H911406                                  177                 60</span></span>
-<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="co">#&gt; 2            653 H911406                                  283               -262</span></span>
-<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="co">#&gt; 3            653 H911406                                  278                574</span></span>
-<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a><span class="co">#&gt; 4            653 H911406                                  506                -32</span></span>
-<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a><span class="co">#&gt; 5            653 H911406                                  467               -222</span></span>
-<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 809,085 more rows</span></span>
-<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated name: ¹​individual_local_identifier</span></span>
-<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a><span class="co">#&gt; # ℹ 22 more variables: acceleration_raw_z &lt;dbl&gt;, barometric_height [m],</span></span>
-<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a><span class="co">#&gt; #   battery_charge_percent [%], battery_charging_current [mA],</span></span>
-<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a><span class="co">#&gt; #   external_temperature [°C], gps_hdop [1], gps_satellite_count [count],</span></span>
-<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a><span class="co">#&gt; #   gps_time_to_fix [s], ground_speed [m/s], heading [°], height_above_msl [m],</span></span>
-<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a><span class="co">#&gt; #   import_marked_outlier &lt;lgl&gt;, light_level &lt;dbl&gt;, …</span></span>
-<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
-<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a><span class="co">#&gt; # A tibble: 92 × 56</span></span>
-<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a><span class="co">#&gt;   deployment_id     tag_id individual_id alt_project_id animal_life_stage</span></span>
-<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt;    &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;          &lt;fct&gt;            </span></span>
-<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a><span class="co">#&gt; 1    3029108356 3029107937    3029107890 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a><span class="co">#&gt; 2    3029108353 3029107972    3029107816 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a><span class="co">#&gt; 3    3029108347 3029107959    3029107819 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a><span class="co">#&gt; 4    3029108346 3029107996    3029107822 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb16-35"><a href="#cb16-35" tabindex="-1"></a><span class="co">#&gt; 5    3029108345 3029107925    3029107891 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a><span class="co">#&gt; # ℹ 87 more rows</span></span>
-<span id="cb16-37"><a href="#cb16-37" tabindex="-1"></a><span class="co">#&gt; # ℹ 51 more variables: animal_mass [g], attachment_type &lt;fct&gt;,</span></span>
-<span id="cb16-38"><a href="#cb16-38" tabindex="-1"></a><span class="co">#&gt; #   deployment_comments &lt;chr&gt;, deploy_off_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb16-39"><a href="#cb16-39" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_timestamp &lt;dttm&gt;, deployment_end_type &lt;fct&gt;,</span></span>
-<span id="cb16-40"><a href="#cb16-40" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb16-41"><a href="#cb16-41" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb16-42"><a href="#cb16-42" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;, …</span></span></code></pre></div>
+<span id="cb16-12"><a href="#cb16-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 845,865 × 26</span></span>
+<span id="cb16-13"><a href="#cb16-13" tabindex="-1"></a><span class="co">#&gt;   sensor_type_id individual_local_identifier acceleration_raw_x acceleration_raw_y</span></span>
+<span id="cb16-14"><a href="#cb16-14" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                                    &lt;dbl&gt;              &lt;dbl&gt;</span></span>
+<span id="cb16-15"><a href="#cb16-15" tabindex="-1"></a><span class="co">#&gt; 1            653 H911406                                    177                 60</span></span>
+<span id="cb16-16"><a href="#cb16-16" tabindex="-1"></a><span class="co">#&gt; 2            653 H911406                                    283               -262</span></span>
+<span id="cb16-17"><a href="#cb16-17" tabindex="-1"></a><span class="co">#&gt; 3            653 H911406                                    278                574</span></span>
+<span id="cb16-18"><a href="#cb16-18" tabindex="-1"></a><span class="co">#&gt; 4            653 H911406                                    506                -32</span></span>
+<span id="cb16-19"><a href="#cb16-19" tabindex="-1"></a><span class="co">#&gt; 5            653 H911406                                    467               -222</span></span>
+<span id="cb16-20"><a href="#cb16-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 845,860 more rows</span></span>
+<span id="cb16-21"><a href="#cb16-21" tabindex="-1"></a><span class="co">#&gt; # ℹ 22 more variables: acceleration_raw_z &lt;dbl&gt;, barometric_height [m],</span></span>
+<span id="cb16-22"><a href="#cb16-22" tabindex="-1"></a><span class="co">#&gt; #   battery_charge_percent [%], battery_charging_current [mA],</span></span>
+<span id="cb16-23"><a href="#cb16-23" tabindex="-1"></a><span class="co">#&gt; #   external_temperature [°C], …</span></span>
+<span id="cb16-24"><a href="#cb16-24" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
+<span id="cb16-25"><a href="#cb16-25" tabindex="-1"></a><span class="co">#&gt; # A tibble: 92 × 56</span></span>
+<span id="cb16-26"><a href="#cb16-26" tabindex="-1"></a><span class="co">#&gt;   deployment_id    tag_id individual_id alt_project_id animal_life_stage animal_mass</span></span>
+<span id="cb16-27"><a href="#cb16-27" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt;   &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;          &lt;fct&gt;                     [g]</span></span>
+<span id="cb16-28"><a href="#cb16-28" tabindex="-1"></a><span class="co">#&gt; 1    3029108356       3e9    3029107890 LBBG_JUVENILE  juvenile                  693</span></span>
+<span id="cb16-29"><a href="#cb16-29" tabindex="-1"></a><span class="co">#&gt; 2    3029108353       3e9    3029107816 LBBG_JUVENILE  juvenile                   NA</span></span>
+<span id="cb16-30"><a href="#cb16-30" tabindex="-1"></a><span class="co">#&gt; 3    3029108347       3e9    3029107819 LBBG_JUVENILE  juvenile                  883</span></span>
+<span id="cb16-31"><a href="#cb16-31" tabindex="-1"></a><span class="co">#&gt; 4    3029108346       3e9    3029107822 LBBG_JUVENILE  juvenile                  726</span></span>
+<span id="cb16-32"><a href="#cb16-32" tabindex="-1"></a><span class="co">#&gt; 5    3029108345       3e9    3029107891 LBBG_JUVENILE  juvenile                  816</span></span>
+<span id="cb16-33"><a href="#cb16-33" tabindex="-1"></a><span class="co">#&gt; # ℹ 87 more rows</span></span>
+<span id="cb16-34"><a href="#cb16-34" tabindex="-1"></a><span class="co">#&gt; # ℹ 50 more variables: attachment_type &lt;fct&gt;, deployment_comments &lt;chr&gt;,</span></span>
+<span id="cb16-35"><a href="#cb16-35" tabindex="-1"></a><span class="co">#&gt; #   deploy_off_timestamp &lt;dttm&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
+<span id="cb16-36"><a href="#cb16-36" tabindex="-1"></a><span class="co">#&gt; #   deployment_end_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 53.6 [s] </font>
+<font size="-3">This code took: 1.05 [min] </font>
 </div>
 <p>Note that the <code>sensor_type_id</code> can either be specified
 either of an <code>integer</code> or <code>character</code> with
@@ -654,9 +635,9 @@ respectively the id or name of the sensor. In some cases additional data
 is added is downloaded if a specific sensor is selected. For example the
 column <code>eobs_acceleration_raw</code>:</p>
 <div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">movebank_download_study</span>(<span class="dv">2911040</span>, <span class="at">sensor_type_id =</span> <span class="st">&quot;acceleration&quot;</span>)</span>
-<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and</span></span>
-<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; `time_column` &quot;timestamp&quot;</span></span>
-<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 3206632 secs in a</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and `time_column`</span></span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 37.1 days in a</span></span>
 <span id="cb17-5"><a href="#cb17-5" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 98515 features and 10 fields (with 98515 geometries empty)</span></span>
 <span id="cb17-6"><a href="#cb17-6" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb17-7"><a href="#cb17-7" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
@@ -673,26 +654,21 @@ column <code>eobs_acceleration_raw</code>:</p>
 <span id="cb17-18"><a href="#cb17-18" tabindex="-1"></a><span class="co">#&gt; # ℹ 98,510 more rows</span></span>
 <span id="cb17-19"><a href="#cb17-19" tabindex="-1"></a><span class="co">#&gt; # ℹ 8 more variables: eobs_acceleration_sampling_frequency_per_axis [Hz],</span></span>
 <span id="cb17-20"><a href="#cb17-20" tabindex="-1"></a><span class="co">#&gt; #   eobs_accelerations_raw &lt;chr&gt;, eobs_key_bin_checksum &lt;int64&gt;,</span></span>
-<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="co">#&gt; #   eobs_start_timestamp &lt;dttm&gt;, timestamp &lt;dttm&gt;, visible &lt;lgl&gt;,</span></span>
-<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="co">#&gt; #   event_id &lt;int64&gt;, geometry &lt;POINT [°]&gt;</span></span>
-<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
-<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a><span class="co">#&gt; # A tibble: 28 × 52</span></span>
-<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt;   deployment_id  tag_id individual_id animal_life_stage attachment_type</span></span>
-<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt; &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;             &lt;fct&gt;          </span></span>
-<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt; 1       2911170 2911124       2911090 adult             tape           </span></span>
-<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="co">#&gt; 2       2911150 2911126       2911091 adult             tape           </span></span>
-<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a><span class="co">#&gt; 3       2911167 2911127       2911092 adult             tape           </span></span>
-<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a><span class="co">#&gt; 4       2911168 2911129       2911093 adult             tape           </span></span>
-<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a><span class="co">#&gt; 5       2911178 2911132       2911094 adult             tape           </span></span>
-<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a><span class="co">#&gt; # ℹ 23 more rows</span></span>
-<span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more variables: deployment_comments &lt;chr&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb17-34"><a href="#cb17-34" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;,</span></span>
-<span id="cb17-35"><a href="#cb17-35" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb17-36"><a href="#cb17-36" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb17-37"><a href="#cb17-37" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb17-38"><a href="#cb17-38" tabindex="-1"></a><span class="co">#&gt; #   individual_comments &lt;chr&gt;, individual_local_identifier &lt;fct&gt;, …</span></span></code></pre></div>
+<span id="cb17-21"><a href="#cb17-21" tabindex="-1"></a><span class="co">#&gt; #   eobs_start_timestamp &lt;dttm&gt;, timestamp &lt;dttm&gt;, …</span></span>
+<span id="cb17-22"><a href="#cb17-22" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
+<span id="cb17-23"><a href="#cb17-23" tabindex="-1"></a><span class="co">#&gt; # A tibble: 28 × 52</span></span>
+<span id="cb17-24"><a href="#cb17-24" tabindex="-1"></a><span class="co">#&gt;   deployment_id  tag_id individual_id animal_life_stage attachment_type</span></span>
+<span id="cb17-25"><a href="#cb17-25" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt; &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;             &lt;fct&gt;          </span></span>
+<span id="cb17-26"><a href="#cb17-26" tabindex="-1"></a><span class="co">#&gt; 1       2911170 2911124       2911090 adult             tape           </span></span>
+<span id="cb17-27"><a href="#cb17-27" tabindex="-1"></a><span class="co">#&gt; 2       2911150 2911126       2911091 adult             tape           </span></span>
+<span id="cb17-28"><a href="#cb17-28" tabindex="-1"></a><span class="co">#&gt; 3       2911167 2911127       2911092 adult             tape           </span></span>
+<span id="cb17-29"><a href="#cb17-29" tabindex="-1"></a><span class="co">#&gt; 4       2911168 2911129       2911093 adult             tape           </span></span>
+<span id="cb17-30"><a href="#cb17-30" tabindex="-1"></a><span class="co">#&gt; 5       2911178 2911132       2911094 adult             tape           </span></span>
+<span id="cb17-31"><a href="#cb17-31" tabindex="-1"></a><span class="co">#&gt; # ℹ 23 more rows</span></span>
+<span id="cb17-32"><a href="#cb17-32" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more variables: deployment_comments &lt;chr&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
+<span id="cb17-33"><a href="#cb17-33" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;, manipulation_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 11.2 [s] </font>
+<font size="-3">This code took: 9.51 [s] </font>
 </div>
 <p>The following list of sensors is available:</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">movebank_retrieve</span>(</span>
@@ -721,10 +697,10 @@ study or a timestamp as a <code>POSIXct</code>:</p>
 <span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>  <span class="at">timestamp_start =</span> <span class="fu">as.POSIXct</span>(<span class="st">&quot;2021-02-03 00:00:00&quot;</span>),</span>
 <span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>  <span class="at">timestamp_end =</span> <span class="fu">as.POSIXct</span>(<span class="st">&quot;2021-03-03 00:00:00&quot;</span>)</span>
 <span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>)</span>
-<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co">#&gt; ℹ In total 7001 records were omitted as they were not deployed (the</span></span>
-<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co">#&gt;   `deployment_id` was `NA`).</span></span>
-<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and</span></span>
-<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="co">#&gt; `time_column` &quot;timestamp&quot;</span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a><span class="co">#&gt; ℹ In total 7001 records were omitted as they were not deployed (the `deployment_id`</span></span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a><span class="co">#&gt;   was `NA`).</span></span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and `time_column`</span></span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
 <span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a><span class="co">#&gt; Containing 6 tracks lasting on average 20.3 days in a</span></span>
 <span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 8763 features and 25 fields</span></span>
 <span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
@@ -732,38 +708,32 @@ study or a timestamp as a <code>POSIXct</code>:</p>
 <span id="cb19-14"><a href="#cb19-14" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -7.169092 ymin: 35.18931 xmax: 3.229445 ymax: 49.06081</span></span>
 <span id="cb19-15"><a href="#cb19-15" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
 <span id="cb19-16"><a href="#cb19-16" tabindex="-1"></a><span class="co">#&gt; # A tibble: 8,763 × 26</span></span>
-<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co">#&gt;   sensor_type_id individual_local_identi…¹ acceleration_raw_x acceleration_raw_y</span></span>
-<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                                  &lt;dbl&gt;              &lt;dbl&gt;</span></span>
-<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a><span class="co">#&gt; 1            653 L930074                                  313                -18</span></span>
-<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a><span class="co">#&gt; 2            653 L930074                                  308                -18</span></span>
-<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a><span class="co">#&gt; 3            653 L930074                                  310                -18</span></span>
-<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a><span class="co">#&gt; 4            653 L930074                                  314                -17</span></span>
-<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a><span class="co">#&gt; 5            653 L930074                                  312                -18</span></span>
+<span id="cb19-17"><a href="#cb19-17" tabindex="-1"></a><span class="co">#&gt;   sensor_type_id individual_local_identifier acceleration_raw_x acceleration_raw_y</span></span>
+<span id="cb19-18"><a href="#cb19-18" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt; &lt;fct&gt;                                    &lt;dbl&gt;              &lt;dbl&gt;</span></span>
+<span id="cb19-19"><a href="#cb19-19" tabindex="-1"></a><span class="co">#&gt; 1            653 L930074                                    313                -18</span></span>
+<span id="cb19-20"><a href="#cb19-20" tabindex="-1"></a><span class="co">#&gt; 2            653 L930074                                    308                -18</span></span>
+<span id="cb19-21"><a href="#cb19-21" tabindex="-1"></a><span class="co">#&gt; 3            653 L930074                                    310                -18</span></span>
+<span id="cb19-22"><a href="#cb19-22" tabindex="-1"></a><span class="co">#&gt; 4            653 L930074                                    314                -17</span></span>
+<span id="cb19-23"><a href="#cb19-23" tabindex="-1"></a><span class="co">#&gt; 5            653 L930074                                    312                -18</span></span>
 <span id="cb19-24"><a href="#cb19-24" tabindex="-1"></a><span class="co">#&gt; # ℹ 8,758 more rows</span></span>
-<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated name: ¹​individual_local_identifier</span></span>
-<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a><span class="co">#&gt; # ℹ 22 more variables: acceleration_raw_z &lt;dbl&gt;, barometric_height [m],</span></span>
-<span id="cb19-27"><a href="#cb19-27" tabindex="-1"></a><span class="co">#&gt; #   battery_charge_percent [%], battery_charging_current [mA],</span></span>
-<span id="cb19-28"><a href="#cb19-28" tabindex="-1"></a><span class="co">#&gt; #   external_temperature [°C], gps_hdop [1], gps_satellite_count [count],</span></span>
-<span id="cb19-29"><a href="#cb19-29" tabindex="-1"></a><span class="co">#&gt; #   gps_time_to_fix [s], ground_speed [m/s], heading [°], height_above_msl [m],</span></span>
-<span id="cb19-30"><a href="#cb19-30" tabindex="-1"></a><span class="co">#&gt; #   import_marked_outlier &lt;lgl&gt;, light_level &lt;dbl&gt;, …</span></span>
-<span id="cb19-31"><a href="#cb19-31" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
-<span id="cb19-32"><a href="#cb19-32" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 56</span></span>
-<span id="cb19-33"><a href="#cb19-33" tabindex="-1"></a><span class="co">#&gt;   deployment_id     tag_id individual_id alt_project_id animal_life_stage</span></span>
-<span id="cb19-34"><a href="#cb19-34" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt;    &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;          &lt;fct&gt;            </span></span>
-<span id="cb19-35"><a href="#cb19-35" tabindex="-1"></a><span class="co">#&gt; 1    3029108271 3029107922    3029107866 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb19-36"><a href="#cb19-36" tabindex="-1"></a><span class="co">#&gt; 2    3029108241 3029107929    3029107889 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb19-37"><a href="#cb19-37" tabindex="-1"></a><span class="co">#&gt; 3    3029108205 3029107957    3029107883 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb19-38"><a href="#cb19-38" tabindex="-1"></a><span class="co">#&gt; 4    3029108176 3029107945    3029107876 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb19-39"><a href="#cb19-39" tabindex="-1"></a><span class="co">#&gt; 5    3029108161 3029107941    3029107863 LBBG_JUVENILE  juvenile         </span></span>
-<span id="cb19-40"><a href="#cb19-40" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more row</span></span>
-<span id="cb19-41"><a href="#cb19-41" tabindex="-1"></a><span class="co">#&gt; # ℹ 51 more variables: animal_mass [g], attachment_type &lt;fct&gt;,</span></span>
-<span id="cb19-42"><a href="#cb19-42" tabindex="-1"></a><span class="co">#&gt; #   deployment_comments &lt;chr&gt;, deploy_off_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb19-43"><a href="#cb19-43" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_timestamp &lt;dttm&gt;, deployment_end_type &lt;fct&gt;,</span></span>
-<span id="cb19-44"><a href="#cb19-44" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb19-45"><a href="#cb19-45" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb19-46"><a href="#cb19-46" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;, …</span></span></code></pre></div>
+<span id="cb19-25"><a href="#cb19-25" tabindex="-1"></a><span class="co">#&gt; # ℹ 22 more variables: acceleration_raw_z &lt;dbl&gt;, barometric_height [m],</span></span>
+<span id="cb19-26"><a href="#cb19-26" tabindex="-1"></a><span class="co">#&gt; #   battery_charge_percent [%], battery_charging_current [mA],</span></span>
+<span id="cb19-27"><a href="#cb19-27" tabindex="-1"></a><span class="co">#&gt; #   external_temperature [°C], …</span></span>
+<span id="cb19-28"><a href="#cb19-28" tabindex="-1"></a><span class="co">#&gt; First 5 track features:</span></span>
+<span id="cb19-29"><a href="#cb19-29" tabindex="-1"></a><span class="co">#&gt; # A tibble: 6 × 56</span></span>
+<span id="cb19-30"><a href="#cb19-30" tabindex="-1"></a><span class="co">#&gt;   deployment_id    tag_id individual_id alt_project_id animal_life_stage animal_mass</span></span>
+<span id="cb19-31"><a href="#cb19-31" tabindex="-1"></a><span class="co">#&gt;         &lt;int64&gt;   &lt;int64&gt;       &lt;int64&gt; &lt;fct&gt;          &lt;fct&gt;                     [g]</span></span>
+<span id="cb19-32"><a href="#cb19-32" tabindex="-1"></a><span class="co">#&gt; 1    3029108271       3e9    3029107866 LBBG_JUVENILE  juvenile                  661</span></span>
+<span id="cb19-33"><a href="#cb19-33" tabindex="-1"></a><span class="co">#&gt; 2    3029108241       3e9    3029107889 LBBG_JUVENILE  juvenile                  885</span></span>
+<span id="cb19-34"><a href="#cb19-34" tabindex="-1"></a><span class="co">#&gt; 3    3029108205       3e9    3029107883 LBBG_JUVENILE  juvenile                  738</span></span>
+<span id="cb19-35"><a href="#cb19-35" tabindex="-1"></a><span class="co">#&gt; 4    3029108176       3e9    3029107876 LBBG_JUVENILE  juvenile                  711</span></span>
+<span id="cb19-36"><a href="#cb19-36" tabindex="-1"></a><span class="co">#&gt; 5    3029108161       3e9    3029107863 LBBG_JUVENILE  juvenile                  841</span></span>
+<span id="cb19-37"><a href="#cb19-37" tabindex="-1"></a><span class="co">#&gt; # ℹ 1 more row</span></span>
+<span id="cb19-38"><a href="#cb19-38" tabindex="-1"></a><span class="co">#&gt; # ℹ 50 more variables: attachment_type &lt;fct&gt;, deployment_comments &lt;chr&gt;,</span></span>
+<span id="cb19-39"><a href="#cb19-39" tabindex="-1"></a><span class="co">#&gt; #   deploy_off_timestamp &lt;dttm&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
+<span id="cb19-40"><a href="#cb19-40" tabindex="-1"></a><span class="co">#&gt; #   deployment_end_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 6.2 [s] </font>
+<font size="-3">This code took: 5.77 [s] </font>
 </div>
 </div>
 <div id="deployments" class="section level1">
@@ -786,13 +756,9 @@ study or a timestamp as a <code>POSIXct</code>:</p>
 <span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a><span class="co">#&gt; 10       9472222 2911134       2911065 adult             tape           </span></span>
 <span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a><span class="co">#&gt; # ℹ 18 more rows</span></span>
 <span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 21 more variables: deployment_comments &lt;chr&gt;, deploy_on_timestamp &lt;dttm&gt;,</span></span>
-<span id="cb20-17"><a href="#cb20-17" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;,</span></span>
-<span id="cb20-18"><a href="#cb20-18" tabindex="-1"></a><span class="co">#&gt; #   manipulation_type &lt;fct&gt;, study_site &lt;chr&gt;, tag_readout_method &lt;fct&gt;,</span></span>
-<span id="cb20-19"><a href="#cb20-19" tabindex="-1"></a><span class="co">#&gt; #   sensor_type_ids &lt;chr&gt;, capture_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb20-20"><a href="#cb20-20" tabindex="-1"></a><span class="co">#&gt; #   deploy_on_location &lt;POINT [°]&gt;, deploy_off_location &lt;POINT [°]&gt;,</span></span>
-<span id="cb20-21"><a href="#cb20-21" tabindex="-1"></a><span class="co">#&gt; #   individual_comments &lt;chr&gt;, individual_local_identifier &lt;fct&gt;, …</span></span></code></pre></div>
+<span id="cb20-17"><a href="#cb20-17" tabindex="-1"></a><span class="co">#&gt; #   duty_cycle &lt;chr&gt;, deployment_local_identifier &lt;fct&gt;, manipulation_type &lt;fct&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 3.97 [s] </font>
+<font size="-3">This code took: 4.1 [s] </font>
 </div>
 </div>
 <div id="advanced-usage" class="section level1">
@@ -804,6 +770,8 @@ type you would like to retrieve information for (e.g. <code>tag</code>
 or <code>event</code>). Other arguments make it possible to select, a
 study id is always required. For more details how to use the api see the
 <a href="https://github.com/movebank/movebank-api-doc/blob/master/movebank-api.md">documentation</a>.</p>
+<div id="downloading-undeployed-data" class="section level2">
+<h2>Downloading undeployed data</h2>
 <p>One common reason to use this options is to retrieve undeployed
 locations. In some cases a set of locations is collected before the tag
 attached to the animal for quality control or error measurements. The
@@ -812,34 +780,36 @@ Filtering for locations where the <code>deployment_id</code> is
 <code>NA</code>, returns those locations that were collected while the
 tag was not deployed. The <code>timestamp_start</code> and
 <code>timestamp_end</code> might be good argument to filter down the
-data even more in the call to <code>movebank_retrieve</code>.</p>
+data even more in the call to <code>movebank_retrieve</code>. By
+omitting the argument <code>tag_local_identifier</code> the entire study
+can downloaded. With the argument <code>sensor_type_id</code> the
+sensors can be specified.</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">movebank_retrieve</span>(<span class="st">&quot;event&quot;</span>,</span>
 <span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>  <span class="at">study_id =</span> <span class="dv">1259686571</span>,</span>
 <span id="cb21-3"><a href="#cb21-3" tabindex="-1"></a>  <span class="at">tag_local_identifier =</span> <span class="st">&quot;193967&quot;</span>, <span class="at">attributes =</span> <span class="st">&quot;all&quot;</span></span>
 <span id="cb21-4"><a href="#cb21-4" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
 <span id="cb21-5"><a href="#cb21-5" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.na</span>(deployment_id))</span>
 <span id="cb21-6"><a href="#cb21-6" tabindex="-1"></a><span class="co">#&gt; # A tibble: 57 × 33</span></span>
-<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co">#&gt;    individual_id deployment_id     tag_id   study_id sensor_type_id</span></span>
-<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt;       &lt;int64&gt;    &lt;int64&gt;    &lt;int64&gt;        &lt;int64&gt;</span></span>
-<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="co">#&gt;  1            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="co">#&gt;  2            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="co">#&gt;  3            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="co">#&gt;  4            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a><span class="co">#&gt;  5            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a><span class="co">#&gt;  6            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a><span class="co">#&gt;  7            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a><span class="co">#&gt;  8            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a><span class="co">#&gt;  9            NA            NA 3029107920 1259686571            653</span></span>
-<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a><span class="co">#&gt; 10            NA            NA 3029107920 1259686571            653</span></span>
+<span id="cb21-7"><a href="#cb21-7" tabindex="-1"></a><span class="co">#&gt;    individual_id deployment_id tag_id study_id sensor_type_id individual_local_ide…¹</span></span>
+<span id="cb21-8"><a href="#cb21-8" tabindex="-1"></a><span class="co">#&gt;          &lt;int64&gt;       &lt;int64&gt; &lt;int6&gt;  &lt;int64&gt;        &lt;int64&gt; &lt;fct&gt;                 </span></span>
+<span id="cb21-9"><a href="#cb21-9" tabindex="-1"></a><span class="co">#&gt;  1            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-10"><a href="#cb21-10" tabindex="-1"></a><span class="co">#&gt;  2            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-11"><a href="#cb21-11" tabindex="-1"></a><span class="co">#&gt;  3            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-12"><a href="#cb21-12" tabindex="-1"></a><span class="co">#&gt;  4            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-13"><a href="#cb21-13" tabindex="-1"></a><span class="co">#&gt;  5            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-14"><a href="#cb21-14" tabindex="-1"></a><span class="co">#&gt;  6            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-15"><a href="#cb21-15" tabindex="-1"></a><span class="co">#&gt;  7            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-16"><a href="#cb21-16" tabindex="-1"></a><span class="co">#&gt;  8            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-17"><a href="#cb21-17" tabindex="-1"></a><span class="co">#&gt;  9            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
+<span id="cb21-18"><a href="#cb21-18" tabindex="-1"></a><span class="co">#&gt; 10            NA            NA    3e9      1e9            653 &lt;NA&gt;                  </span></span>
 <span id="cb21-19"><a href="#cb21-19" tabindex="-1"></a><span class="co">#&gt; # ℹ 47 more rows</span></span>
-<span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 28 more variables: individual_local_identifier &lt;fct&gt;,</span></span>
-<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a><span class="co">#&gt; #   tag_local_identifier &lt;fct&gt;, individual_taxon_canonical_name &lt;fct&gt;,</span></span>
-<span id="cb21-22"><a href="#cb21-22" tabindex="-1"></a><span class="co">#&gt; #   acceleration_raw_x &lt;dbl&gt;, acceleration_raw_y &lt;dbl&gt;,</span></span>
-<span id="cb21-23"><a href="#cb21-23" tabindex="-1"></a><span class="co">#&gt; #   acceleration_raw_z &lt;dbl&gt;, barometric_height [m],</span></span>
-<span id="cb21-24"><a href="#cb21-24" tabindex="-1"></a><span class="co">#&gt; #   battery_charge_percent [%], battery_charging_current [mA],</span></span>
-<span id="cb21-25"><a href="#cb21-25" tabindex="-1"></a><span class="co">#&gt; #   external_temperature [°C], gps_hdop [1], gps_satellite_count [count], …</span></span></code></pre></div>
+<span id="cb21-20"><a href="#cb21-20" tabindex="-1"></a><span class="co">#&gt; # ℹ abbreviated name: ¹​individual_local_identifier</span></span>
+<span id="cb21-21"><a href="#cb21-21" tabindex="-1"></a><span class="co">#&gt; # ℹ 27 more variables: tag_local_identifier &lt;fct&gt;,</span></span>
+<span id="cb21-22"><a href="#cb21-22" tabindex="-1"></a><span class="co">#&gt; #   individual_taxon_canonical_name &lt;fct&gt;, acceleration_raw_x &lt;dbl&gt;,</span></span>
+<span id="cb21-23"><a href="#cb21-23" tabindex="-1"></a><span class="co">#&gt; #   acceleration_raw_y &lt;dbl&gt;, acceleration_raw_z &lt;dbl&gt;, …</span></span></code></pre></div>
 <div style="text-align: right; margin-top: -10px;">
-<font size="-3">This code took: 1.38 [s] </font>
+<font size="-3">This code took: 1.07 [s] </font>
+</div>
 </div>
 </div>
 

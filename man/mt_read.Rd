@@ -7,7 +7,8 @@
 mt_read(file, ...)
 }
 \arguments{
-\item{file}{The file path to read or a R connection (for details see \code{\link[base]{connections}})}
+\item{file}{The file path to read or a R connection (for details see \code{\link[base]{connections}}).
+Files can either be csv files from movebank or zip files that are created using Env-DATA.}
 
 \item{...}{Arguments passed on to \code{\link[vroom]{vroom}}, for example \code{col_select}}
 }
@@ -33,7 +34,7 @@ not necessarily correspond to the deployments in movebank as this information is
 }
 \examples{
 path_fishers <- mt_example()
-\dontshow{if (vroom:::vroom_threads() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 mt_read(path_fishers)
 
 ## Reduce the mount of data read this might provide memory advantages
@@ -42,8 +43,17 @@ mt_read(path_fishers, col_select = c(
   "location-long", "location-lat",
   "timestamp", "individual-local-identifier"
 ))
+## Read Galapagos Albatross data that has been annotated
+mt_read(mt_example("Galapagos_Albatrosses-1332012225316982996.zip"))
+## Notice this produces a warning as some units are not recognized
+## This can be prevented by installing the units
+\dontrun{
+units::install_unit("gC", "g", "Grams of carbon")
+}
 
 \dontrun{
+## Reading can also be manipulted to speed up or reduce memory consumption
+## Here we assume the Galapagos albatross data has been downloaded
 mt_read("~/Downloads/Galapagos Albatrosses.csv")
 ## Exclude the column 'eobs:accelerations-raw'
 mt_read("~/Downloads/Galapagos Albatrosses.csv",

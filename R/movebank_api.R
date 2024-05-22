@@ -7,7 +7,7 @@
 #' @importFrom dplyr filter_ rename select_if rename_with across everything
 #' @importFrom vroom vroom_lines
 #' @importFrom bit64 as.integer64
-#' @importFrom cli cli_warn cli_inform format_message format_error cli_abort qty
+#' @importFrom cli cli_warn cli_inform format_message format_error cli_abort qty cli_fmt cli_text
 NULL
 
 utils::globalVariables("where") # for tidy select
@@ -140,6 +140,8 @@ utils::globalVariables("where") # for tidy select
 #'   i_have_download_access = TRUE,
 #'   attributes = c("name", "id")
 #' )
+#' ## Download list of own studies
+#' movebank_download_study_info(i_am_owner = TRUE)
 #' }
 #'
 movebank_download_study <- function(study_id, attributes = "all", # nolint
@@ -331,7 +333,7 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
     url <- entity_type
     assert_that(
       isFALSE(rename_columns),
-      "When `entity_type` is an url the columns cant be renamed, so `rename_columns` should be false."
+      msg = "When `entity_type` is an url the columns can't be renamed, so `rename_columns` should be false."
     )
   } else {
     url <- movebank_construct_url(entity_type = entity_type, ...)
@@ -507,9 +509,17 @@ movebank_get_study_id <- function(study_id, ...) {
           i = "Check if a correct name is provided."
         ), class = "move2_error_movebank_api_no_study_name_match")
       }
+      nms <- study_id_data$name[s <- study_id_data$study_id %in% study_id]
+      ids <- study_id_data$study_id[s]
+      ss <- split(ids, nms, drop = T)
+      studies <- unlist(lapply(names(ss), function(x) {
+        cli_fmt(cli_text("{.arg {x}} ({.val {ss[[x]]}})"))
+      }))
       cli_abort(c(
         e = "The argument {.arg study_id} matches more then one study.",
-        i = "{.arg study_id} should only match one study. The currently matched studies are: {.arg {study_id_data$name[study_id_data$study_id %in% study_id]}}"
+        i = "{.arg study_id} should only match one study. The currently matched studies are: {studies}",
+        i = "To resolve either write out the full name of the study or use the numerical identifier for downloading data.
+        You can also find the (correct) numerical study identifier in movebank."
       ), class = "move2_error_movebank_api_name_matches_multiple_studies")
     }
   }

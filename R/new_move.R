@@ -1,6 +1,7 @@
 #' @importFrom dplyr summarise_all transmute_all n_distinct
 #' @importFrom tidyselect any_of all_of
 #' @importFrom utils URLencode
+#' @importFrom rlang is_installed
 NULL
 
 #' Create a new move2 object
@@ -79,12 +80,13 @@ mt_as_move2.sf <- function(x, time_column, track_id_column, track_attributes = "
 #' @export
 #' @name mt_as_move2
 mt_as_move2.data.frame <- function(x, time_column, track_id_column, track_attributes = "", ...) {
-  x |>
-    st_as_sf(...) |>
-    mt_as_move2(
-      time_column = time_column,
-      track_id_column = track_id_column, track_attributes = track_attributes, ...
-    )
+  x <- st_as_sf(x, ...)
+  mt_as_move2(
+    x = x,
+    time_column = time_column,
+    track_id_column = track_id_column,
+    track_attributes = track_attributes, ...
+  )
 }
 
 #' @export
@@ -115,26 +117,30 @@ mt_as_move2.telemetry <- function(x, time_column, track_id_column, track_attribu
   } else {
     as.factor(x@info$identity)
   }
-  colnames_x <- colnames(x)
   x <- x |> add_column(track = track, .name_repair = "unique")
-  track_id_column <- setdiff(colnames(x), colnames_x)
+  track_id_column <- tail(colnames(x), 1)
   if ("timestamp" %in% colnames(x)) {
     if (!all.equal(as.numeric(x$timestamp), x$t)) {
       cli_warn(c("The ctmm contains both a `t` and `timestamp` column. The information in these columns differs,
-                 as generally the `timestamp` column contains {.cls POSIXct} this one is selected as the time column"))
+                 as generally the `timestamp` column contains {.cls POSIXct} this one is selected as the time column"),
+        class = "move2_warning_telemetry_time_column_confusion"
+      )
     }
     time_column <- "timestamp"
   } else {
     time_column <- "t"
   }
-  mt_as_move2(data.frame(x),
+  crs <- ifelse(is.null(x@info$projection),
+    NA_crs_,
+    x@info$projection
+  )
+
+  x <- as(x, "data.frame")
+  NextMethod(x,
     coords = c("x", "y"),
     time_column = time_column,
     track_id_column = track_id_column,
-    crs = ifelse(is.null(x@info$projection),
-      NA_crs_,
-      x@info$projection
-    )
+    crs = crs
   )
 }
 #' @export
@@ -189,10 +195,10 @@ mt_as_move2..MoveTrack <- function(x, ...) {
 
 new_move <- function(sf, time_column = "timestamp", track_id_column, track_attributes = "") {
   if (!(time_column %in% colnames(sf))) {
-    cli_abort("The {.arg time_column} argument needs to be the name of a column in the dataset")
+    cli_abort("The {.arg time_column} argument needs to be the name of a column in the dataset", class = "move2_error_no_time_column_in_sf")
   }
   if (!(track_id_column %in% colnames(sf))) {
-    cli_abort("The {.arg track_id_column} argument needs to be the name of a column in the dataset")
+    cli_abort("The {.arg track_id_column} argument needs to be the name of a column in the dataset", class = "move2_error_not_track_id_column_in_sf")
   }
   r <- structure(sf,
     time_column = time_column,
@@ -210,6 +216,9 @@ new_move <- function(sf, time_column = "timestamp", track_id_column, track_attri
 #' @export
 print.move2 <- function(x, ..., n = getOption("sf_max_print", default = 10)) {
   avgdur <- mean(do.call(c, lapply(lapply(split(mt_time(x), mt_track_id(x), drop = T), range), diff)))
+  if (is_installed("lubridate")) {
+    avgdur <- lubridate::make_difftime(as.numeric(avgdur, units = "secs"))
+  }
   cat(format_message(
     "A {.cls move2} with `track_id_column` {.val {mt_track_id_column(x)}} and `time_column` {.val {mt_time_column(x)}}"
   ), "\n", sep = "")

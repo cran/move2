@@ -11,7 +11,7 @@ test_that("basic interpolation", {
   dd$geometry[c(2, 3, 4)] <- sf::st_point()
   expect_equal(st_coordinates(mt_interpolate(dd)), cbind(c(1:5), c(1:5)), ignore_attr = TRUE)
   expect_identical(mt_interpolate(dd), d)
-  expect_identical(st_geometry(mt_interpolate(d[-3, ], 3L)), st_geometry(d))
+  expect_identical(st_geometry(mt_interpolate(d[-3, ], 3L)), st_geometry(d)[T,]) #temporary fix for points matrix
   expect_silent(mt_interpolate(d[-3, ], 3L))
   expect_silent(mt_interpolate(d[-3, ], 3L))
   expect_error(mt_interpolate(d[-3, ], "5 mins"), "does not correspond to the class of the .time.")

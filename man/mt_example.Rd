@@ -4,25 +4,35 @@
 \alias{mt_example}
 \title{Get path to \code{move2} example data}
 \usage{
-mt_example()
+mt_example(
+  file = c("fishers.csv.gz", "Galapagos_Albatrosses-1332012225316982996.zip")
+)
+}
+\arguments{
+\item{file}{The name of the file for which the path needs to be retrieved.}
 }
 \value{
 The path to the example file of the \code{move2} package
 }
 \description{
-The \code{move2} package comes with an example data file that is directly downloaded from
-\href{https://www.movebank.org}{movebank} and gz compressed for reduction in package size.
+The \code{move2} package comes with an example data files that is directly downloaded from
+\href{https://www.movebank.org}{movebank}.
 }
 \details{
-The example dataset is the study "Martes pennanti LaPoint New York" (study id: \code{69258089}), shared under
+The fisher example dataset is the study "Martes pennanti LaPoint New York" (study id: \code{69258089}), shared under
 the CC-BY-NC license.
-For more information on the data see LaPoint et al. (2013) Landscape Ecology. doi: 10.1007/s10980-013-9910-0
+For more information on the data see LaPoint et al. (2013) Landscape Ecology. doi: 10.1007/s10980-013-9910-0 .
+This csv file is gz compressed for reduction in package size.
+
+The Galapagos Albatrosses (study id: \code{2911040}) dataset annotated with environmental data using the Env-DATA system.
+For this dataset two individuals (\code{4261-2228} & \code{2131-2131}) were selected. Data was annotated with wind and
+an productivity variables.
 }
 \examples{
 
 ## Get path to one example
 mt_example()
-mt_read(mt_example())
+mt_example("Galapagos_Albatrosses-1332012225316982996.zip")
 }
 \seealso{
 \itemize{

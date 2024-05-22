@@ -58,6 +58,14 @@ test_that("Remove user", {
 })
 test_that("Test url construction", {
   expect_identical(
+    movebank_construct_url("study", i_am_owner = TRUE),
+    "https://www.movebank.org/movebank/service/direct-read?entity_type=study&i_am_owner=TRUE"
+  )
+  expect_error(
+    movebank_construct_url("event", individual_id = 1:10000),
+    "The constructed url for the request to the movebank API gets too long .48979 characters.. It should be less then 8202 characters."
+  )
+  expect_identical(
     movebank_construct_url("event", timestamp_start = as.POSIXct("2018-1-1 01:13:23", tz = "UTC")),
     "https://www.movebank.org/movebank/service/direct-read?entity_type=event&timestamp_start=20180101011323000"
   )
@@ -214,6 +222,30 @@ test_that("Download deployment", {
     })
   )
 })
+
+
+test_that("retrieve with url", {
+  skip_if_offline()
+  skip_on_cran()
+  skip_if_no_mbpwd()
+  withr::with_envvar(
+    list("movebank:move2_user" = Sys.getenv("MBPWD")),
+    withr::with_options(list(keyring_backend = "env"), {
+      expect_identical(
+        m <- movebank_retrieve("https://www.movebank.org/movebank/service/direct-read?entity_type=individual&study_id=2911040"),
+        movebank_retrieve("individual", study_id = 2911040)
+      )
+      expect_gt(nrow(m), 5)
+      expect_gt(ncol(m), 5)
+      expect_error(
+        movebank_retrieve("https://www.movebank.org/movebank/service/direct-read?entity_type=individual&study_id=2911040", rename_columns = T),
+        "When `entity_type` is an url the columns can't be renamed"
+      )
+    })
+  )
+})
+
+
 test_that("can download using handle directly", {
   skip_if_offline()
   skip_on_cran()

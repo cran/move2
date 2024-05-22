@@ -6,7 +6,7 @@
 \usage{
 mt_stack(
   ...,
-  .track_combine = c("check_unique", "merge", "rename"),
+  .track_combine = c("check_unique", "merge", "merge_list", "rename"),
   .track_id_repair = c("unique", "universal", "unique_quiet", "universal_quiet")
 )
 }
@@ -14,7 +14,7 @@ mt_stack(
 \item{...}{Either a list of \code{move2} objects to combine or the objects to combine as separate arguments}
 
 \item{.track_combine}{A character string indicating the way duplicated tracks should be resolved. By default ("check_unique")
-an error is raised if different objects contain tracks with the same name. With "merge" tracks with the same name can be merged, and with "rename" non unique tracks can be renamed.}
+an error is raised if different objects contain tracks with the same name. With "merge" and "merge_list" tracks with the same name can be merged, and with "rename" non unique tracks can be renamed.}
 
 \item{.track_id_repair}{The way in which names should be repaired when renaming is done, see \code{\link[vctrs:vec_as_names]{vctrs::vec_as_names()}}
 for more details on each option}
@@ -30,12 +30,13 @@ objects, they are added.
 An attempt is made to combine objects that have a different \code{track_id_column} or \code{time_column}, however this is
 only done if it can be done without data loss.
 
-When objects are too different (e.g. different projection or different types of timestamps that cannot
+When objects are too different (e.g. different projection or different types of time columns that cannot
 be combine) and error is raised.
 When tracks have the same name in different objects to combine this will results in an error.
 
 When merging several tracks, the track attributes of these tracks are also combined.
-This is done by creating a lists within each column. See examples in \code{\link[=mt_set_track_id]{mt_set_track_id()}}.
+For track data this can result in conflicts. With "merge" unique values are selected if not one unique value is present a warning is raised.
+With "merge_list" a list column is created for each track attribute that can be summarized later.
 }
 \examples{
 a <- mt_sim_brownian_motion(1:2, tracks = c("a", "b"))
@@ -64,7 +65,16 @@ mt_stack(
   random_track,
   fishers
 )
-
+track_1 <- mt_sim_brownian_motion(tracks = letters[1:3], t = 1:3) |>
+  mutate_track_data(sex = "f")
+track_2 <- mt_sim_brownian_motion(tracks = letters[3:4], t = 4:6) |>
+  mutate_track_data(sex = c("f", "m"))
+mt_stack(track_1, track_2,
+  .track_combine = "merge_list"
+)
+mt_stack(track_1, track_2,
+  .track_combine = "merge"
+)
 \donttest{
 if (requireNamespace("units")) {
   males <- tail(filter_track_data(

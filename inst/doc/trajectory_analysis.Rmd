@@ -78,6 +78,8 @@ vulture_data %<>% mutate(
     September = "South migration", October = "South migration",
     November = "Wintering", December = "Wintering"
   ),
+  # Here we change season to NA if the next location is either from
+  # a different track or season
   season = if_else(season == lead(season, 1) &
     mt_track_id() == lead(mt_track_id(), 1),
   season, NA
@@ -91,7 +93,7 @@ Annotate speed and azimuth to the trajectory.
 vulture_data %<>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
 ```
 ## Seasonal distribution per individual
-```{r}
+```{r fig.height=6}
 library(circular, quietly = TRUE)
 vulture_azimuth_distributions <- vulture_data %>%
   filter(speed > set_units(2, "m/s") & !is.na(season)) %>%

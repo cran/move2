@@ -172,6 +172,8 @@ movebank_download_study_info(
   i_have_download_access = TRUE,
   attributes = c("name", "id")
 )
+## Download list of own studies
+movebank_download_study_info(i_am_owner = TRUE)
 }
 
 }

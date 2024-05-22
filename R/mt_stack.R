@@ -5,7 +5,7 @@
 #'
 #' @param ... Either a list of `move2` objects to combine or the objects to combine as separate arguments
 #' @param .track_combine A character string indicating the way duplicated tracks should be resolved. By default ("check_unique")
-#' an error is raised if different objects contain tracks with the same name. With "merge" tracks with the same name can be merged, and with "rename" non unique tracks can be renamed.
+#' an error is raised if different objects contain tracks with the same name. With "merge" and "merge_list" tracks with the same name can be merged, and with "rename" non unique tracks can be renamed.
 #' @param .track_id_repair The way in which names should be repaired when renaming is done, see [vctrs::vec_as_names()]
 #'  for more details on each option
 #'
@@ -15,12 +15,13 @@
 #' An attempt is made to combine objects that have a different `track_id_column` or `time_column`, however this is
 #'  only done if it can be done without data loss.
 #'
-#' When objects are too different (e.g. different projection or different types of timestamps that cannot
+#' When objects are too different (e.g. different projection or different types of time columns that cannot
 #' be combine) and error is raised.
 #' When tracks have the same name in different objects to combine this will results in an error.
 #'
 #' When merging several tracks, the track attributes of these tracks are also combined.
-#' This is done by creating a lists within each column. See examples in [mt_set_track_id()].
+#' For track data this can result in conflicts. With "merge" unique values are selected if not one unique value is present a warning is raised.
+#' With "merge_list" a list column is created for each track attribute that can be summarized later.
 #'
 #' @seealso rbind
 #'
@@ -52,7 +53,16 @@
 #'   random_track,
 #'   fishers
 #' )
-#'
+#' track_1 <- mt_sim_brownian_motion(tracks = letters[1:3], t = 1:3) |>
+#'   mutate_track_data(sex = "f")
+#' track_2 <- mt_sim_brownian_motion(tracks = letters[3:4], t = 4:6) |>
+#'   mutate_track_data(sex = c("f", "m"))
+#' mt_stack(track_1, track_2,
+#'   .track_combine = "merge_list"
+#' )
+#' mt_stack(track_1, track_2,
+#'   .track_combine = "merge"
+#' )
 #' \donttest{
 #' if (requireNamespace("units")) {
 #'   males <- tail(filter_track_data(
@@ -73,7 +83,7 @@
 #' }
 #' }
 mt_stack <- function(..., # nolint cyclo complexity to reduce
-                     .track_combine = c("check_unique", "merge", "rename"),
+                     .track_combine = c("check_unique", "merge", "merge_list", "rename"),
                      .track_id_repair = c(
                        "unique", "universal", "unique_quiet",
                        "universal_quiet"
@@ -165,7 +175,9 @@ mt_stack <- function(..., # nolint cyclo complexity to reduce
     }
     dots <- lapply(dots, mt_set_time, value = time_column_name[1])
     cli_warn("The {.code time_column} differs between the objects to stack, for successfull stacking all
-             {.code time_column} attributes have been renamed to {.code {time_column_name[1]}}")
+             {.code time_column} attributes have been renamed to {.code {time_column_name[1]}}",
+      class = "move2_warning_differing_time_column"
+    )
   }
   dots <- lapply(dots, function(x) {
     class(x) <- setdiff(class(x), "move2")
@@ -174,22 +186,33 @@ mt_stack <- function(..., # nolint cyclo complexity to reduce
 
   stacked <- dplyr::bind_rows(dots)
   new_track_data <- dplyr::bind_rows(lapply(dots, mt_track_data))
+  if (.track_combine == "merge_list") {
+    new_track_data <- summarise(new_track_data, across(
+      everything(),
+      ~ list(.x)
+    ), .by = unname(track_id_column_name[1]))
+  }
   if (.track_combine == "merge" && anyDuplicated(new_track_data[, track_id_column_name[1]])) {
-    new_track_data <- dplyr::bind_rows(
-      lapply(split(
-        new_track_data,
-        new_track_data[, track_id_column_name[1]]
-      ), function(x, n) {
-        if (nrow(x) == 1) {
-          return(x)
-        }
-        x <- x[1, , drop = FALSE]
-        s <- colnames(x) != n
-        if (any(s)) {
-          x[, s] <- NA
-        }
-        x
-      }, n = track_id_column_name[1])
+    summary_unique <- summarise(
+      new_track_data,
+      across(everything(), ~ (length(unique(.x)) != 1)),
+      .by = unname(track_id_column_name[1])
+    ) |>
+      select(-track_id_column_name[1]) |>
+      summarise(across(everything(), ~ any(.x))) |>
+      unlist()
+    if (any(summary_unique)) {
+      cli_warn(
+        "The column{?s} {.field {names(summary_unique)[summary_unique]}}, {?does/do} not have one unique value per track,
+               therefore these values are replaced by {.code NA}. Consider using {.code .track_combine='merge_list'}
+               and use a informed merge strategy for the track data to combine the list columns and avoid information loss.",
+        class = "move2_warning_no_unique_value_in_merge_track_data"
+      )
+    }
+    new_track_data <- summarise(
+      new_track_data,
+      across(everything(), ~ if_else(length(unique(.x)) == 1, head(.x, n = 1), NA)),
+      .by = unname(track_id_column_name[1])
     )
   }
   attr(dots[[1]], "track_data") <- new_track_data

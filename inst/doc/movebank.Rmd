@@ -168,8 +168,8 @@ if (Sys.info()["user"] != "bart") {
 }
 ```
 
-```{r}
-library(dplyr, quietly = TRUE)
+```{r, message=FALSE}
+library(dplyr)
 ```
 
 Using the `movebank_retrieve` function it is possible to directly access the
@@ -275,13 +275,16 @@ The first argument is the entity type you would like to retrieve information for
 is always required. For more details how to use the api see the
 [documentation](https://github.com/movebank/movebank-api-doc/blob/master/movebank-api.md).
 
+## Downloading undeployed data
 One common reason to use this options is to retrieve undeployed locations. In
 some cases a set of locations is collected before the tag attached to the animal
 for quality control or error measurements. The example below shows how all
 records for a specific tag can be retrieved. Filtering for locations where the
 `deployment_id` is `NA`, returns those locations that were collected while the
 tag was not deployed. The `timestamp_start` and `timestamp_end` might be good
-argument to filter down the data even more in the call to `movebank_retrieve`.
+argument to filter down the data even more in the call to `movebank_retrieve`. 
+By omitting the argument `tag_local_identifier` the entire study can downloaded. 
+With the argument `sensor_type_id` the sensors can be specified.
 
 ```{r advance, time_it=TRUE}
 movebank_retrieve("event",

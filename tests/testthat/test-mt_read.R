@@ -26,3 +26,23 @@ test_that("multiple deployments", {
   expect_false("individual-tag-local-identifier" %in% (mt_read(I(txt), col_select = !(`tag-local-identifier`)) |>
     names()))
 })
+test_that("env data read works", {
+  expect_s3_class(
+    suppressWarnings(data <- mt_read(mt_example("Galapagos_Albatrosses-1332012225316982996.zip"))),
+    "move2"
+  )
+  data <- suppressWarnings(mt_read(mt_example("Galapagos_Albatrosses-1332012225316982996.zip")))
+  expect_named(data, c(
+    "event-id", "timestamp", "eobs:battery-voltage", "eobs:fix-battery-voltage",
+    "eobs:horizontal-accuracy-estimate", "eobs:key-bin-checksum", "eobs:speed-accuracy-estimate",
+    "eobs:start-timestamp", "eobs:status", "eobs:temperature", "eobs:type-of-fix", "eobs:used-time-to-get-fix",
+    "ground-speed", "heading", "height-above-ellipsoid", "visible", "sensor-type", "individual-local-identifier",
+    "height-above-msl", "MODIS Ocean Aqua OceanColor 4km 8d Chlorophyll A (OCI)", "OSU Ocean NPP 0.083deg 8d NPP",
+    "ECMWF ERA5 SL Wind (10 m above Ground U Component)", "ECMWF ERA5 SL Wind (10 m above Ground V Component)",
+    "geometry"
+  ))
+  expect_identical(
+    units(data$`ECMWF ERA5 SL Wind (10 m above Ground U Component)`),
+    units(units::as_units("m/s"))
+  )
+})

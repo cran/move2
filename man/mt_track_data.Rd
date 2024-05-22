@@ -23,7 +23,6 @@ with the track ids, the column name must be the same as in the \code{move2} obje
 \itemize{
 \item \code{mt_track_data()} retrieve track attribute table
 \item \code{mt_set_track_data()} replace the attribute table
-\item 
 }
 }
 \examples{

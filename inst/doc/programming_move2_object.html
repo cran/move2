@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -336,101 +336,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Programming with a move2 object</h1>
+<h1 class="title toc-ignore">Programming with a <code>move2</code>
+object</h1>
 
 
 
-<div id="function-overview" class="section level1">
-<h1>Function overview</h1>
-<div id="extracting-information-from-a-move2-object" class="section level2">
-<h2>Extracting information from a <code>move2</code> object</h2>
-<ul>
-<li><p><code>sf::st_coordinates()</code>: returns the coordinates from
-the the events in the track(s)</p></li>
-<li><p><code>sf::st_crs()</code>: returns the projection of the
-tracks(s)</p></li>
-<li><p><code>mt_time()</code>: returns the timestamps for each event in
-the track</p></li>
-<li><p><code>mt_track_data()</code>: returns the table containing the
-information associated to the tracks</p></li>
-<li><p><code>mt_track_id()</code>: returns a vector of the track id
-associated to each event</p></li>
-<li><p><code>unique(mt_track_id())</code>: returns the names of the
-tracks</p></li>
-<li><p><code>mt_n_tracks()</code>: returns the number of the
-tracks</p></li>
-<li><p><code>nrow()/table(mt_track_id())</code>: returns the number of
-events in total and per track respectively</p></li>
-<li><p><code>mt_time_column()</code>: returns the name of the column
-containing the timestamps used by the <code>move2</code> object</p></li>
-<li><p><code>mt_track_id_column()</code>: returns the name of the column
-containing the track ids used by the <code>move2</code> object</p></li>
-</ul>
-</div>
-<div id="transforming-other-classes-to-a-move2-object" class="section level2">
-<h2>Transforming other classes to a <code>move2</code> object</h2>
-<ul>
-<li><code>mt_as_move2()</code>: creates a <code>move2</code> object from
-objects of class <code>sf</code>, <code>data.frame</code>,
-<code>telemetry</code>/<code>telemetry list</code> from <em>ctmm</em>,
-<code>track_xyt</code> from <em>amt</em> or
-<code>Move</code>/<code>MoveStack</code> from <em>move</em>.</li>
-</ul>
-</div>
-<div id="transforming-a-move2-object-into-other-classes" class="section level2">
-<h2>Transforming a <code>move2</code> object into other classes</h2>
-<ul>
-<li><p><code>to_move()</code>: converts to a object of class
-<code>Move</code>/<code>MoveStack</code></p></li>
-<li><p><code>mt_track_id(x) &lt;- NULL</code>: to remove
-<code>move2</code> class from the object, it will be recognized as a
-object of class <code>sf</code></p></li>
-<li><p><code>mt_as_event_attribute(x, names(mt_track_data(x)))</code>:
-join all attributes (event and track) into one table. If additionally
-<code>mt_track_id(x) &lt;- NULL</code> is applied, the resulting
-<code>sf</code> object should behave as any
-<code>data.frame</code></p></li>
-</ul>
-</div>
-<div id="useful-functions" class="section level2">
-<h2>Useful functions</h2>
-<ul>
-<li><p><code>mt_read()</code>: read in data downloaded from movebank, by
-just stating the path to the file</p></li>
-<li><p><code>mt_read(mt_example())</code>: example dataset</p></li>
-<li><p><code>dplyr::filter(x, !sf::st_is_empty(x))</code>: exclude all
-empty locations</p></li>
-<li><p><code>filter_track_data(x, .track_id = c(&quot;nameTrack1&quot;, &quot;nameTrack3&quot;)</code>:
-subset to one or more tracks</p></li>
-<li><p><code>split(x, mt_track_id(x))</code>: split a <code>move2</code>
-object into a list of single objects per track. Alternatively see
-<code>dplyr::mutate()</code>, <code>dplyr::group_by()</code>,
-<code>group_by_track_data()</code> to apply calculations to tracks
-separately</p></li>
-<li><p><code>mt_stack()</code>: combine multiple <code>move2</code>
-objects into one</p></li>
-<li><p><code>mt_as_track_attribute()</code>/<code>mt_as_event_attribute()</code>:
-move columns between track and event attributes (and vv)</p></li>
-<li><p><code>mt_set_track_id()</code>: replace track ids with new
-values, set new column to define tracks or rename track id
-column</p></li>
-<li><p><code>mutate_track_data()</code>: add or modify attributes in the
-track data</p></li>
-<li><p><code>sf::st_transform()</code>: to reproject the
-<code>move2</code> into a different projection</p></li>
-<li><p><code>mt_aeqd_crs()</code>: create a AEQD coordinate reference
-system</p></li>
-<li><p><code>mt_track_lines()</code>: convert a trajectory into lines
-for plotting with e.g. <code>ggplot</code></p></li>
-<li><p>use the option <code>options(sf_max.plot=1)</code> to display a
-single plot of the track. The attribute that should be used to color the
-tracks can be specified, e.g.
-<code>plot(x[&quot;individual_local_identifier&quot;])</code>. <a href="https://r-spatial.github.io/sf/articles/sf5.html">Here</a> is more
-information on how to do simple plots.</p></li>
-</ul>
-<p>All functions of the <code>move2</code> package are described <a href="https://bartk.gitlab.io/move2/reference/index.html">here.</a></p>
-</div>
-</div>
 <div id="structure-of-the-move2-object" class="section level1">
 <h1>Structure of the <code>move2</code> object</h1>
 <ul>
@@ -586,8 +496,8 @@ messages:</p>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">assert_that</span>(<span class="fu">mt_is_time_ordered</span>(data))</span>
 <span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; Error: Not all timestamps in `data` are ordered within track.</span></span>
 <span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; ℹ It is required that all subsequent records have an equal or later timestamps.</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ℹ The first offending record is of track: 1 at time: 3 (record: 2), the next</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;   record has an earlier timestamp.</span></span></code></pre></div>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co">#&gt; ℹ The first offending record is of track: 1 at time: 3 (record: 2), the next record</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="co">#&gt;   has an earlier timestamp.</span></span></code></pre></div>
 </div>
 <div id="function-naming-schemes" class="section level3">
 <h3>Function naming schemes</h3>
@@ -638,6 +548,106 @@ the data loaded does not solve the problem, it can be advisable to use a
 computer with more memory or when possible split up analysis per
 track.</p>
 </div>
+</div>
+</div>
+<div id="function-overview" class="section level1">
+<h1>Function overview</h1>
+<p>Here we first a quick overview of the most important function.</p>
+<div id="extracting-information-from-a-move2-object" class="section level2">
+<h2>Extracting information from a <code>move2</code> object</h2>
+<ul>
+<li><p><code>sf::st_coordinates()</code>: returns the coordinates from
+the the events in the track(s)</p></li>
+<li><p><code>sf::st_crs()</code>: returns the projection of the
+tracks(s)</p></li>
+<li><p><code>sf::st_bbox()</code>: returns the bounding box of the
+track(s)</p></li>
+<li><p><code>mt_time()</code>: returns the timestamps for each event in
+the track</p></li>
+<li><p><code>mt_track_data()</code>: returns the table containing the
+information associated to the tracks</p></li>
+<li><p><code>mt_track_id()</code>: returns a vector of the track id
+associated to each event</p></li>
+<li><p><code>unique(mt_track_id())</code>: returns the names of the
+tracks</p></li>
+<li><p><code>mt_n_tracks()</code>: returns the number of the
+tracks</p></li>
+<li><p><code>nrow()</code>: returns the total number of events</p></li>
+<li><p><code>table(mt_track_id())</code>: returns the number of events
+per track</p></li>
+<li><p><code>mt_time_column()</code>: returns the name of the column
+containing the timestamps used by the <code>move2</code> object</p></li>
+<li><p><code>mt_track_id_column()</code>: returns the name of the column
+containing the track ids used by the <code>move2</code> object</p></li>
+</ul>
+</div>
+<div id="transforming-other-classes-to-a-move2-object" class="section level2">
+<h2>Transforming other classes to a <code>move2</code> object</h2>
+<ul>
+<li><code>mt_as_move2()</code>: creates a <code>move2</code> object from
+objects of class <code>sf</code>, <code>data.frame</code>,
+<code>telemetry</code>/<code>telemetry list</code> from <em>ctmm</em>,
+<code>track_xyt</code> from <em>amt</em> or
+<code>Move</code>/<code>MoveStack</code> from <em>move</em>.</li>
+</ul>
+</div>
+<div id="transforming-a-move2-object-into-other-classes" class="section level2">
+<h2>Transforming a <code>move2</code> object into other classes</h2>
+<ul>
+<li><p><code>to_move()</code>: converts to a object of class
+<code>Move</code>/<code>MoveStack</code></p></li>
+<li><p><code>mt_track_id(x) &lt;- NULL</code>: to remove
+<code>move2</code> class from the object, it will be recognized as a
+object of class <code>sf</code></p></li>
+<li><p>to transform into a flat table without loosing information:</p>
+<ul>
+<li>move all track associated attributes to the event table:
+<code>x &lt;- mt_as_event_attribute(x, names(mt_track_data(x)))</code></li>
+<li>put coordinates in 2 columns:
+<code>x &lt;- dplyr::mutate(x, coords_x=sf::st_coordinates(x)[,1], coords_y=sf::st_coordinates(x)[,2])</code></li>
+<li>remove the sf geometry column from the table:
+<code>x &lt;- sf::st_drop_geometry(x)</code></li>
+</ul></li>
+</ul>
+</div>
+<div id="useful-functions" class="section level2">
+<h2>Useful functions</h2>
+<ul>
+<li><p><code>mt_read()</code>: read in data downloaded from movebank, by
+just stating the path to the file</p></li>
+<li><p><code>mt_read(mt_example())</code>: example dataset</p></li>
+<li><p><code>dplyr::filter(x, !sf::st_is_empty(x))</code>: exclude all
+empty locations</p></li>
+<li><p><code>filter_track_data(x, .track_id = c(&quot;nameTrack1&quot;, &quot;nameTrack3&quot;)</code>:
+subset to one or more tracks</p></li>
+<li><p><code>split(x, mt_track_id(x))</code>: split a <code>move2</code>
+object into a list of single objects per track. Alternatively see
+<code>dplyr::mutate()</code>, <code>dplyr::group_by()</code>,
+<code>group_by_track_data()</code> to apply calculations to tracks
+separately</p></li>
+<li><p><code>mt_stack()</code>: combine multiple <code>move2</code>
+objects into one</p></li>
+<li><p><code>mt_as_track_attribute()</code>/<code>mt_as_event_attribute()</code>:
+move columns between track and event attributes (and vice
+versa)</p></li>
+<li><p><code>mt_set_track_id()</code>: replace track ids with new
+values, set new column to define tracks or rename track id
+column</p></li>
+<li><p><code>mutate_track_data()</code>: add or modify attributes in the
+track data</p></li>
+<li><p><code>sf::st_transform()</code>: to reproject the
+<code>move2</code> into a different projection</p></li>
+<li><p><code>mt_aeqd_crs()</code>: create a AEQD coordinate reference
+system</p></li>
+<li><p><code>mt_track_lines()</code>: convert a trajectory into lines
+for plotting with e.g. <code>ggplot</code></p></li>
+<li><p>use the option <code>options(sf_max.plot=1)</code> to display a
+single plot of the track. The attribute that should be used to color the
+tracks can be specified, e.g.
+<code>plot(x[&quot;individual_local_identifier&quot;])</code>. <a href="https://r-spatial.github.io/sf/articles/sf5.html">Here</a> is more
+information on how to do simple plots.</p></li>
+</ul>
+<p>All functions of the <code>move2</code> package are described <a href="https://bartk.gitlab.io/move2/reference/index.html">here.</a></p>
 </div>
 </div>
 

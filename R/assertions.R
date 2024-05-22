@@ -33,12 +33,16 @@ NULL
 #' @examples
 #' ## examples of what to do if assertion if FALSE
 #' n <- 8
-#' data <- data.frame(x = cumsum(rnorm(n)), y = cumsum(rnorm(n)),
-#'                    time = seq(n), track = sample(c("a","b"), size=n, replace=TRUE))
-#' data <- rbind(data, data[sample(nrow(data),2),]) # adding duplicate timestamps
-#' mv <- mt_as_move2(data, coords = c("x", "y"),
-#'                   time_column = "time",
-#'                   track_id_column = "track")
+#' data <- data.frame(
+#'   x = cumsum(rnorm(n)), y = cumsum(rnorm(n)),
+#'   time = seq(n), track = sample(c("a", "b"), size = n, replace = TRUE)
+#' )
+#' data <- rbind(data, data[sample(nrow(data), 2), ]) # adding duplicate timestamps
+#' mv <- mt_as_move2(data,
+#'   coords = c("x", "y"),
+#'   time_column = "time",
+#'   track_id_column = "track"
+#' )
 #' mv$geometry[c(1, 3)] <- sf::st_point() # adding empty locations
 #'
 #' mt_is_track_id_cleaved(mv)
@@ -119,14 +123,22 @@ on_failure(mt_is_time_ordered) <- function(call, env) {
 #' @rdname assertions
 mt_has_unique_location_time_records <- function(x) { # nolint
   empty_points <- st_is_empty(x)
-  duplicates <- duplicated(cbind(mt_track_id(x), mt_time(x), empty_points))
+  t <- mt_time(x)
+  if (inherits(t, "POSIXt")) { # pre convert POSIXt to speedup
+    t <- as.numeric(t)
+  }
+  duplicates <- duplicated(data.frame(mt_track_id(x), t, empty_points))
   duplicates[empty_points] <- FALSE
   return(!any(duplicates))
 }
 on_failure(mt_has_unique_location_time_records) <- function(call, env) { # nolint
   x <- eval(call$x, envir = env)
   empty_points <- st_is_empty(x)
-  duplicates <- duplicated(cbind(mt_track_id(x), mt_time(x), empty_points))
+  t <- mt_time(x)
+  if (inherits(t, "POSIXt")) {
+    t <- as.numeric(t)
+  }
+  duplicates <- duplicated(cbind(mt_track_id(x), t, empty_points))
   duplicates[empty_points] <- FALSE
   format_error(c("Not all (non empty) locations within a track have a unique timestamp.",
     i = "In total there {?is/are} {sum(duplicates)} duplicat{?ed/e} timestamp{?s}.",

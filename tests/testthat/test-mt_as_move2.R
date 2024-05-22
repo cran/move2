@@ -2,9 +2,19 @@ test_that("convertions of move", {
   skip_if_not_installed("move")
   data(leroy, package = "move")
   expect_s3_class(m <- mt_as_move2(leroy), "move2")
+  expect_false("citation" %in% colnames(mt_track_data(m)))
+  expect_false("license" %in% colnames(mt_track_data(m)))
   expect_identical(move::n.locs(leroy), dim(m)[1])
   expect_identical(move::timestamps(leroy), mt_time(m))
   expect_identical(mt_track_id_column(m), "track")
+  expect_identical(move::citations(leroy), character())
+  expect_silent(move::citations(leroy) <- "text")
+  expect_true("citation" %in% colnames(mt_track_data(mt_as_move2(leroy))))
+  expect_identical(mt_track_data(mt_as_move2(leroy))$citation, "text")
+  expect_identical(move::licenseTerms(leroy), character())
+  expect_silent(move::licenseTerms(leroy) <- "text2")
+  expect_true("license" %in% colnames(mt_track_data(mt_as_move2(leroy))))
+  expect_identical(mt_track_data(mt_as_move2(leroy))$license, "text2")
 })
 test_that("convertions of move with changed times", {
   skip_if_not_installed("move")
@@ -18,7 +28,7 @@ test_that("convertions of move with changed times", {
 test_that("round trip", {
   skip_if_not_installed("move")
   expect_s3_class(a <- mt_sim_brownian_motion(as.POSIXct("1970-1-1") + 1:5), "move2")
-  expect_identical(st_geometry(aa <- mt_as_move2(to_move(a))), st_geometry(a))
+  expect_identical(st_geometry(aa <- mt_as_move2(to_move(a)))[T,], st_geometry(a)) # realize points to prevent error
   expect_identical(mt_time(a), mt_time(aa))
 })
 test_that("error on wrong column name", {

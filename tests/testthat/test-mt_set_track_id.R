@@ -42,7 +42,7 @@ test_that("splitting track and assigning new id retains column and data removed 
   )
   expect_identical(
     mt_track_data(mt_set_track_id(m, gl(1, 20)))$sex,
-    list(`1` = c("f", "f", "m", "m"))
+    list(c("f", "f", "m", "m"))
   )
   expect_identical(
     mt_track_data(mt_set_track_id(m, c(
@@ -50,7 +50,7 @@ test_that("splitting track and assigning new id retains column and data removed 
       rep("b", 10),
       rep("a", 5)
     )))$sex,
-    list(`a` = c("f", "m"), b = c("f", "m"))
+    list(c("f", "m"), c("f", "m"))
   )
   expect_identical(
     mt_track_data(mt_set_track_id(m, c(
@@ -58,7 +58,7 @@ test_that("splitting track and assigning new id retains column and data removed 
       rep("b", 10),
       rep("c", 5)
     )))$sex,
-    list(`a` = c("f"), b = c("f", "m"), c = "m")
+    list(c("f"), c("f", "m"), "m")
   )
   expect_identical(
     mt_track_data(mt_set_track_id(
@@ -68,7 +68,7 @@ test_that("splitting track and assigning new id retains column and data removed 
         rep("b", 10)
       )
     ))$sex,
-    list(`a` = c("f", "f"), b = c("m", "m"))
+    list(c("f", "f"), c("m", "m"))
   )
 
   expect_identical(mt_set_track_id(m, gl(1, 20)) |> mt_track_data() |> class(), m |> mt_track_data() |> class())
@@ -98,7 +98,7 @@ test_that("Assing track id with track attribute", {
   expect_identical(mt_set_track_id(a, "hh") |> mt_n_tracks(), 2L)
   expect_identical(mt_set_track_id(a, "hh") |> mt_track_id_column(), "hh")
   expect_identical(mt_set_track_id(a, "hh") |> mt_track_id(), c(rep(1L, 20), rep(2L, 10)))
-  expect_identical(mt_track_data(mt_set_track_id(a, "hh"))$kk, list("1" = 1:2, "2" = 3L))
+  expect_identical(mt_track_data(mt_set_track_id(a, "hh"))$kk, list(1:2, 3L))
   expect_false(as.logical(anyDuplicated(colnames(mt_track_data(mt_set_track_id(a, "hh"))))))
 })
 test_that("Assing track id with track attribute", {

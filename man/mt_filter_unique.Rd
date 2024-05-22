@@ -9,14 +9,16 @@ mt_filter_unique(x, ...)
 
 mt_unique(
   x,
-  criterion = c("subsets", "sample", "first", "last"),
-  additional_columns = NULL
+  criterion = c("subsets", "subsets_equal", "sample", "first", "last"),
+  additional_columns = NULL,
+  ...
 )
 }
 \arguments{
 \item{x}{The \code{move2} object to filter}
 
-\item{...}{Arguments passed on to the \code{mt_unique} function}
+\item{...}{Arguments passed on to the \code{mt_unique} function like \code{criterion} and arguments to the equivalence function
+when one of the \code{"subsets"} criteria is use, this allows for example controlling the \code{tolerance} (\code{\link[base:all.equal]{base::all.equal()}})}
 
 \item{criterion}{The criterion to decide what records to filter out. For more information see \emph{Details} below.}
 
@@ -50,6 +52,9 @@ Some tracking devices first transmit an smaller dataset that does not contain al
 records may be the same as others only containing additional \code{NA} values.
 This strategy only omits those (duplicated) records. As a result duplicates that contain unique information are
 retained, the dataset is thus not guaranteed to not have unique records afterwards.
+\item \code{"subsets_equal"}: The same as \code{"subsets"} however not exact equivalence is tested using \code{\link[base:identical]{base::identical()}} but
+rather \code{\link[base:all.equal]{base::all.equal()}} is used. This makes it possible to allow for small numeric differences to be considered
+equal. This can however reduce speed considerably.
 \item \code{"sample"}: In this case one record is randomly selected from the duplicated records.
 \item \code{"first"}: Select the first location from a set of duplicated locations. Note that reordering the data will affect
 which record is selected. For movebank data no specific order is enforced, ensure that the order of the locations is like you expect (same goes for \code{"last"}).

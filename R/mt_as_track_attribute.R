@@ -52,9 +52,7 @@ mt_as_track_attribute <- function(x, ..., .keep = FALSE) {
     pos <- -pos
   }
   updated_data <- mt_track_data(x) |>
-    select(-!!attr(x, "track_id_column")) |>
-    #  tibble::as_tibble() |>
-    bind_cols(to_move) |>
+    left_join(to_move, by = attr(x, "track_id_column")) |>
     mt_set_track_data(x = x[, pos])
   return(updated_data)
 }
@@ -67,7 +65,7 @@ mt_as_event_attribute <- function(x, ..., .keep = FALSE) {
   track_data <- mt_track_data(x)
   pos <- eval_select(expr, data = track_data)
   pos <- pos[names(pos) != mt_track_id_column(x)]
-  if (length(pos) != 0 && !.keep) {
+  if (length(pos) != 0) {
     pos <- -pos
   } else {
     pos <- TRUE
@@ -77,6 +75,10 @@ mt_as_event_attribute <- function(x, ..., .keep = FALSE) {
       track_data[, c(mt_track_id_column(x), names(pos)), drop = FALSE],
       mt_track_id_column(x)
     ) |>
-    mt_set_track_data(track_data[, pos, drop = FALSE])
+    mt_set_track_data(track_data[, if (.keep) {
+      T
+    } else {
+      pos
+    }, drop = FALSE])
   return(x)
 }

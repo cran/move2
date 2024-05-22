@@ -2,6 +2,7 @@
 #' @importFrom sf NA_agr_
 NULL
 
+#' @export
 filter.move2 <- function(.data, ..., .dots) { # nolint
   # note this relates to a problem with inheritance in sf: https://github.com/r-spatial/sf/issues/1852
   template <- .data
@@ -11,6 +12,7 @@ filter.move2 <- function(.data, ..., .dots) { # nolint
   x
 }
 
+#' @export
 select.move2 <- function(.data, ...) { # nolint
   # For the time being re conserve time and trackid columsn
   time_column_name <- mt_time_column(.data)
@@ -27,6 +29,8 @@ select.move2 <- function(.data, ...) { # nolint
   }
   dplyr_reconstruct.move2(x, .data)
 }
+
+#' @export
 group_by.move2 <- function(.data, ..., add = FALSE) { # nolint
   template <- .data
   class(.data) <- setdiff(class(.data), "move2")
@@ -35,12 +39,15 @@ group_by.move2 <- function(.data, ..., add = FALSE) { # nolint
 }
 
 
+#' @export
 mutate.move2 <- function(.data, ..., .dots) { # nolint
   template <- .data
   class(.data) <- setdiff(class(.data), "move2")
   x <- NextMethod()
   dplyr_reconstruct.move2(x, template)
 }
+
+#' @export
 slice.move2 <- function(.data, ..., .dots) { # nolint
   template <- .data
   class(.data) <- setdiff(class(.data), "move2")
@@ -48,6 +55,7 @@ slice.move2 <- function(.data, ..., .dots) { # nolint
   dplyr_reconstruct.move2(x, template)
 }
 
+#' @export
 ungroup.move2 <- function(x, ...) { # nolint
   template <- x
   class(x) <- setdiff(class(x), "move2")
@@ -65,6 +73,7 @@ rowwise.move2 <- function(x, ...) {
 
 
 
+#' @export
 arrange.move2 <- function(.data, ..., .dots) { # nolint
   template <- .data
   class(.data) <- setdiff(class(.data), "move2")
@@ -138,52 +147,8 @@ group_split.move2 <- function(.tbl, ..., .keep = TRUE) { # nolint
 }
 
 
+#' @export
 left_join.move2 <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...) { # nolint
   class(x) <- setdiff(class(x), "move2")
   dplyr_reconstruct.move2(NextMethod(), template = x)
 }
-
-
-# nocov start
-register_all_s3_methods <- function() {
-  register_s3_method("dplyr", "dplyr_reconstruct", "move2")
-  register_s3_method("dplyr", "filter", "move2")
-  register_s3_method("dplyr", "arrange", "move2")
-  register_s3_method("dplyr", "group_by", "move2")
-  register_s3_method("dplyr", "ungroup", "move2")
-  register_s3_method("dplyr", "rowwise", "move2")
-  register_s3_method("dplyr", "group_split", "move2")
-  register_s3_method("dplyr", "mutate", "move2")
-  register_s3_method("dplyr", "slice", "move2")
-  register_s3_method("dplyr", "select", "move2")
-  register_s3_method("dplyr", "left_join", "move2")
-  register_s3_method("sf", "st_intersection", "move2")
-  register_s3_method("sf", "st_join", "move2")
-}
-
-# from: https://github.com/tidyverse/hms/blob/master/R/zzz.R
-# Thu Apr 19 10:53:24 CEST 2018
-register_s3_method <- function(pkg, generic, class, fun = NULL) {
-  stopifnot(is.character(pkg), length(pkg) == 1)
-  stopifnot(is.character(generic), length(generic) == 1)
-  stopifnot(is.character(class), length(class) == 1)
-
-  if (is.null(fun)) {
-    fun <- get(paste0(generic, ".", class), envir = parent.frame())
-  } else {
-    stopifnot(is.function(fun))
-  }
-
-  if (pkg %in% loadedNamespaces()) {
-    registerS3method(generic, class, fun, envir = asNamespace(pkg))
-  }
-
-  # Always register hook in case package is later unloaded & reloaded
-  setHook(
-    packageEvent(pkg, "onLoad"),
-    function(...) {
-      registerS3method(generic, class, fun, envir = asNamespace(pkg))
-    }
-  )
-}
-# nocov end

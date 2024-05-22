@@ -11,7 +11,6 @@ NULL
 #' @description
 #' * `mt_track_data()` retrieve track attribute table
 #' * `mt_set_track_data()` replace the attribute table
-#' *
 #'
 #' @param x the `move2` object
 #' @param data the new track data. This `data.frame` must contain the column
@@ -250,10 +249,10 @@ mt_set_track_id <- function(x, value) {
     # some individuals combine previous data generate list columns to retain this duplicated data
     data <- unique(new_track_data[, new_column_name, drop = FALSE])
     for (i in setdiff(colnames(new_track_data), new_column_name)) {
-      l <- split(
+      l <- unname(split(
         new_track_data[, i],
         new_track_data[, new_column_name]
-      )[data[, new_column_name]]
+      )[data[, new_column_name]])
       if (all(unlist(lapply(l, length)) == 1)) {
         l <- unlist(l)
       }
@@ -299,6 +298,14 @@ mt_n_tracks <- function(x) {
   )))
   x
 }
+
+#' @export
+"[<-.move2" <- function(x, i, j, value) {
+  x <- NextMethod()
+  class(x) <- unique(c("move2", class(x)))
+  return(x)
+}
+
 #' @export
 "[.move2" <- function(x, i, j, ..., drop = FALSE) { # nolint
   time_column_name <- mt_time_column(x)
@@ -325,7 +332,6 @@ mt_n_tracks <- function(x) {
         FUN.VALUE = logical(1L)
       )) &
         length(i) == ncol(x) && is.logical(i))
-
       i <- TRUE
       # fix for code in ggplot2 coord-sf.R (line 67), where using '[' is used to update projections
     }

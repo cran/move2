@@ -1,0 +1,411 @@
+---
+title: "Example analysis of albatross trajectories"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Example analysis of albatross trajectories}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+params:
+  eval_output: TRUE
+---
+```{r set_width, echo=FALSE, eval=params$eval_output}
+options(width = 84)
+options(sf_max_print = 3)
+options(tibble.max_extra_cols = 5)
+
+knitr::opts_chunk$set(
+  collapse = TRUE, fig.width = 7, fig.height = 4,
+  comment = "#>", fig.align = "center"
+)
+
+
+knitr::opts_chunk$set(
+  gganimate = list(
+    nframes = 30,
+    fps = 5
+  )
+)
+
+if (Sys.info()["user"] != "bart") {
+  if (Sys.getenv("MBPWD") != "") {
+    options(keyring_backend = "env")
+    move2::movebank_store_credentials("move2_user", Sys.getenv("MBPWD"))
+  } else {
+    warning("Evaluation of movebank download not possible")
+    knitr::opts_chunk$set(eval = FALSE)
+  }
+}
+```
+
+First the `move2` package needs to be loaded.
+
+```{r load_move}
+library(move2)
+```
+First valid movebank credentials need to be stored. Here the 'username' needs to be set. In an interactive session the user will be prompted for a password and possibly will be prompted to install additional packages. Alternatively the password can be provided on the command line as a second argument however it is then important to ensure it will not be stored in the R history. For more details and setups storing multiple credentials we refer to the "[movebank](https://bartk.gitlab.io/move2/articles/movebank.html)" vignette.
+
+```{r example_store_cred, eval=FALSE}
+movebank_store_credentials("username")
+```
+
+For this example we download the data from the study 'Galapagos Albatrosses' (notice that matching is conducted if no study is named as such). Here we specify to only download data from the 'gps' sensor. Filtering at this early stage speeds up the working cycle as no unneeded data is extracted from the database. The resulting data is printed to the screen showing an overview of the data (here the number of lines are reduced). First general properties of the data are shown including the number of tracks and the average track duration. After, the first observations are printed. The units of attributes derived from the movebank vocabulary are associated to the locations are shown between square brackets. Finally, the summary of the `track_data` is printed, where each row corresponds to the track level data for each track. 
+
+In case the license terms for the study have not been accepted before, the download command will fail and prompt the user to read the license terms and accept these. This can be done by adding the `license-md5` argument to the download command with the hash provided in the error message.  
+
+```{r download_example}
+data <- movebank_download_study("Galapagos Albatrosses", sensor_type_id = "gps")
+data
+```
+
+As the `move2` class extends `sf` we can profit from existing plotting functionality. Here we use `ggplot2` to visualize the data. Notice that `geom_sf` is called twice, once to plot the location records, and a second time to plot the tracks for each individual. For the later `mt_track_lines` is used convert the point location data to a single line geometry per individual.
+
+```{r preload_raster, echo=FALSE, include=FALSE}
+# preload rnatural earth to prevent messaging
+library(ggplot2)
+library(raster)
+```
+```{r map_albatrosses, fig.width=5.3}
+library(ggplot2)
+ggplot() +
+  ggspatial::annotation_map_tile(zoom = 5) +
+  ggspatial::annotation_scale() +
+  theme_linedraw() +
+  geom_sf(data = data, color = "darkgrey", size = 1) +
+  geom_sf(data = mt_track_lines(data), aes(color = individual_local_identifier)) +
+  coord_sf(
+    crs = sf::st_crs("+proj=aeqd +lon_0=-83 +lat_0=-6 +units=km"),
+    xlim = c(-1000, 600),
+    ylim = c(-800, 700)
+  ) +
+  guides(color = "none")
+```
+
+For more interactive explorations of the data other packages like `mapview` and `leaflet` might be of interest, as it allows to zoom into the tracks and explore the attributes of each location. 
+
+## Animating
+
+Using the tools from `gganimate` and `ggspatial` we can also add more context to the map and animate it. Here `annotate_map_tile` is used to add the [OpenStreetMap](https://www.openstreetmap.org) background map and `annotate_scale` to add a scale bar. A variety of different animations are possible, here we show birds originating from different `study_site`'s. These kind of animations help to gain insights into the differences between subgroups of the data set. Besides tagging location, also different years, life stages or sexes are clear candidates to compare.
+```{r preload_spatial, echo=FALSE, include=FALSE}
+# preload rnatural earth to prevent messaging
+library(gganimate)
+library(ggspatial)
+```
+```{r island_animation, eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3, results='hide'}
+require(gganimate)
+require(ggspatial)
+animation_site <- ggplot() +
+  annotation_map_tile(zoom = 5, progress = "none") +
+  geom_sf(
+    data = mt_track_lines(data),
+    mapping = aes(group = individual_local_identifier),
+    color = "black"
+  ) +
+  transition_states(study_site, state_length = 2) +
+  enter_fade() +
+  exit_fade() +
+  ease_aes("cubic-in-out") +
+  labs(title = "{closest_state}") +
+  annotation_scale()
+animation_site
+```
+```{r island_animation_render ,echo=FALSE, results='asis'}
+# animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
+anim_save("island_animation.gif", animation = animation_site)
+cat("![](island_animation.gif)\n")
+```
+
+We can also take this one step further by animating the map view. To do that we use a local equal area projection and define for each state a manual zoom.
+
+```{r change_view, eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3, results='hide'}
+animation_site +
+  coord_sf(
+    crs = sf::st_crs("+proj=aeqd +lon_0=-83 +lat_0=-6 +units=km")
+  ) +
+  view_zoom_manual(
+    pause_length = 2,
+    xmin = c(-850, -900, -950),
+    ymin = c(-350, -800, -350),
+    ymax = c(610, 700, 610),
+    xmax = c(500, 600, 500)
+  )
+```
+```{r change_view_render ,echo=FALSE, results='asis'}
+# animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
+anim_save("change_view.gif", renderer = gifski_renderer())
+cat("![](change_view.gif)\n")
+```
+
+It is also possible to animate the movement of individuals. To make the animation smoother, we linearly interpolate the position of individuals. Here we interpolate to a location every 60 minutes. We avoid interpolating longer time lags (in this case larger than 3 hours) to avoid inferring movement between location to long apart, this causes some individuals to temporarily disappear from the animation. To ensure that the data set is fully regular we omit the existing locations. For visual purposes we only show a short period of a few days, however, this can be adjusted to what is most appropriate for the intended visualization. For each timestamp we render one frame. Here we color by individual but other attributes like the speed could also be used. 
+
+```{r movement_animation, eval=params$eval_output &     knitr::opts_chunk$get("eval"), results='hide'}
+data_interpolated <- data[!sf::st_is_empty(data), ] |>
+  mt_interpolate(
+    seq(
+      as.POSIXct("2008-7-27"),
+      as.POSIXct("2008-8-1"), "60 mins"
+    ),
+    max_time_lag = units::as_units(3, "hours"),
+    omit = TRUE
+  )
+animation <- ggplot() +
+  annotation_map_tile(zoom = 5, progress = "none") +
+  annotation_scale() +
+  theme_linedraw() +
+  geom_sf(
+    data = data_interpolated, size = 3,
+    aes(color = individual_local_identifier)
+  ) +
+  transition_manual(timestamp) +
+  labs(
+    title = "Galapagos Albatrosses",
+    subtitle = "Time: {current_frame}",
+    color = "Individual"
+  )
+animate(animation,
+  nframes = length(unique(data_interpolated$timestamp))
+)
+```
+```{r movement_animation_render ,echo=FALSE, results='asis'}
+# animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
+anim_save("movement_animation.gif", renderer = gifski_renderer())
+cat("![](movement_animation.gif)\n")
+```
+
+The previous animation was made using a relatively simple approach. However, with some additional changes it is possible to add a tail to the movement of individuals and use a dark color scheme. To visualize the tail we use `shadow_wake` which does not work in combination with `transition_manual`, therefore we switch here to the usage of `transition_time`. To keep the continuity of movement, this case we do in interpolate over longer time spans.
+
+```{r movement_animation_tail}
+date_range <- as.POSIXct(c("2008-7-29", "2008-8-1"))
+ts <- mt_time(data)
+data_interpolated <- data[!sf::st_is_empty(data), ] |>
+  mt_interpolate(
+    times <- sort(unique((c(date_range, ts[ts < max(date_range) & ts > min(date_range)])))),
+    omit = T
+  )
+label_df <- data.frame(
+  timestamp = date_range,
+  display_time = lubridate::with_tz(date_range, "America/Lima")
+)
+animation <- ggplot() +
+  annotation_map_tile("cartodark", zoom = 5, progress = "none") +
+  annotation_scale(bar_cols = c("gray80", "gray40"), text_col = "gray80") +
+  geom_sf(data = mt_track_lines(data), color = "grey40") +
+  theme_linedraw() +
+  geom_sf(
+    data = data_interpolated, size = 3,
+    aes(color = individual_local_identifier)
+  ) +
+  scale_color_brewer(palette = "Set1") +
+  guides(color = "none") +
+  xlab("") +
+  ylab("") +
+  geom_text(
+    data = label_df,
+    aes(label = display_time, x = -10100000, y = -1370000),
+    color = "grey80", size = 3, hjust = 0
+  ) +
+  transition_time(timestamp) +
+  shadow_wake(.2, exclude_layer = 6)
+```
+
+
+The time period selected is 3 days and we generate one frame every 30 minutes. The `detail` argument is used to estimate additional intermediate locations so that the tail gets a smooth shape.  
+
+```{r movement_animation_tail_show, results='hide', eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3}
+animate(animation,
+  nframes = 3 * 24 * 2 + 1, detail = 5
+)
+```
+```{r movement_animation_tail_show_render ,echo=FALSE, results='asis'}
+# animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
+anim_save("movement_animation_tail_show.gif", renderer = gifski_renderer())
+cat("![](movement_animation_tail_show.gif)\n")
+```
+
+Note that the timezone is set to Lima, this provides us the possibility to easily identify that most movement occurs during the day and that the birds are relatively stationary and floating with the current during the night.
+
+## Spatial analysis
+
+Now lets take a deeper dive into the albatross data. We have seen that these birds breed on the Galapagos islands and forage on the coast of South America. For some of these birds only one foraging trip has been recorded while for others multiple trips are available. In this example we explore the tracks within four different stages of these trips (in the breeding area, the outbound and inbound flight and the foraging area). To do this we do spatial intersections with the defined regions, split the track into different sections and summarize each track.
+
+First we download the data again, however this time we additionally include the accelerometer data, this gives us one trajectory per individual. Some individuals are marked in the deployment data as being 'not used for analysis', so we omit these individuals from the dataset.
+
+```{r start_advance, message=FALSE}
+require(units)
+require(dplyr)
+require(sf)
+data <- movebank_download_study("Galapagos Albatrosses",
+  sensor_type_id = c("gps", "acceleration")
+)
+data <- data %>%
+  filter_track_data(deployment_comments != "not used in analysis")
+```
+The dataset now contains both accelerometer and gps data, these records are not necessarily recorded at the same time and are thus reported as separate rows in the data. The accelerometer data are not associated with locations. In order to associate the measurements to a specific region we do a linear interpolation for all missing locations (the default of `mt_interpolate`). The records as downloaded by default are not sorted by time and individual, therefore we first need to ensure this ordering is correct.
+
+
+```{r interpolate_empty}
+data <- data[order(mt_track_id(data), mt_time(data)), ]
+data <- mt_interpolate(data)
+```
+
+Next, we want to associate records with the respective regions (breeding and foraging), we do this by a spatial intersection (`st_join`). For simplicity here the breeding region is defined as with a fixed distance from any of the deployment locations of the tracks. The foraging region is defined as the area within a 100 kilometer from the coast of South America. As a result a new column called `region` is generated where all records outside of either of the regions has a `NA` value.
+
+```{r preload, echo=FALSE, include=FALSE}
+# preload rnatural earth to prevent messaging
+library(rnaturalearth)
+```
+
+```{r intersection}
+library(rnaturalearth)
+breeding_area <- st_buffer(mt_track_data(data)$deploy_on_location, as_units(25, "km")) |>
+  st_union()
+foraging_area <- ne_countries(110,
+  returnclass = "sf",
+  continent = "South America"
+) |>
+  st_union() |>
+  st_buffer(as_units(100, "km"))
+regions <- st_sf(data.frame(
+  region = c("Breeding", "Foraging"),
+  polygon = c(breeding_area, foraging_area)
+))
+data <- st_join(data, regions)
+```
+
+Next, we need to find those trajectories that are either inbound or outbound. To identify these we look for series of `NA` records where the previous location was within the breeding region and the next location in the foraging region, or vice versa. This approach has the advantage that only full trips from one to the other region are defined as commutes. Shorter trips outside of the breeding or foraging region can be redefined to be either foraging or breeding so that these sections are not cut up. 
+
+```{r recode_region_change}
+data <- data %>%
+  group_by(mt_track_id(.)) %>%
+  mutate(
+    region_change = paste(
+      vctrs::vec_fill_missing(region),
+      vctrs::vec_fill_missing(region, "up")
+    ),
+    region = case_match(region_change,
+      "Foraging Breeding" ~ "Inbound",
+      "Breeding Foraging" ~ "Outbound",
+      "Breeding Breeding" ~ "Breeding",
+      "Foraging Foraging" ~ "Foraging",
+      .default = region
+    )
+  )
+```
+
+Next, we redefine tracks, up to now the tracks corresponded to all tracking data from one individual. Now we want to convert all continuous data within one region as being one track. Here `rle` is used to identify continues section within one region. We do omit locations that have no region associated, these occur at the start or end of trajectories 
+
+```{r change_track}
+data <- data %>%
+  mutate(
+    sequence_number = with(rle(region), rep(seq_along(lengths), lengths)),
+    track = paste(individual_local_identifier, region, sequence_number)
+  ) %>%
+  ungroup() %>%
+  mutate_track_data(individual = droplevels(individual_local_identifier)) %>%
+  mt_set_track_id("track") %>%
+  filter(!is.na(region))
+```
+
+These used gps tracking devices were also equipped with accelerometers, here we do not go into the calibration of these measurements, however we can still calculate a proxy for energy expenditure, the dynamic body acceleration (DBA). The acceleration measurements, in this case collected in bursts, are stored in movebank as a text string which can be parsed to an expenditure for each burst as follows (notice that for these tags no calibration is available):
+
+```{r expenditure_acc}
+acc_to_dba <- function(x) {
+  acc_mat <- matrix(as.numeric(unlist(strsplit(x, " "))), nrow = 2)
+  mean(colSums(abs(acc_mat - rowMeans(acc_mat))))
+}
+data$dba <- unlist(lapply(data$eobs_accelerations_raw, acc_to_dba))
+```
+
+Now we can calculate summaries for each track, in this case we calculate the number of records in each track but also the start and end so the duration can be calculates. Furthermore we calculate summary statistics for the ground speed as measured by the gps and the DBA.
+
+```{r track_summary, fig.width=7}
+track_summary <- data %>%
+  mt_track_lines(
+    region = unique(region), n = dplyr::n(), start = min(timestamp),
+    end = max(timestamp),
+    across(
+      all_of(c("ground_speed", "dba")),
+      list(
+        mean = function(x) mean(x, na.rm = TRUE),
+        sd = function(x) sd(x, na.rm = TRUE)
+      )
+    )
+  ) %>%
+  mutate(duration = as_units(end - start))
+```
+
+We can first tabulate the number of tracks per region for each individual. Here we see that each individual has one track more in the breeding region then in the other regions. This makes sense as all individuals were equipped with transmitters in the breeding region and data is only retrieved once they returned.
+
+```{r tab;e}
+table(track_summary$individual, track_summary$region)
+```
+
+Now we can plot the obtained summary statistics for the trajectories in each 'region'. First we plot a map, to show where each track is, the inbound tracks are longer then the outbound tracks. 
+
+```{r track_map}
+ggplot(track_summary) +
+  geom_sf(data = ne_coastline(returnclass = "sf", 50)) +
+  geom_sf(aes(color = region)) +
+  theme_linedraw() +
+  coord_sf(
+    crs = st_crs("+proj=aeqd +lon_0=-83 +lat_0=-6 +units=km"),
+    xlim = c(-1000, 600),
+    ylim = c(-800, 700)
+  ) +
+  labs(color = "Region") +
+  scale_color_brewer(type = "qual")
+```
+
+However the distance is covered in a shorter time as can be seen in the following graph. Here the units are changes to days to facilitate the interpretation. 
+
+```{r plots_duration,  fig.width=6}
+ggplot(track_summary, aes(x = region, y = duration)) +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(aes(color = individual, group = individual),
+    position = position_jitterdodge()
+  ) +
+  xlab("") +
+  scale_y_units("Duration", unit = "days", trans = "log10") +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  theme_linedraw() +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  scale_color_brewer("Individual", type = "qual", palette = "Set1")
+```
+
+This corresponds with the fact that the ground speed measured by the gps sensor is on average higher (notice units get propagated from movebank). 
+
+```{r plots_speed,  fig.width=6}
+ggplot(
+  track_summary,
+  aes(x = region, y = ground_speed_mean)
+) +
+  theme_linedraw() +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(aes(color = individual, group = individual),
+    position = position_jitterdodge()
+  ) +
+  xlab("") +
+  ylab("Mean ground speed") +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  scale_color_brewer("Individual", type = "qual", palette = "Set1")
+```
+
+
+At the same time DBA is lower in these inbound flight corresponding to the tail winds these birds profit from. We also see that birds have a higher speed and DBA in the foraging region compared to the breeding region corresponding with their respective activities.
+
+```{r plot_expend,  fig.width=6}
+ggplot(
+  track_summary,
+  aes(x = region, y = dba_mean)
+) +
+  theme_linedraw() +
+  geom_boxplot(outlier.shape = NA) +
+  geom_point(aes(color = individual, group = individual),
+    position = position_jitterdodge()
+  ) +
+  ylab("Mean DBA") +
+  xlab("") +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  scale_color_brewer("Individual", type = "qual", palette = "Set1")
+```
+
+This analysis provides an example on how movement data can be analyzed using `move2` and how the retention of meta data is important to maintain consistency throughout the analysis. This enables tight integration with other packages facilitating visualization and spatial operations.  

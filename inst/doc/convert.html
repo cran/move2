@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -352,9 +352,9 @@ where to start looking if you search a <code>move2</code>
 equivalent.</p>
 <table>
 <colgroup>
-<col width="12%" />
+<col width="14%" />
 <col width="39%" />
-<col width="47%" />
+<col width="45%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -365,142 +365,147 @@ equivalent.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">angle()</td>
-<td align="left">mt_azimuth()</td>
+<td align="left"><code>angle()</code></td>
+<td align="left"><code>mt_azimuth()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">trackId()</td>
-<td align="left">mt_track_id()</td>
+<td align="left"><code>trackId()</code></td>
+<td align="left"><code>mt_track_id()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">timestamps()</td>
-<td align="left">mt_time()</td>
+<td align="left"><code>timestamps()</code></td>
+<td align="left"><code>mt_time()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">timestamps()&lt;-</td>
-<td align="left">mt_set_time()</td>
+<td align="left"><code>timestamps()&lt;-</code></td>
+<td align="left"><code>mt_set_time()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">timeLag()</td>
-<td align="left">mt_time_lags()</td>
+<td align="left"><code>timeLag()</code></td>
+<td align="left"><code>mt_time_lags()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">distance(), seglength()</td>
-<td align="left">mt_distance()</td>
+<td align="left"><code>distance()</code>, <code>seglength()</code></td>
+<td align="left"><code>mt_distance()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">speed()</td>
-<td align="left">mt_speed()</td>
+<td align="left"><code>speed()</code></td>
+<td align="left"><code>mt_speed()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">moveStack()</td>
-<td align="left">mt_stack()</td>
+<td align="left"><code>moveStack()</code></td>
+<td align="left"><code>mt_stack()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">n.indiv()</td>
-<td align="left">mt_n_tracks()</td>
+<td align="left"><code>n.indiv()</code></td>
+<td align="left"><code>mt_n_tracks()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">n.locs()</td>
-<td align="left">nrow()/table(mt_track_id())</td>
+<td align="left"><code>n.locs()</code></td>
+<td align="left"><code>nrow()</code>/<code>table(mt_track_id())</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">idData()</td>
-<td align="left">mt_track_data()</td>
+<td align="left"><code>idData()</code></td>
+<td align="left"><code>mt_track_data()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">idData()&lt;-</td>
-<td align="left">mt_set_track_data()</td>
+<td align="left"><code>idData()&lt;-</code></td>
+<td align="left"><code>mt_set_track_data()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">turnAngleGc()</td>
-<td align="left">mt_turnangle()</td>
+<td align="left"><code>turnAngleGc()</code></td>
+<td align="left"><code>mt_turnangle()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">unUsedRecords()</td>
-<td align="left">x[sf::st_is_empty(x),]</td>
+<td align="left"><code>unUsedRecords()</code></td>
+<td align="left"><code>x[sf::st_is_empty(x),]</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">namesIndiv()</td>
-<td align="left">unique(mt_track_id())</td>
+<td align="left"><code>namesIndiv()</code></td>
+<td align="left"><code>unique(mt_track_id())</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getDuplicatedTimestamps()</td>
-<td align="left">mt_is_time_ordered(…, non_zero = TRUE)</td>
+<td align="left"><code>getDuplicatedTimestamps()</code></td>
+<td align="left"><code>mt_is_time_ordered(..., non_zero = TRUE)</code></td>
 <td align="left">This is not a perfect replacement, but atleast gives a
 warning where duplicated times occur.</td>
 </tr>
 <tr class="odd">
-<td align="left">citations(), citations()&lt;-</td>
-<td align="left">mt_track_data()$citation, mutate_track_data(x,
-citation=…)</td>
+<td align="left"><code>citations()</code>,
+<code>citations()&lt;-</code></td>
+<td align="left"><code>mt_track_data()$citation</code>,
+<code>mutate_track_data(x, citation=...)</code></td>
 <td align="left">Citations are now a track properties, this helps when
 combining studies.</td>
 </tr>
 <tr class="even">
-<td align="left">licenseTerms(), licenseTerms()&lt;-</td>
-<td align="left">mt_track_data()$license_type, mutate_track_data(x,
-license_type=…), mt_track_data()$license_terms, mutate_track_data(x,
-license_terms=…)</td>
+<td align="left"><code>licenseTerms()</code>,
+<code>licenseTerms()&lt;-</code></td>
+<td align="left"><code>mt_track_data()$license_type</code>,
+<code>mutate_track_data(x, license_type=...)</code>,
+<code>mt_track_data()$license_terms</code>,
+<code>mutate_track_data(x, license_terms=...)</code></td>
 <td align="left">Licenses are not tracked per object separate anymore,
 rather they are considered a track attribute. This should facilitate
 more easly traceing what study has what license.</td>
 </tr>
 <tr class="odd">
-<td align="left">split()</td>
-<td align="left">split(x, mt_track_id(x))</td>
+<td align="left"><code>split()</code></td>
+<td align="left"><code>split(x, mt_track_id(x))</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">plot()</td>
-<td align="left">plot(), plot(mt_track_lines())</td>
+<td align="left"><code>plot()</code></td>
+<td align="left"><code>plot()</code>,
+<code>plot(mt_track_lines())</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">equalProj()</td>
-<td align="left">sf::st_crs()==sf::st_crs()</td>
+<td align="left"><code>equalProj()</code></td>
+<td align="left"><code>sf::st_crs()==sf::st_crs()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">burst(), burstId(), burstId()&lt;-, plotBursts()</td>
+<td align="left"><code>burst()</code>, <code>burstId()</code>,
+<code>burstId()&lt;-</code>, <code>plotBursts()</code></td>
 <td align="left"></td>
 <td align="left">Currently bursting is not explicit functionality of the
 package, <code>group_by</code> might replace some functionality that is
 however grouping per point and not per segment</td>
 </tr>
 <tr class="odd">
-<td align="left">show()</td>
-<td align="left">print()</td>
+<td align="left"><code>show()</code></td>
+<td align="left"><code>print()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">move()</td>
-<td align="left">mt_as_move2()</td>
+<td align="left"><code>move()</code></td>
+<td align="left"><code>mt_as_move2()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">interpolateTime()</td>
-<td align="left">mt_interpolate()</td>
+<td align="left"><code>interpolateTime()</code></td>
+<td align="left"><code>mt_interpolate()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">thinTrackTime()</td>
-<td align="left">mt_filter_per_interval()</td>
+<td align="left"><code>thinTrackTime()</code></td>
+<td align="left"><code>mt_filter_per_interval()</code></td>
 <td align="left">These two functions are not exactly doing the same, the
 new one subsets the data to a specified time window, but also retains
 segments with larger timelags</td>
@@ -511,9 +516,9 @@ segments with larger timelags</td>
 <h2>Movebank API related</h2>
 <table>
 <colgroup>
-<col width="15%" />
-<col width="51%" />
-<col width="32%" />
+<col width="16%" />
+<col width="52%" />
+<col width="31%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -524,75 +529,74 @@ segments with larger timelags</td>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">getMovebankStudies()</td>
-<td align="left">movebank_download_study_info()</td>
+<td align="left"><code>getMovebankStudies()</code></td>
+<td align="left"><code>movebank_download_study_info()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getMovebankStudy()</td>
-<td align="left">movebank_download_study_info(id = …)</td>
+<td align="left"><code>getMovebankStudy()</code></td>
+<td align="left"><code>movebank_download_study_info(id = ...)</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">getMovebankData()</td>
-<td align="left">movebank_download_study()</td>
+<td align="left"><code>getMovebankData()</code></td>
+<td align="left"><code>movebank_download_study()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">searchMovebankStudies()</td>
+<td align="left"><code>searchMovebankStudies()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">movebankLogin()</td>
-<td align="left">movebank_store_credentials(),
-movebank_remove_credentials(), movebank_handle()</td>
+<td align="left"><code>movebankLogin()</code></td>
+<td align="left"><code>movebank_store_credentials()</code>,
+<code>movebank_remove_credentials()</code>,
+<code>movebank_handle()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getMovebank()</td>
-<td align="left">movebank_retrieve()</td>
+<td align="left"><code>getMovebank()</code></td>
+<td align="left"><code>movebank_retrieve()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">getMovebankReferenceTable()</td>
-<td align="left">movebank_download_deployment()</td>
+<td align="left"><code>getMovebankReferenceTable()</code></td>
+<td align="left"><code>movebank_download_deployment()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getMovebankSensors()</td>
-<td align="left">movebank_retrieve(entity_type=“sensor”,
-tag_study_id=…), movebank_retrieve(entity_type=“tag_type”)</td>
+<td align="left"><code>getMovebankSensors()</code></td>
+<td align="left"><code>movebank_retrieve(entity_type=&quot;sensor&quot;, tag_study_id=...)</code>,
+<code>movebank_retrieve(entity_type=&quot;tag_type&quot;)</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
 <td align="left">getMovebankID()</td>
-<td align="left">movebank_get_study_id()</td>
+<td align="left"><code>movebank_get_study_id()</code></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getMovebankAnimals()</td>
-<td align="left">movebank_download_deployment(),
-movebank_retrieve(entity_type = “individual”, study_id = …)</td>
+<td align="left"><code>getMovebankAnimals()</code></td>
+<td align="left"><code>movebank_download_deployment()</code>,
+<code>movebank_retrieve(entity_type = &quot;individual&quot;, study_id = ...)</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">getMovebankNonLocationData()</td>
-<td align="left">movebank_download_study(study_id=…,
-sensor_type_id=‘…’)</td>
+<td align="left"><code>getMovebankNonLocationData()</code></td>
+<td align="left"><code>movebank_download_study(study_id=..., sensor_type_id=&#39;...&#39;)</code></td>
 <td align="left">see <code>movebank_retrieve(&#39;tag_type&#39;)</code> for
 valid <code>sensor_type_id</code></td>
 </tr>
 <tr class="even">
-<td align="left">getMovebankLocationData()</td>
-<td align="left">movebank_download_study(),
-movebank_retrieve(entity_type=‘event’, study_id=…)</td>
+<td align="left"><code>getMovebankLocationData()</code></td>
+<td align="left"><code>movebank_download_study()</code>,
+<code>movebank_retrieve(entity_type=&#39;event&#39;, study_id=...)</code></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">getMovebankSensorsAttributes()</td>
-<td align="left">movebank_retrieve(entity_type = “study_attribute”,
-study_id=…, sensor_type_id=…)</td>
+<td align="left"><code>getMovebankSensorsAttributes()</code></td>
+<td align="left"><code>movebank_retrieve(entity_type = &quot;study_attribute&quot;, study_id=..., sensor_type_id=...)</code></td>
 <td align="left">see <code>movebank_retrieve(&#39;tag_type&#39;)</code> for
 valid <code>sensor_type_id</code></td>
 </tr>
@@ -615,57 +619,57 @@ directly in <code>move2</code>.</p>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">UDStack()</td>
+<td align="left"><code>UDStack()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getVolumeUD()</td>
+<td align="left"><code>getVolumeUD()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">contour()</td>
+<td align="left"><code>contour()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">hrBootstrap()</td>
+<td align="left"><code>hrBootstrap()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">brownian.bridge.dyn()</td>
+<td align="left"><code>brownian.bridge.dyn()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">brownian.motion.variance.dyn()</td>
+<td align="left"><code>brownian.motion.variance.dyn()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">dynBGB()</td>
+<td align="left"><code>dynBGB()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">dynBGBvariance()</td>
+<td align="left"><code>dynBGBvariance()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">raster2contour()</td>
+<td align="left"><code>raster2contour()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">getMotionVariance()</td>
+<td align="left"><code>getMotionVariance()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>
 <tr class="odd">
-<td align="left">outerProbability()</td>
+<td align="left"><code>outerProbability()</code></td>
 <td align="left"></td>
 <td align="left"></td>
 </tr>

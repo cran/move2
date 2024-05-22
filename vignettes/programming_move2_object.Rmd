@@ -1,8 +1,8 @@
 ---
-title: "Programming with a move2 object"
+title: "Programming with a `move2` object"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Programming with a move2 object}
+  %\VignetteIndexEntry{Programming with a `move2` object}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -16,93 +16,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Function overview
-
-## Extracting information from a `move2` object
-
-- `sf::st_coordinates()`: returns the coordinates from the the events in the
-  track(s)
-
-- `sf::st_crs()`: returns the projection of the tracks(s)
-
-- `mt_time()`: returns the timestamps for each event in the track
-
-- `mt_track_data()`: returns the table containing the information associated to
-  the tracks
-
-- `mt_track_id()`: returns a vector of the track id associated to each event
-
-- `unique(mt_track_id())`: returns the names of the tracks
-
-- `mt_n_tracks()`: returns the number of the tracks
-
-- `nrow()/table(mt_track_id())`: returns the number of events in total and per
-  track respectively
-
-- `mt_time_column()`: returns the name of the column containing the timestamps
-  used by the `move2` object
-
-- `mt_track_id_column()`: returns the name of the column containing the track
-  ids used by the `move2` object
-
-## Transforming other classes to a `move2` object
-
-- `mt_as_move2()`: creates a `move2` object from objects of class `sf`, 
-`data.frame`, `telemetry`/`telemetry list` from *ctmm*, `track_xyt` from *amt* 
-or `Move`/`MoveStack` from *move*. 
-  
-## Transforming a `move2` object into other classes
-
-- `to_move()`: converts to a object of class `Move`/`MoveStack`
-
-- `mt_track_id(x) <- NULL`: to remove `move2` class from the object, it will 
-be recognized as a object of class `sf`
-
-- `mt_as_event_attribute(x, names(mt_track_data(x)))`: join all attributes (event and track) 
-into one table. If additionally `mt_track_id(x) <- NULL` is applied, the 
-resulting `sf` object should behave as any `data.frame`
-
-## Useful functions
-
-- `mt_read()`: read in data downloaded from movebank, by just stating the path to the file
-
-- `mt_read(mt_example())`: example dataset
-
-- `dplyr::filter(x, !sf::st_is_empty(x))`: exclude all empty locations
-
-- `filter_track_data(x, .track_id = c("nameTrack1", "nameTrack3")`: subset to one or more tracks
-
-- `split(x, mt_track_id(x))`: split a `move2` object into a list of single
-  objects per track. Alternatively see `dplyr::mutate()`, `dplyr::group_by()`, 
-  `group_by_track_data()` to apply calculations to tracks separately
-
-- `mt_stack()`: combine multiple `move2` objects into one
-
-- `mt_as_track_attribute()`/`mt_as_event_attribute()`: move columns between 
-track and event attributes (and vv)
-
-- `mt_set_track_id()`: replace track ids with new values, set new column to 
-define tracks or rename track id column
-
-- `mutate_track_data()`: add or modify attributes in the track data
-
-- `sf::st_transform()`: to reproject the `move2` into a different projection
-
-- `mt_aeqd_crs()`: create a AEQD coordinate reference system
-
-- `mt_track_lines()`: convert a trajectory into lines for plotting with e.g.
-  `ggplot`
-
-- use the option `options(sf_max.plot=1)` to display a single plot of the track.
-  The attribute that should be used to color the tracks can be specified, e.g.
-  `plot(x["individual_local_identifier"])`.
-  [Here](https://r-spatial.github.io/sf/articles/sf5.html) is more information
-  on how to do simple plots.
-
-All functions of the `move2` package are described
-[here.](https://bartk.gitlab.io/move2/reference/index.html)
-
 # Structure of the `move2` object 
+
 - it is based on the `sf` objects and compatible with a lot of
   `dplyr`/`tidyverse` based functionality
 
@@ -290,3 +205,96 @@ many functions and packages we rely on do not support this, we opt not to do
 this. Therefore, if reducing the data loaded does not solve the problem, it can
 be advisable to use a computer with more memory or when possible split up
 analysis per track.
+
+
+# Function overview
+
+Here we first a quick overview of the most important function. 
+
+## Extracting information from a `move2` object
+
+- `sf::st_coordinates()`: returns the coordinates from the the events in the
+  track(s)
+
+- `sf::st_crs()`: returns the projection of the tracks(s)
+
+- `sf::st_bbox()`: returns the bounding box of the track(s)
+
+- `mt_time()`: returns the timestamps for each event in the track
+
+- `mt_track_data()`: returns the table containing the information associated to
+  the tracks
+
+- `mt_track_id()`: returns a vector of the track id associated to each event
+
+- `unique(mt_track_id())`: returns the names of the tracks
+
+- `mt_n_tracks()`: returns the number of the tracks
+
+- `nrow()`: returns the total number of events
+
+- `table(mt_track_id())`: returns the number of events per track
+
+- `mt_time_column()`: returns the name of the column containing the timestamps
+  used by the `move2` object
+
+- `mt_track_id_column()`: returns the name of the column containing the track
+  ids used by the `move2` object
+
+## Transforming other classes to a `move2` object
+
+- `mt_as_move2()`: creates a `move2` object from objects of class `sf`, 
+`data.frame`, `telemetry`/`telemetry list` from *ctmm*, `track_xyt` from *amt* 
+or `Move`/`MoveStack` from *move*. 
+  
+## Transforming a `move2` object into other classes
+
+- `to_move()`: converts to a object of class `Move`/`MoveStack`
+
+- `mt_track_id(x) <- NULL`: to remove `move2` class from the object, it will 
+be recognized as a object of class `sf`
+
+- to transform into a flat table without loosing information:
+    * move all track associated attributes to the event table: `x <- mt_as_event_attribute(x, names(mt_track_data(x)))`
+    * put coordinates in 2 columns: `x <- dplyr::mutate(x, coords_x=sf::st_coordinates(x)[,1], coords_y=sf::st_coordinates(x)[,2])`
+    * remove the sf geometry column from the table: `x <- sf::st_drop_geometry(x)`
+
+## Useful functions
+
+- `mt_read()`: read in data downloaded from movebank, by just stating the path to the file
+
+- `mt_read(mt_example())`: example dataset
+
+- `dplyr::filter(x, !sf::st_is_empty(x))`: exclude all empty locations
+
+- `filter_track_data(x, .track_id = c("nameTrack1", "nameTrack3")`: subset to one or more tracks
+
+- `split(x, mt_track_id(x))`: split a `move2` object into a list of single
+  objects per track. Alternatively see `dplyr::mutate()`, `dplyr::group_by()`, 
+  `group_by_track_data()` to apply calculations to tracks separately
+
+- `mt_stack()`: combine multiple `move2` objects into one
+
+- `mt_as_track_attribute()`/`mt_as_event_attribute()`: move columns between 
+track and event attributes (and vice versa)
+
+- `mt_set_track_id()`: replace track ids with new values, set new column to 
+define tracks or rename track id column
+
+- `mutate_track_data()`: add or modify attributes in the track data
+
+- `sf::st_transform()`: to reproject the `move2` into a different projection
+
+- `mt_aeqd_crs()`: create a AEQD coordinate reference system
+
+- `mt_track_lines()`: convert a trajectory into lines for plotting with e.g.
+  `ggplot`
+
+- use the option `options(sf_max.plot=1)` to display a single plot of the track.
+  The attribute that should be used to color the tracks can be specified, e.g.
+  `plot(x["individual_local_identifier"])`.
+  [Here](https://r-spatial.github.io/sf/articles/sf5.html) is more information
+  on how to do simple plots.
+
+All functions of the `move2` package are described
+[here.](https://bartk.gitlab.io/move2/reference/index.html)

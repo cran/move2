@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE--------------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE, fig.width = 7, fig.height = 7,
   comment = "#>"
@@ -13,13 +13,13 @@ if (Sys.info()["user"] != "bart") {
 }
 Sys.setlocale("LC_TIME", "en_US.utf8")
 
-## ----setup--------------------------------------------------------------------
+## ----setup------------------------------------------------------------------------
 library(move2)
 vulture_data <-
   movebank_download_study("Turkey vultures in North and South America")
 vulture_data
 
-## -----------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------
 library(dplyr, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(rnaturalearth, quietly = TRUE)
@@ -46,7 +46,7 @@ ggplot() +
     xlim = c(-3500, 3800), ylim = c(-4980, 4900)
   )
 
-## -----------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------
 library(magrittr, quietly = TRUE)
 library(lubridate, quietly = TRUE)
 vulture_data %<>% mutate(
@@ -59,16 +59,18 @@ vulture_data %<>% mutate(
     September = "South migration", October = "South migration",
     November = "Wintering", December = "Wintering"
   ),
+  # Here we change season to NA if the next location is either from
+  # a different track or season
   season = if_else(season == lead(season, 1) &
     mt_track_id() == lead(mt_track_id(), 1),
   season, NA
   )
 )
 
-## -----------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------
 vulture_data %<>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
 
-## -----------------------------------------------------------------------------
+## ----fig.height=6-----------------------------------------------------------------
 library(circular, quietly = TRUE)
 vulture_azimuth_distributions <- vulture_data %>%
   filter(speed > set_units(2, "m/s") & !is.na(season)) %>%
@@ -110,7 +112,7 @@ vulture_azimuth_distributions %>%
   ) +
   scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L))
 
-## ---- fig.height=5------------------------------------------------------------
+## ----fig.height=5-----------------------------------------------------------------
 leo <- vulture_data |>
   filter_track_data(individual_local_identifier == "Leo") |>
   mutate(speed_categorical = cut(speed, breaks = c(2, 5, 10, 15, 35)))
@@ -119,7 +121,7 @@ leo |> ggplot(aes(x = azimuth, y = speed)) +
   scale_x_units(unit = "degrees", breaks = c(-2:2) * 90, expand = c(0L, 0L)) +
   theme_linedraw()
 
-## -----------------------------------------------------------------------------
+## ---------------------------------------------------------------------------------
 leo |>
   filter(speed > set_units(2L, "m/s") & !is.na(season)) |>
   ggplot() +
@@ -141,7 +143,7 @@ leo |>
   scale_fill_ordinal("Speed") +
   theme_linedraw()
 
-## ---- fig.height=4, fig.width=5-----------------------------------------------
+## ----fig.height=4, fig.width=5----------------------------------------------------
 pi_r <- set_units(pi, "rad")
 leo %>%
   mutate(turnangle = mt_turnangle(.)) %>%
@@ -160,7 +162,7 @@ leo %>%
   scale_y_continuous(limits = c(-500L, 650L), breaks = c(0L, 250L, 500L)) +
   theme_linedraw()
 
-## ---- fig.height=5------------------------------------------------------------
+## ----fig.height=5-----------------------------------------------------------------
 vulture_data %<>% group_by(mt_track_id()) %>%
   mutate(displacement = c(st_distance(
     !!!syms(attr(., "sf_column")),

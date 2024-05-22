@@ -3,9 +3,9 @@ test_that("Round trip combining and splitting indviduals", {
   expect_s3_class(b <- mt_sim_brownian_motion(tracks = "b"), "move2")
   expect_silent(d <- rbind(a, b))
   expect_silent(aa <- d |> filter_track_data(.track_id = "a"))
-  expect_identical(a, aa)
+  expect_identical(a[T,], aa) #temporary fix for points matrix
   expect_silent(bb <- d |> filter_track_data(.track_id = "b"))
-  expect_identical(b, bb)
+  expect_identical(b[T,], bb) #temporary fix for points matrix
 })
 
 test_that(
@@ -19,7 +19,7 @@ test_that(
     expect_silent(aa <- d |> filter_track_data(.track_id = c("a", "d")))
     expect_identical(a, aa)
     expect_silent(bb <- d |> filter_track_data(.track_id = "b"))
-    expect_identical(b, bb)
+    expect_identical(b[T,], bb) #temporary fix for points matrix
   }
 )
 
@@ -32,7 +32,7 @@ test_that(
     expect_silent(aa <- d |> filter_track_data(.track_id = c("a", "d")))
     expect_identical(a, aa)
     expect_silent(bb <- d |> filter_track_data(.track_id = "b"))
-    expect_identical(b, bb)
+    expect_identical(b[T,], bb) #temporary fix for points matrix
   }
 )
 test_that("Rbind different timezones", {

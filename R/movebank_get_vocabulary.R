@@ -19,7 +19,7 @@ movebank_simplify_labels <- function(x) {
 #'
 #' @details
 #' This function can return data in several formats (see `return_type` argument):
-#' * `definition` A text string with the description of the term.
+#' * `definition` A named text vector with the description of the term.
 #' * `list` A list with all information for each term.
 #' * `xml` A xml_node with the definition.
 #' * `uri` A link to the full definitions page.
@@ -30,8 +30,11 @@ movebank_simplify_labels <- function(x) {
 #'
 #' @examples
 #' \donttest{
-#' ## list of all terms used in movebank
-#' movebank_get_vocabulary()
+#' ## the names of all terms used in movebank
+#' movebank_get_vocabulary() |>
+#'   names()
+#' ## retrieve one variable
+#' movebank_get_vocabulary("gps hdop")
 #' ## Count the units used in movebank
 #' movebank_get_vocabulary() |>
 #'   unlist() |>
@@ -45,9 +48,11 @@ movebank_simplify_labels <- function(x) {
 #' movebank_get_vocabulary("light-level", return_type = "xml")
 #' movebank_get_vocabulary("light-level", return_type = "uri")
 #' movebank_get_vocabulary("light-level", return_type = "list")
-#' ## get definitions of all column names of a move2 object
+#' ## get definitions of all column names of a move2 object, the conversion
+#' ## to a list is for better printing
 #' data <- mt_read(mt_example())
-#' movebank_get_vocabulary(data)
+#' movebank_get_vocabulary(data) |>
+#'   as.list()
 #' }
 movebank_get_vocabulary <-
   function(labels,

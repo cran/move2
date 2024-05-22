@@ -1,3 +1,23 @@
+# move2 0.3.0
+
+* Fix assertion messaging in `movebank_retrieve`
+* Resolve some telemetry import issues (#65)
+* Support reading zip files from Env-DATA (#49)
+* If `lubridate` is installed improve the printing of the average track duration
+* Prevent superfluous printing of join column in `mt_track_lines`
+* Improve printing error for multiple studies matching (see #71, @robitalec)
+* Make it possible to find unique with tolerances in `mt_unique`
+* Assigning in grouped `move2` retains class
+* Remove ASU units as they are not recognized by `units` (#67)
+* Fix error in matching data when order of tracks differed in `mt_as_track_data` (#73)
+* make `setOldClass` inherit `sf` so S4 methods like `mapView` work
+* `.keep` in `mt_as_event_attribute` incorrectly did not add column (#74)
+* Using `"merge_list"` results in list columns in `track_data` with `mt_stack`, "merge" now returns unique values (#72, Bruno Caneco)
+* Update vocabulary (note speed accuracy had incorrect units)
+* Update vocabulary to version released in January 2024 (note speed accuracy had incorrect units, #69)
+* When `mt_set_track_id` now returns a list column the lists are unnamed
+* Fix `mt_has_unique_location_time_records` failing with `int64` `POSIXct` combination (#79)
+
 # move2 0.2.7
 
 * Add "transmission-end" & "dead/fall-off" to deployment end type to read data correctly

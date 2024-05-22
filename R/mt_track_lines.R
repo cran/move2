@@ -52,5 +52,5 @@ mt_track_lines <- function(x, ...) {
     group_by(!!sym(attr(x, "track_id_column"))) |>
     summarise(do_union = FALSE, ...) |> # union F prevents point order from being mixed up
     st_cast("LINESTRING") |>
-    left_join(mt_track_data(x))
+    left_join(mt_track_data(x), by = mt_track_id_column(x))
 }

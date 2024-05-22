@@ -34,7 +34,7 @@ from [CRAN](https://cran.r-project.org/package=move2):
 install.packages("move2")
 ```
 
-You can also install the development version of move2 like so:
+You can also install the development version of `move2` like so:
 
 ``` r
 devtools::install_git('https://gitlab.com/bartk/move2.git')
@@ -55,7 +55,9 @@ track <- movebank_download_study("Galapagos Albatrosses",
   sensor_type_id = "gps"
 )
 track
-#> A <move2> object containing 28 tracks consisting of:
+#> A <move2> with `track_id_column` "individual_local_identifier" and
+#> `time_column` "timestamp"
+#> Containing 28 tracks lasting on average 37.1 days in a
 #> Simple feature collection with 16414 features and 18 fields (with 386 geometries empty)
 #> Geometry type: POINT
 #> Dimension:     XY
@@ -101,7 +103,6 @@ ggplot() +
     ylim = c(-800, 700)
   )
 #> In total 386 empty location records are removed before summarizing.
-#> Joining with `by = join_by(individual_local_identifier)`
 ```
 
 <img src="man/figures/README-map-1.png" width="100%" />
@@ -168,7 +169,7 @@ suggestions or information what is used are welcome.
   - `filter_minimal_travel`: Minimally x meter travel between locations
   - `filter_minimal_distance`: Minimally x meter distance between
     locations
-  - `filter_outlier_quick_return`: Combination of \~180 degree turns,
+  - `filter_outlier_quick_return`: Combination of ~180 degree turns,
     high speed and comparable distances?
 - Import data from PostgreSQL database
 
