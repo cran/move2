@@ -177,7 +177,7 @@ mt_interpolate <- function(x, time, max_time_lag, omit = FALSE) {
     ) |>
     pull(new)
   st_geometry(x)[!st_is_empty(res)] <- res[!st_is_empty(res)]
-  if (omit & !missing(time)) {
+  if (omit && !missing(time)) {
     x <- x[mt_time(x) %in% time, ]
   }
   return(x)

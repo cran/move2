@@ -3,9 +3,9 @@ test_that("Round trip combining and splitting indviduals", {
   expect_s3_class(b <- mt_sim_brownian_motion(tracks = "b"), "move2")
   expect_silent(d <- rbind(a, b))
   expect_silent(aa <- d |> filter_track_data(.track_id = "a"))
-  expect_identical(a[T,], aa) #temporary fix for points matrix
+  expect_identical(a[TRUE, ], aa) # temporary fix for points matrix
   expect_silent(bb <- d |> filter_track_data(.track_id = "b"))
-  expect_identical(b[T,], bb) #temporary fix for points matrix
+  expect_identical(b[TRUE, ], bb) # temporary fix for points matrix
 })
 
 test_that(
@@ -19,7 +19,7 @@ test_that(
     expect_silent(aa <- d |> filter_track_data(.track_id = c("a", "d")))
     expect_identical(a, aa)
     expect_silent(bb <- d |> filter_track_data(.track_id = "b"))
-    expect_identical(b[T,], bb) #temporary fix for points matrix
+    expect_identical(b[TRUE, ], bb) # temporary fix for points matrix
   }
 )
 
@@ -32,14 +32,14 @@ test_that(
     expect_silent(aa <- d |> filter_track_data(.track_id = c("a", "d")))
     expect_identical(a, aa)
     expect_silent(bb <- d |> filter_track_data(.track_id = "b"))
-    expect_identical(b[T,], bb) #temporary fix for points matrix
+    expect_identical(b[TRUE, ], bb) # temporary fix for points matrix
   }
 )
 test_that("Rbind different timezones", {
   expect_identical(
     rbind(
       mt_sim_brownian_motion(as.POSIXct("1970-1-1", tz = "UTC") + 1:3),
-      mt_sim_brownian_motion(as.POSIXct("1970-1-1", tz = "EST") + 1:3, tracks = "4")
+      mt_sim_brownian_motion(as.POSIXct("1970-1-1", tz = "UTC+5") + 1:3, tracks = "4")
     ) |> mt_time(),
     structure(c(1, 2, 3, 1, 2, 3, 18001, 18002, 18003), class = c(
       "POSIXct",

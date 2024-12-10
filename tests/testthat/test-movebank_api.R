@@ -181,6 +181,19 @@ test_that("Download api license acceptance message", {
     })
   )
 })
+
+test_that("movebank_download_study_info", {
+  skip_if_offline()
+  skip_on_cran()
+  skip_if_no_mbpwd()
+  withr::with_envvar(
+    list("movebank:move2_user" = Sys.getenv("MBPWD")),
+    withr::with_options(list(keyring_backend = "env"), {
+      expect_identical(nrow(a <- movebank_download_study_info(study_id = 2911040)), 1L)
+      expect_identical(movebank_download_study_info(study_id = "Galapagos Alba"), a)
+    })
+  )
+})
 test_that("Test if workaround for NA coordinates can be omitted (#63)", {
   show_failure(expect_warning(expect_warning(
     expect_warning(expect_warning(st_as_sf(
@@ -233,12 +246,14 @@ test_that("retrieve with url", {
     withr::with_options(list(keyring_backend = "env"), {
       expect_identical(
         m <- movebank_retrieve("https://www.movebank.org/movebank/service/direct-read?entity_type=individual&study_id=2911040"),
-        movebank_retrieve("individual", study_id = 2911040)
+        movebank_retrieve("individual", study_id = 2911040L)
       )
-      expect_gt(nrow(m), 5)
-      expect_gt(ncol(m), 5)
+      expect_gt(nrow(m), 5L)
+      expect_gt(ncol(m), 5L)
       expect_error(
-        movebank_retrieve("https://www.movebank.org/movebank/service/direct-read?entity_type=individual&study_id=2911040", rename_columns = T),
+        movebank_retrieve("https://www.movebank.org/movebank/service/direct-read?entity_type=individual&study_id=2911040",
+          rename_columns = TRUE
+        ),
         "When `entity_type` is an url the columns can't be renamed"
       )
     })
@@ -258,23 +273,26 @@ test_that("can download using handle directly", {
     attributes = NULL, timestamp_start = as.POSIXct("2008-06-6 01:30:24"),
     handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))
   ) |>
-    mt_time() |> max(), as.POSIXct("2008-06-6 01:30:24"))
+    mt_time() |>
+    max(), as.POSIXct("2008-06-6 01:30:24"))
   expect_identical(
     suppressMessages(movebank_download_study("artes pennanti LaPoint New York",
       attributes = "eobs_battery_voltage",
       handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))
     )),
-    suppressMessages(movebank_download_study(6925808,
+    suppressMessages(movebank_download_study(6925808L,
       attributes = "eobs_battery_voltage",
       handle = movebank_handle("move2_user", Sys.getenv("MBPWD")), timestamp_start = as.POSIXct("2007-06-6 01:30:24")
     ))
   )
   # At least temporary suppress warnings due to having only empty coordinates in creation of bounding box
-  suppressWarnings(expect_true(movebank_download_study(2911040,
-    sensor_type_id = 2365683, individual_id = 2911092,
+  suppressWarnings(expect_true(movebank_download_study(2911040L,
+    sensor_type_id = 2365683L, individual_id = 2911092L,
     handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))
   ) |>
-    sf::st_coordinates() |> is.na() |> all()))
+    sf::st_coordinates() |>
+    is.na() |>
+    all()))
 })
 test_that("No credentials 401", {
   skip_if_offline()
@@ -318,11 +336,11 @@ test_that("unknown error", {
   skip_if_no_mbpwd()
   withr::with_options(list(move2_movebank_api_url = "https://www.movebank.org/movebank/service/direct-red"), {
     expect_error(
-      movebank_download_study(1245488040, handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))),
+      movebank_download_study(1245488040L, handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))),
       "There is an unknown download error"
     )
     expect_error(
-      movebank_download_study(1245488040, handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))),
+      movebank_download_study(1245488040L, handle = movebank_handle("move2_user", Sys.getenv("MBPWD"))),
       "The status message was: 404"
     )
   })
@@ -350,29 +368,29 @@ test_that("Local test of argos gps study", {
     keyring = getOption("move2_movebank_keyring")
   )$username != "bart")
   expect_message(
-    tmp <- movebank_download_study(8849883),
+    tmp <- movebank_download_study(8849883L),
     "[0-9][0-9] records were omitted as they were not deployed"
   )
   expect_identical(
-    tmp$event_id[2],
+    tmp$event_id[2L],
     (dta <- movebank_retrieve("event",
-      study_id = 8849883, attributes = "all",
-      convert_spatial_columns = F
-    ))$event_id[2]
+      study_id = 8849883L, attributes = "all",
+      convert_spatial_columns = FALSE
+    ))$event_id[2L]
   )
   expect_equal(
-    unlist(dta[2, c("location_long", "location_lat")]),
-    sf::st_coordinates(tmp)[2, ],
+    unlist(dta[2L, c("location_long", "location_lat")]),
+    sf::st_coordinates(tmp)[2L, ],
     ignore_attr = TRUE
   )
   expect_equal(
-    unlist(dta[70031, c("location_long", "location_lat")]),
-    sf::st_coordinates(tmp)[tmp$event_id == dta$event_id[70031], ],
+    unlist(dta[70031L, c("location_long", "location_lat")]),
+    sf::st_coordinates(tmp)[tmp$event_id == dta$event_id[70031L], ],
     ignore_attr = TRUE
   )
   expect_s3_class(tmp$argos_location_1, "sfc")
   expect_s3_class(tmp$argos_location_2, "sfc")
-  expect_identical(st_crs(tmp$argos_location_1), st_crs(4326))
+  expect_identical(st_crs(tmp$argos_location_1), st_crs(4326L))
   expect_false("argos_location_2" %in% colnames(dta))
   expect_false("argos_location_1" %in% colnames(dta))
   expect_false("argos_lat2" %in% colnames(tmp))

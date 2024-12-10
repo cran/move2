@@ -39,7 +39,7 @@ mt_segments <- function(x) {
           as.numeric(as.factor(.data$numeric_track_id))
         }
       },
-      s = c(diff(.data$numeric_track_id) == 0, FALSE),
+      s = c(diff(.data$numeric_track_id) == 0L, FALSE),
       segment_column = replace(.data$segment_column, .data$s, st_cast(
         do.call(st_sfc, c(
           list(crs = st_crs(x)),

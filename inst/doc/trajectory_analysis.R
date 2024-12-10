@@ -49,7 +49,7 @@ ggplot() +
 ## ---------------------------------------------------------------------------------
 library(magrittr, quietly = TRUE)
 library(lubridate, quietly = TRUE)
-vulture_data %<>% mutate(
+vulture_data <- vulture_data %>% mutate(
   month = month(mt_time(), label = TRUE, abbr = FALSE),
   season = recode_factor(month,
     January = "Wintering", February = "Wintering",
@@ -68,12 +68,12 @@ vulture_data %<>% mutate(
 )
 
 ## ---------------------------------------------------------------------------------
-vulture_data %<>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
+vulture_data <- vulture_data %>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
 
 ## ----fig.height=6-----------------------------------------------------------------
 library(circular, quietly = TRUE)
 vulture_azimuth_distributions <- vulture_data %>%
-  filter(speed > set_units(2, "m/s") & !is.na(season)) %>%
+  filter(speed > set_units(2, "m/s"), !is.na(season)) %>%
   group_by(season, track_id = mt_track_id()) %>%
   filter(n() > 50) %>%
   summarise(azimuth_distribution = list(density(
@@ -118,12 +118,12 @@ leo <- vulture_data |>
   mutate(speed_categorical = cut(speed, breaks = c(2, 5, 10, 15, 35)))
 leo |> ggplot(aes(x = azimuth, y = speed)) +
   geom_point() +
-  scale_x_units(unit = "degrees", breaks = c(-2:2) * 90, expand = c(0L, 0L)) +
+  scale_x_units(unit = "degrees", breaks = -2:2 * 90, expand = c(0L, 0L)) +
   theme_linedraw()
 
 ## ---------------------------------------------------------------------------------
 leo |>
-  filter(speed > set_units(2L, "m/s") & !is.na(season)) |>
+  filter(speed > set_units(2L, "m/s"), !is.na(season)) |>
   ggplot() +
   coord_polar(start = pi) +
   geom_histogram(
@@ -147,7 +147,7 @@ leo |>
 pi_r <- set_units(pi, "rad")
 leo %>%
   mutate(turnangle = mt_turnangle(.)) %>%
-  filter(speed > set_units(2L, "m/s") & lag(speed, 1L) > set_units(2L, "m/s")) %>%
+  filter(speed > set_units(2L, "m/s"), lag(speed, 1L) > set_units(2L, "m/s")) %>%
   ggplot() +
   geom_histogram(
     aes(
@@ -163,7 +163,8 @@ leo %>%
   theme_linedraw()
 
 ## ----fig.height=5-----------------------------------------------------------------
-vulture_data %<>% group_by(mt_track_id()) %>%
+vulture_data <- vulture_data %>%
+  group_by(mt_track_id()) %>%
   mutate(displacement = c(st_distance(
     !!!syms(attr(., "sf_column")),
     (!!!syms(attr(., "sf_column")))[row_number() == 1]

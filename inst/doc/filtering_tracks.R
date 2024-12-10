@@ -3,7 +3,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-options(sf_max_print = 5)
+options(sf_max_print = 5L)
 if (Sys.info()["user"] != "bart") {
   if (Sys.getenv("MBPWD") != "") {
     options(keyring_backend = "env")
@@ -86,7 +86,7 @@ library(ggplot2, quietly = TRUE)
 ggplot() +
   geom_sf(data = rnaturalearth::ne_coastline(returnclass = "sf", 50)) +
   theme_linedraw() +
-  geom_sf(data = foraging_area, fill = "red", alpha = .3, color = "red") +
+  geom_sf(data = foraging_area, fill = "red", alpha = 0.3, color = "red") +
   geom_sf(
     data = galapagos_albatrosses %>% filter(!st_is_empty(.)),
     aes(color = `individual_local_identifier`)

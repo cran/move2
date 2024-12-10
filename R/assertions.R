@@ -69,8 +69,8 @@ NULL
 #'
 mt_is_track_id_cleaved <- function(x) {
   # factor numeric is needed to account for character, factor and numeric returns
-  individual_changes <- sum(diff(as.numeric(factor(mt_track_id(x)))) != 0)
-  return((individual_changes + 1) == mt_n_tracks(x))
+  individual_changes <- sum(diff(as.numeric(factor(mt_track_id(x)))) != 0L)
+  return((individual_changes + 1L) == mt_n_tracks(x))
 }
 on_failure(mt_is_track_id_cleaved) <- function(call, env) {
   movetrk <- eval(call$x, envir = env)
@@ -93,8 +93,8 @@ mt_is_time_ordered <- function(x, non_zero = FALSE) {
   if (is.character(id)) {
     id <- factor(id)
   }
-  return(all(ifelse(non_zero, `>`, `>=`)(as.numeric(diff(t)), 0) |
-    diff(as.numeric(id)) != 0))
+  return(all(ifelse(non_zero, `>`, `>=`)(as.numeric(diff(t)), 0L) |
+    diff(as.numeric(id)) != 0L))
 }
 on_failure(mt_is_time_ordered) <- function(call, env) {
   x <- eval(call[["x"]], envir = env)

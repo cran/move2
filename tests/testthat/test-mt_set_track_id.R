@@ -17,7 +17,7 @@ test_that("test renaming time", {
 test_that("splitting track and assigning new track ids", {
   m <- mt_sim_brownian_motion()
   expect_identical(mt_n_tracks(m), 2L)
-  expect_silent(mt_track_id(m) <- gl(4, 5))
+  expect_silent(mt_track_id(m) <- gl(4L, 5L))
   expect_identical(nrow(mt_track_data(m)), 4L)
   expect_identical(mt_n_tracks(m), 4L)
 })

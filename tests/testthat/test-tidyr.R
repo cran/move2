@@ -58,7 +58,8 @@ test_that("select work on aditional columns", {
     ignore.order = TRUE
   )
   expect_named(
-    m |> mutate(extra = time) |>
+    m |>
+      mutate(extra = time) |>
       select(extra), c("extra", "geometry", "time", "track"),
     ignore.order = TRUE
   )
@@ -68,7 +69,8 @@ test_that("select work on aditional columns", {
     ignore.order = TRUE
   )
   expect_named(
-    m |> mutate(extra = time) |>
+    m |>
+      mutate(extra = time) |>
       select(track), c("track", "geometry", "time"),
     ignore.order = TRUE
   )
@@ -147,9 +149,9 @@ test_that("grouping corresponds", {
 test_that("bind_cols and st_join return correct", {
   m <- mt_read(mt_example())[1000:1010, ]
   class(m) <- setdiff(class(m), "spec_tbl_df") # remove "spec_tbl_df" class
-  dfa <- data.frame(x = sf::st_coordinates(m)[, 1], y = sf::st_coordinates(m)[, 2], new_colA = (letters[1:nrow(m)]))
+  dfa <- data.frame(x = sf::st_coordinates(m)[, 1], y = sf::st_coordinates(m)[, 2], new_colA = (letters[seq_len(nrow(m))]))
   df <- dfa[-c(1, 4, 7), ]
-  df <- df[sample(1:nrow(df)), ]
+  df <- df[sample(seq_len(nrow(df))), ]
   dfsf <- sf::st_as_sf(df, coords = c("x", "y"), crs = st_crs(m))
   mdf <- mt_as_move2(data.frame(m), time_column = "timestamp", track_id_column = "individual.local.identifier")
 
@@ -160,7 +162,7 @@ test_that("bind_cols and st_join return correct", {
 
   expect_s3_class((sf::st_join(mdf, dfsf)), class(mdf), exact = TRUE)
   expect_s3_class((sf::st_join(m, dfsf)), class(m), exact = TRUE)
-  e <- letters[1:11]
+  e <- letters[1L:11L]
   e[c(1, 4, 7)] <- NA
   expect_identical(sf::st_join(mdf, dfsf)$new_colA, e)
   expect_identical(sf::st_join(m, dfsf)$new_colA, e)

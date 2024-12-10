@@ -13,13 +13,14 @@ movebank_get_vocabulary(
 }
 \arguments{
 \item{labels}{Either a character vector with the column names to look up or a \code{move2} object from which the column
-names will be extracted. If no argument is provided all movebank terms are returned}
+names will be extracted. Matches are made both based on the preferred label and the alternative label in the vocabulary.
+If no argument is provided all movebank terms are returned}
 
 \item{xml}{Either a connection to the movebank vocabulary xml, a path to the vocabulary file or an url where it can
 be downloaded. The later is the default. By downloading the xml yourself the function will speed up and become
 independent of an internet connection being available.}
 
-\item{omit_deprecated}{If concepts are marked deprecated they are omitted from the set of possible labels.}
+\item{omit_deprecated}{If concepts are marked deprecated they are omitted from the set of possible labels to match.}
 
 \item{return_type}{A character scalar identifying the desired return type, see details for more information on the
 specific types.}
@@ -39,6 +40,8 @@ This function can return data in several formats (see \code{return_type} argumen
 \item \code{xml} A xml_node with the definition.
 \item \code{uri} A link to the full definitions page.
 }
+
+In case \code{labels} matches both a preferred and an alternative label the term with the preferred label is returned.
 }
 \examples{
 \donttest{

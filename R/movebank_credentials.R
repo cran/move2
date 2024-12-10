@@ -1,4 +1,5 @@
-mt_internal_get_password <- function(msg = "Please provide your movebank password") {
+mt_internal_get_password <- function(
+    msg = "Please provide your movebank password") {
   check_installed("askpass", "to enable inputting a password.")
   askpass::askpass(msg)
 }
@@ -30,8 +31,10 @@ mt_internal_get_password <- function(msg = "Please provide your movebank passwor
 #' \dontrun{
 #' movebank_store_credentials("bart")
 #' }
-movebank_store_credentials <- function(username, password,
-                                       key_name = getOption("move2_movebank_key_name"), force = FALSE) {
+movebank_store_credentials <- function(
+    username, password,
+    key_name = getOption("move2_movebank_key_name"),
+    force = FALSE) {
   check_installed(c("keyring"), "to store credentials in the keyring.")
   if (missing(username)) {
     cli_abort(
@@ -55,7 +58,8 @@ movebank_store_credentials <- function(username, password,
       handle = curl_handle
     ))
     if (!is.null(res)) {
-      cli_abort("The provided {.arg username} and {.arg password} combination fail.",
+      cli_abort(
+        "The provided {.arg username} and {.arg password} combination fail.",
         class = "move2_error_multiple_keys",
         body = format_error_bullets(c(
           x = "`mt_store_credential` was not able to succesfully conduct a test query to movebank with the `username`

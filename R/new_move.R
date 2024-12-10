@@ -118,7 +118,7 @@ mt_as_move2.telemetry <- function(x, time_column, track_id_column, track_attribu
     as.factor(x@info$identity)
   }
   x <- x |> add_column(track = track, .name_repair = "unique")
-  track_id_column <- tail(colnames(x), 1)
+  track_id_column <- tail(colnames(x), 1L)
   if ("timestamp" %in% colnames(x)) {
     if (!all.equal(as.numeric(x$timestamp), x$t)) {
       cli_warn(c("The ctmm contains both a `t` and `timestamp` column. The information in these columns differs,
@@ -184,10 +184,10 @@ mt_as_move2..MoveTrack <- function(x, ...) {
       add_column("{track_id_column}" := rownames(move::idData(x, drop = FALSE))), # nolint
     class = c("move2", class(x_sf))
   )
-  if (!identical(move::citations(x), character(0))) {
+  if (!identical(move::citations(x), character(0L))) {
     res <- res |> mutate_track_data(citation = move::citations(x))
   }
-  if (!identical(move::licenseTerms(x), character(0))) {
+  if (!identical(move::licenseTerms(x), character(0L))) {
     res <- res |> mutate_track_data(license = move::licenseTerms(x))
   }
   return(res)
@@ -214,8 +214,8 @@ new_move <- function(sf, time_column = "timestamp", track_id_column, track_attri
 
 
 #' @export
-print.move2 <- function(x, ..., n = getOption("sf_max_print", default = 10)) {
-  avgdur <- mean(do.call(c, lapply(lapply(split(mt_time(x), mt_track_id(x), drop = T), range), diff)))
+print.move2 <- function(x, ..., n = getOption("sf_max_print", default = 10L)) {
+  avgdur <- mean(do.call(c, lapply(lapply(split(mt_time(x), mt_track_id(x), drop = TRUE), range), diff)))
   if (is_installed("lubridate")) {
     avgdur <- lubridate::make_difftime(as.numeric(avgdur, units = "secs"))
   }
@@ -226,7 +226,7 @@ print.move2 <- function(x, ..., n = getOption("sf_max_print", default = 10)) {
   NextMethod(n = n)
   # Print individual data
   track_data <- mt_track_data(x)
-  if (n > 0) {
+  if (n > 0L) {
     if (inherits(track_data, "tbl_df")) {
       if (nrow(track_data) > n) {
         cat(paste("First", n, "track features:\n"))
@@ -238,7 +238,7 @@ print.move2 <- function(x, ..., n = getOption("sf_max_print", default = 10)) {
       y <- track_data
       if (nrow(y) > n) {
         cat(paste("First", n, "track features:\n"))
-        y <- track_data[1:n, , drop = FALSE]
+        y <- track_data[1L:n, , drop = FALSE]
       } else {
         cat(paste("Track features:\n"))
       }

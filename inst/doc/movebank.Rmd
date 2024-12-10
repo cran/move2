@@ -172,107 +172,180 @@ if (Sys.info()["user"] != "bart") {
 library(dplyr)
 ```
 
-Using the `movebank_retrieve` function it is possible to directly access the
-API, here all studies with a creative commons 0 license are returned. These are
-a good candidate for exploration and testing
+## Study information
 
-```{r cc_studies, time_it=TRUE}
-movebank_retrieve(entity_type = "study", license_type = "CC_0") |>
-  select(id, name, number_of_deployed_locations) |>
-  filter(!is.na(number_of_deployed_locations))
+Using the function `movebank_download_study_info` it is possible to download 
+information for all studies, for all studies that have certain property or 
+for a single study. Any column of the table can be used to download only the 
+information of the studies that comply with the selected property.
+This table contains all the information that can be seen on the "Study page" 
+on the Movebank webpage, plus additional information about download rights 
+and ownership.
+
+NOTE: due to incorrect timestamps in some Movebank studies, the function `movebank_download_study_info()` sometimes returns a *Warning* message as the one in the example below. You can ignore this (see issue [#17](https://gitlab.com/bartk/move2/-/issues/17)).
+
+- For all studies
+
+```{r study_info, time_it=TRUE}
+movebank_download_study_info()
 ```
 
-A more quick way to retrieve the information is the following (the selection is
-performed on movebank and not all data is downloaded):
+- All studies where you have access to download the data
 
-```{r studies, eval=FALSE}
+```{r study_info_2, eval=F }
+movebank_download_study_info(i_have_download_access = TRUE)
+```
+
+-  All studies where you are owner of the data
+
+```{r study_info_3, eval=F }
+movebank_download_study_info(i_am_owner = TRUE)
+```
+
+- All studies with a creative commons zero license are returned. These are a good candidate for exploration and testing
+
+```{r study_info_4, eval=F }
 movebank_download_study_info(license_type = "CC_0")
 ```
 
-By default all attributes are downloaded:
+- For a specific study
 
-```{r full_dl, time_it=TRUE}
-movebank_download_study(2911040, sensor_type_id = "gps")
+```{r study_info_5, eval=F }
+movebank_download_study_info(id = 2911040)
 ```
 
-For speed of download you might want to add the argument `attributes = NULL` as
-it reduces the columns to download to the bare minimum. Note still all
-individual attributes are downloaded as this does not take much time.
+## Individual, tag and deployment information
 
-```{r quick_download, time_it=TRUE}
-movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
-```
-
-If only specific attributes want to be download you can state them in the argument `attributes`. The available attributes vary between studies and sensors. You can retrieve the list of available attributes for a specific sensor in given study. Note that only one sensor at a time can be stated.
-```{r study_attrs, time_it=T}
-movebank_retrieve(
-  entity_type = "study_attribute",
-  study_id = 2911040,
-  sensor_type_id = "gps"
-)$short_name
-movebank_download_study(
-  study_id = 2911040,
-  sensor_type_id = "gps",
-  attributes = c(
-    "height_above_ellipsoid",
-    "eobs_temperature"
-  )
-)
-```
-
-
-Only load gps records:
-
-```{r gps_sensor, time_it=TRUE}
-movebank_download_study(1259686571, sensor_type_id = 653)
-```
-
-Note that the `sensor_type_id` can either be specified either of an `integer` or
-`character` with respectively the id or name of the sensor. In some cases
-additional data is added is downloaded if a specific sensor is selected. For
-example the column `eobs_acceleration_raw`:
-
-```{r acc_study_download, time_it=TRUE}
-movebank_download_study(2911040, sensor_type_id = "acceleration")
-```
-
-The following list of sensors is available:
-
-```{r retrieve_sensors}
-movebank_retrieve(
-  entity_type = "tag_type",
-  attributes = c("external_id", "id")
-)
-```
-
-Alternatively more informative names can be used for some arguments. For example
-you can use a `character` string to identify a study or a timestamp as a
-`POSIXct`:
-
-```{r download_lbbg, time_it=TRUE}
-movebank_download_study("LBBG_JUVENILE",
-  sensor_type_id = "gps",
-  timestamp_start = as.POSIXct("2021-02-03 00:00:00"),
-  timestamp_end = as.POSIXct("2021-03-03 00:00:00")
-)
-```
-
-# Deployments
-
-If you are interested in the deployment information you can use the
-`movebank_download_deployment` function.
+The function `movebank_download_deployment` downloads a table with the 
+associated information to individuals, tags and deployments. This table
+reassembles the "Reference Data" table that can be downloaded from the 
+Movebank webpage.
 
 ```{r galapagos_deployment, time_it=T}
 movebank_download_deployment("Galapagos Albatrosses")
 ```
 
+
+## Location & non-location data (Event data)
+
+With the function `movebank_download_study` the complete study from Movebank 
+can be downloaded. There are many options to download a subset of the 
+complete study. The `study_id` can either be specified either as an `integer` 
+or `character` with respectively the id or name of the study. 
+
+To get the study ID of a Movebank study use `movebank_get_study_id`
+```{r get_studyid, time_it=T}
+movebank_get_study_id(study_id = "Galapagos Albatrosses")
+```
+
+- Download an entire study (all data of all sensors)
+
+```{r download_allsensors, time_it=T}
+movebank_download_study_info(study_id = 2911040)$sensor_type_ids
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = c("gps", "acceleration")
+)
+```
+
+- Download gps data of one individual
+
+```{r download_oneindv, time_it=T}
+movebank_download_study(
+  study_id = "Galapagos Albatrosses",
+  sensor_type_id = "gps",
+  individual_local_identifier = "unbanded-160"
+)
+```
+
+- Download gps data for multiple individuals
+
+```{r download_multiindv, time_it=T}
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = "gps",
+  individual_local_identifier = c("1094-1094", "1103-1103")
+)
+```
+```{r download_multiindv_2, eval=F}
+## it is also possible to use the numerical identifiers
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = "gps",
+  individual_id = c(2911086, 2911065)
+)
+```
+
+- Download acceleration data of one or several individuals
+
+```{r download_acc, time_it=T}
+movebank_download_study(2911040,
+  sensor_type_id = "acceleration",
+  individual_local_identifier = "1094-1094"
+)
+```
+
+Note that the `sensor_type_id` can either be specified either as an `integer`
+or `character` with respectively the 'id' or 'external_id' of the sensor. Here is how 
+you get the correspondence table of sensor name and id: 
+
+```{r retrieve_sensors}
+movebank_retrieve(entity_type = "tag_type")
+```
+
+- Download data of a specific time window and sensor. The `timestamp_*` 
+arguments can either be formatted as a `POSIXct` timestamp, `Date` or a 
+character string (e.g. `"20080604133046000"`(yyyyMMddHHmmssSSS)). The 
+`timestamp_*` arguments can also be used separately.
+
+```{r download_time_win, time_it=T}
+movebank_download_study(2911040,
+  sensor_type_id = "gps",
+  timestamp_start = as.POSIXct("2008-08-01 00:00:00"),
+  timestamp_end = as.POSIXct("2008-08-02 00:00:00")
+)
+```
+
+- Reduce columns downloaded to a minimal set (only for location data). By 
+default all attributes are downloaded, but to speed up download, the argument 
+`attributes = NULL` can be used as it reduces the columns to download to
+the bare minimum. All individual attributes are downloaded as this does not 
+take much time. Note that this option should only be used when downloading 
+location data (by specifying the sensor), as only timestamps, location 
+and track id is downloaded.
+
+```{r quick_download, time_it=TRUE}
+movebank_download_study(1259686571, sensor_type_id = 653, attributes = NULL)
+```
+
+- Download only specific attributes. If only specific attributes want to be 
+download you can state them in the argument attributes. The available 
+attributes vary between studies and sensors. You can retrieve the list of 
+available attributes for a specific sensor in given study. Note that only 
+one sensor at a time can be stated.
+
+```{r study_attrs, time_it=T}
+## get all attributes available for a specific study and sensor
+movebank_retrieve(
+  entity_type = "study_attribute",
+  study_id = 2911040,
+  sensor_type_id = "gps"
+)$short_name
+
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = "gps",
+  attributes = c("height_above_ellipsoid", "eobs_temperature")
+)
+```
+
 # Advanced usage
 
 For specific request it might be useful to directly retrieve information from
-the movebank api. The `movebank_retrieve` function provides this functionality.
+the Movebank API. The `movebank_retrieve` function provides this functionality.
 The first argument is the entity type you would like to retrieve information for
-(e.g. `tag` or `event`). Other arguments make it possible to select, a study id
-is always required. For more details how to use the api see the
+(e.g. `tag` or `event`). A study id is always required and other arguments make 
+it possible to select. For more details how to use the api see the
 [documentation](https://github.com/movebank/movebank-api-doc/blob/master/movebank-api.md).
 
 ## Downloading undeployed data
@@ -289,7 +362,8 @@ With the argument `sensor_type_id` the sensors can be specified.
 ```{r advance, time_it=TRUE}
 movebank_retrieve("event",
   study_id = 1259686571,
-  tag_local_identifier = "193967", attributes = "all"
+  tag_local_identifier = "193967",
+  attributes = "all"
 ) %>%
   filter(is.na(deployment_id))
 ```

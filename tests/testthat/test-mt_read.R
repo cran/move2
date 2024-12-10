@@ -46,3 +46,22 @@ test_that("env data read works", {
     units(units::as_units("m/s"))
   )
 })
+
+
+test_that("error non unique id", {
+  txt <- paste0(
+    "event-id,visible,timestamp,location-long,location-lat,sensor-type,individual-taxon-canonical-name",
+    ',tag-local-identifier,individual-local-identifier,study-name
+  26735128471,true,2020-01-01 00:00:00.000,1.0,1.0,"gps",,"w","b_n","test study bart"
+  26735128472,true,2020-02-01 00:00:00.000,2.0,2.0,"gps",,"w","b_n","test study bart"
+  26735128475,true,2020-05-01 00:00:00.000,5.0,5.0,"gps",,"n_w","b","test study bart"
+  26735128476,true,2020-06-01 00:00:00.000,6.0,6.0,"gps",,"n_w","b","test study bart"
+  26735128473,true,2020-03-01 00:00:00.000,3.0,3.0,"gps",,"r","b","test study bart"
+  26735128474,true,2020-04-01 00:00:00.000,4.0,4.0,"gps",,"r","b","test study bart"
+  26735128477,true,2020-07-01 00:00:00.000,7.0,7.0,"gps",,"r","c","test study bart"
+  26735128478,true,2020-08-01 00:00:00.000,8.0,8.0,"gps",,"r","c","test study bart"
+  26735128479,true,2020-09-01 00:00:00.000,9.0,9.0,"gps",,"y","c","test study bart"
+  26735128480,true,2020-10-01 00:00:00.000,10.0,10.0,"gps",,"y","c","test study bart"'
+  )
+  suppressMessages(expect_error(mt_read(I(txt)), "Combining tag and individual identifiers does not result in unique names"))
+})

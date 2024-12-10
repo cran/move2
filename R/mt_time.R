@@ -165,7 +165,7 @@ pad_na <- function(x) {
 mt_time_lags <- function(x, units) {
   assert_that(mt_is_time_ordered(x)) # this also works for empty locations
   dt <- diff(mt_time(x))
-  dt[diff(as.numeric(factor(mt_track_id(x)))) != 0] <- NA
+  dt[diff(as.numeric(factor(mt_track_id(x)))) != 0L] <- NA
   if (inherits(dt, "difftime")) {
     dt <- as_units(dt)
   }

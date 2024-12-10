@@ -86,7 +86,7 @@ utils::globalVariables("where") # for tidy select
 #' @examples
 #' \dontrun{
 #' ## download entire study (all data of all sensors)
-#' movebank_download_study_info(study_id = myStudyID)$sensor_type_ids
+#' movebank_download_study_info(study_id = 2911040)$sensor_type_ids
 #' movebank_download_study(2911040, sensor_type_id = c("gps", "acceleration"))
 #'
 #' ## download data of one individual
@@ -150,11 +150,15 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
   study_id <- movebank_get_study_id(study_id, ...)
 
   assert_that(is.flag(remove_movebank_outliers), !is.na(remove_movebank_outliers))
-
-
+  if(remove_movebank_outliers){
+    # ensure the visible column is present when outliers are about to removed
+  attr<-mb_include_minimal_attributes(attributes, 'visible')
+  }else{
+    attr<-mb_include_minimal_attributes(attributes)
+  }
   data <- movebank_retrieve(
     entity_type = "event",
-    study_id = study_id, attributes = mb_include_minimal_attributes(attributes), ...
+    study_id = study_id, attributes =attr , ...
   )
   if (is_scalar_character(attributes) &&
     attributes == "all" &&
@@ -164,7 +168,7 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     data$location_lat <- NA_real_
   }
 
-  if (nrow(data) == 0) {
+  if (nrow(data) == 0L) {
     cli_abort(
       class = "move2_error_no_data_found",
       "The request did not result in any data, this might be caused by trying to retrieve a none existant individual.
@@ -227,10 +231,14 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     (data |>
       group_by(!!!syms("individual_local_identifier")) |>
       st_drop_geometry() |>
-      summarise(cnt = length(unique(!!!syms("deployment_id"))) == 1) |>
-      pull("cnt") |> all()) &&
-    !any(data |> st_drop_geometry() |> filter(!is.na(!!!syms("deployment_id"))) |>
-      pull("individual_local_identifier") |> is.na())
+      summarise(cnt = length(unique(!!!syms("deployment_id"))) == 1L) |>
+      pull("cnt") |>
+      all()) &&
+    !any(data |>
+      st_drop_geometry() |>
+      filter(!is.na(!!!syms("deployment_id"))) |>
+      pull("individual_local_identifier") |>
+      is.na())
   # if individuals id's are not filled out we fall back to local ids, this can atleast happen when individuals have no
   # name in movebank and there is only one individual
   ) {
@@ -272,7 +280,11 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
 #' @rdname movebank_download_study
 #' @export
 movebank_download_study_info <- function(...) {
-  movebank_retrieve(entity_type = "study", ...)
+  dots <- rlang::list2(...)
+  if ("study_id" %in% names(dots)) {
+    dots[["study_id"]] <- movebank_get_study_id(...)
+  }
+  do.call("movebank_retrieve", c(list(entity_type = "study"), dots))
 }
 #' @rdname movebank_download_study
 #' @export
@@ -342,7 +354,11 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
   # We define too many columns and remove the warning about that
   issue <- catch_cnd(suppressWarnings(
     classes = c("vroom_mismatched_column_name", "vroom_parse_issue"),
-    data_dl <- vroom::vroom(con, col_types = mb_column_types_underscore, delim = ",", progress = progress, trim_ws = F)
+    data_dl <- vroom::vroom(con,
+      col_types = mb_column_types_underscore,
+      delim = ",",
+      progress = progress, trim_ws = FALSE
+    )
   ))
   # use vroom and not readr as the later misses col_big_integer, readr cannot be silenced and reads from connections
   # Parse any issues that might have occurred
@@ -357,7 +373,7 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
         rawToChar(error_return$content)
       )))
     )
-    if (error_return$status_code == 401) {
+    if (error_return$status_code == 401L) {
       cli_abort(
         c(
           "No valid movebank credentials provided (status code 401)",
@@ -365,7 +381,7 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
         ),
         class = "move2_error_movebank_api_401_no_valid_credentials", url = url
       )
-    } else if (error_return$status_code == 500) {
+    } else if (error_return$status_code == 500L) {
       cli_abort(
         class = "move2_error_movebank_api_500_internal_server_error",
         c(
@@ -511,7 +527,7 @@ movebank_get_study_id <- function(study_id, ...) {
       }
       nms <- study_id_data$name[s <- study_id_data$study_id %in% study_id]
       ids <- study_id_data$study_id[s]
-      ss <- split(ids, nms, drop = T)
+      ss <- split(ids, nms, drop = TRUE)
       studies <- unlist(lapply(names(ss), function(x) {
         cli_fmt(cli_text("{.arg {x}} ({.val {ss[[x]]}})"))
       }))

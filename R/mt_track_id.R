@@ -238,12 +238,12 @@ mt_set_track_id <- function(x, value) {
     by.y = mt_track_id_column(x), all.x = TRUE, suffixes = c(".x", "")
   )
 
-  new_track_data[, 1] <- NULL
+  new_track_data[, 1L] <- NULL
   # now we have matched the old name is no longer needed, by index because name might have changed in merge
-  if (new_column_name %in% colnames(new_track_data)[-1]) {
+  if (new_column_name %in% colnames(new_track_data)[-1L]) {
     new_track_data[, new_column_name] <- NULL # prevent duplicated column names
   }
-  colnames(new_track_data)[1] <- new_column_name
+  colnames(new_track_data)[1L] <- new_column_name
 
   if (anyDuplicated(new_track_data[, new_column_name])) {
     # some individuals combine previous data generate list columns to retain this duplicated data
@@ -253,7 +253,7 @@ mt_set_track_id <- function(x, value) {
         new_track_data[, i],
         new_track_data[, new_column_name]
       )[data[, new_column_name]])
-      if (all(unlist(lapply(l, length)) == 1)) {
+      if (all(unlist(lapply(l, length)) == 1L)) {
         l <- unlist(l)
       }
       data[[i]] <- l
@@ -325,7 +325,7 @@ mt_n_tracks <- function(x) {
       i <- TRUE
     }
     fix <- TRUE
-    if (nargs() == 2 && missing(j) && nrow(x) == nrow(xx)) {
+    if (nargs() == 2L && missing(j) && nrow(x) == nrow(xx)) {
       # forexample x["colname"]
       fix <- !(all(vapply(xx, inherits,
         what = "sfc",

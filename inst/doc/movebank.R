@@ -85,61 +85,94 @@ if (Sys.info()["user"] != "bart") {
 ## ----message=FALSE----------------------------------------------------------------
 library(dplyr)
 
-## ----cc_studies, time_it=TRUE-----------------------------------------------------
-movebank_retrieve(entity_type = "study", license_type = "CC_0") |>
-  select(id, name, number_of_deployed_locations) |>
-  filter(!is.na(number_of_deployed_locations))
+## ----study_info, time_it=TRUE-----------------------------------------------------
+movebank_download_study_info()
 
-## ----studies, eval=FALSE----------------------------------------------------------
+## ----study_info_2, eval=F---------------------------------------------------------
+#  movebank_download_study_info(i_have_download_access = TRUE)
+
+## ----study_info_3, eval=F---------------------------------------------------------
+#  movebank_download_study_info(i_am_owner = TRUE)
+
+## ----study_info_4, eval=F---------------------------------------------------------
 #  movebank_download_study_info(license_type = "CC_0")
 
-## ----full_dl, time_it=TRUE--------------------------------------------------------
-movebank_download_study(2911040, sensor_type_id = "gps")
+## ----study_info_5, eval=F---------------------------------------------------------
+#  movebank_download_study_info(id = 2911040)
+
+## ----galapagos_deployment, time_it=T----------------------------------------------
+movebank_download_deployment("Galapagos Albatrosses")
+
+## ----get_studyid, time_it=T-------------------------------------------------------
+movebank_get_study_id(study_id = "Galapagos Albatrosses")
+
+## ----download_allsensors, time_it=T-----------------------------------------------
+movebank_download_study_info(study_id = 2911040)$sensor_type_ids
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = c("gps", "acceleration")
+)
+
+## ----download_oneindv, time_it=T--------------------------------------------------
+movebank_download_study(
+  study_id = "Galapagos Albatrosses",
+  sensor_type_id = "gps",
+  individual_local_identifier = "unbanded-160"
+)
+
+## ----download_multiindv, time_it=T------------------------------------------------
+movebank_download_study(
+  study_id = 2911040,
+  sensor_type_id = "gps",
+  individual_local_identifier = c("1094-1094", "1103-1103")
+)
+
+## ----download_multiindv_2, eval=F-------------------------------------------------
+#  ## it is also possible to use the numerical identifiers
+#  movebank_download_study(
+#    study_id = 2911040,
+#    sensor_type_id = "gps",
+#    individual_id = c(2911086, 2911065)
+#  )
+
+## ----download_acc, time_it=T------------------------------------------------------
+movebank_download_study(2911040,
+  sensor_type_id = "acceleration",
+  individual_local_identifier = "1094-1094"
+)
+
+## ----retrieve_sensors-------------------------------------------------------------
+movebank_retrieve(entity_type = "tag_type")
+
+## ----download_time_win, time_it=T-------------------------------------------------
+movebank_download_study(2911040,
+  sensor_type_id = "gps",
+  timestamp_start = as.POSIXct("2008-08-01 00:00:00"),
+  timestamp_end = as.POSIXct("2008-08-02 00:00:00")
+)
 
 ## ----quick_download, time_it=TRUE-------------------------------------------------
-movebank_download_study(1259686571, sensor_type_id = "gps", attributes = NULL)
+movebank_download_study(1259686571, sensor_type_id = 653, attributes = NULL)
 
 ## ----study_attrs, time_it=T-------------------------------------------------------
+## get all attributes available for a specific study and sensor
 movebank_retrieve(
   entity_type = "study_attribute",
   study_id = 2911040,
   sensor_type_id = "gps"
 )$short_name
+
 movebank_download_study(
   study_id = 2911040,
   sensor_type_id = "gps",
-  attributes = c(
-    "height_above_ellipsoid",
-    "eobs_temperature"
-  )
+  attributes = c("height_above_ellipsoid", "eobs_temperature")
 )
-
-## ----gps_sensor, time_it=TRUE-----------------------------------------------------
-movebank_download_study(1259686571, sensor_type_id = 653)
-
-## ----acc_study_download, time_it=TRUE---------------------------------------------
-movebank_download_study(2911040, sensor_type_id = "acceleration")
-
-## ----retrieve_sensors-------------------------------------------------------------
-movebank_retrieve(
-  entity_type = "tag_type",
-  attributes = c("external_id", "id")
-)
-
-## ----download_lbbg, time_it=TRUE--------------------------------------------------
-movebank_download_study("LBBG_JUVENILE",
-  sensor_type_id = "gps",
-  timestamp_start = as.POSIXct("2021-02-03 00:00:00"),
-  timestamp_end = as.POSIXct("2021-03-03 00:00:00")
-)
-
-## ----galapagos_deployment, time_it=T----------------------------------------------
-movebank_download_deployment("Galapagos Albatrosses")
 
 ## ----advance, time_it=TRUE--------------------------------------------------------
 movebank_retrieve("event",
   study_id = 1259686571,
-  tag_local_identifier = "193967", attributes = "all"
+  tag_local_identifier = "193967",
+  attributes = "all"
 ) %>%
   filter(is.na(deployment_id))
 

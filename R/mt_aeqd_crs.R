@@ -40,10 +40,10 @@ mt_aeqd_crs <- function(x, center = c("centroid", "center"), units = c("m", "km"
     }
     center <- switch(center,
       centroid = st_coordinates(sf::st_transform(
-        sf::st_centroid(sf::st_cast(sf::st_geometry(x)[!sf::st_is_empty(x)], "MULTIPOINT", ids = 1)),
-        4236
-      ))[1, ],
-      center = apply(apply(st_coordinates(sf::st_transform(x[!sf::st_is_empty(x)], 4326)), 2, range), 2, mean)
+        sf::st_centroid(sf::st_cast(sf::st_geometry(x)[!sf::st_is_empty(x)], "MULTIPOINT", ids = 1L)),
+        4236L
+      ))[1L, ],
+      center = apply(apply(st_coordinates(sf::st_transform(x[!sf::st_is_empty(x)], 4326L)), 2L, range), 2L, mean)
     )
   }
   if (inherits(center, "sf")) {
@@ -55,21 +55,21 @@ mt_aeqd_crs <- function(x, center = c("centroid", "center"), units = c("m", "km"
         class = "move2_error_center_sfc_length"
       )
     }
-    center <- st_transform(center, 4326)[[1]]
+    center <- st_transform(center, 4326L)[[1L]]
   }
   if (inherits(center, "POINTS")) {
-    center <- st_coordinates(center)[1, ]
+    center <- st_coordinates(center)[1L, ]
   }
 
 
 
-  if (length(center) != 2) {
+  if (length(center) != 2L) {
     cli_abort("The length of {.arg center} coordinates is unequal to two.",
       class = "move2_error_center_length"
     )
   }
   st_crs(sprintf(
     "+proj=aeqd +lat_0=%.6f +lon_0=%.6f +x_0=0 +y_0=0 +ellps=WGS84 +datum=WGS84 +units=%s +no_defs",
-    (center)[2], (center)[1], units
+    (center)[2L], (center)[1L], units
   ))
 }

@@ -106,15 +106,15 @@ anim_save("change_view.gif", renderer = gifski_renderer())
 cat("![](change_view.gif)\n")
 
 ## ----movement_animation, eval=params$eval_output &     knitr::opts_chunk$get("eval"), results='hide'----
-data_interpolated <- data[!sf::st_is_empty(data), ] |>
-  mt_interpolate(
-    seq(
-      as.POSIXct("2008-7-27"),
-      as.POSIXct("2008-8-1"), "60 mins"
-    ),
-    max_time_lag = units::as_units(3, "hours"),
-    omit = TRUE
-  )
+data_interpolated <- mt_interpolate(
+  data[!sf::st_is_empty(data), ],
+  time = seq(
+    as.POSIXct("2008-7-27"),
+    as.POSIXct("2008-8-1"), "60 mins"
+  ),
+  max_time_lag = units::as_units(3, "hours"),
+  omit = TRUE
+)
 animation <- ggplot() +
   annotation_map_tile(zoom = 5, progress = "none") +
   annotation_scale() +
@@ -141,10 +141,12 @@ cat("![](movement_animation.gif)\n")
 ## ----movement_animation_tail------------------------------------------------------
 date_range <- as.POSIXct(c("2008-7-29", "2008-8-1"))
 ts <- mt_time(data)
-data_interpolated <- data[!sf::st_is_empty(data), ] |>
+times <- sort(unique((c(date_range, ts[ts < max(date_range) & ts > min(date_range)]))))
+data_interpolated <-
   mt_interpolate(
-    times <- sort(unique((c(date_range, ts[ts < max(date_range) & ts > min(date_range)])))),
-    omit = T
+    data[!sf::st_is_empty(data), ],
+    times,
+    omit = TRUE
   )
 label_df <- data.frame(
   timestamp = date_range,
@@ -169,7 +171,7 @@ animation <- ggplot() +
     color = "grey80", size = 3, hjust = 0
   ) +
   transition_time(timestamp) +
-  shadow_wake(.2, exclude_layer = 6)
+  shadow_wake(0.2, exclude_layer = 6)
 
 ## ----movement_animation_tail_show, results='hide', eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3----
 animate(animation,
@@ -201,13 +203,13 @@ library(rnaturalearth)
 
 ## ----intersection-----------------------------------------------------------------
 library(rnaturalearth)
-breeding_area <- st_buffer(mt_track_data(data)$deploy_on_location, as_units(25, "km")) |>
+breeding_area <- st_buffer(mt_track_data(data)$deploy_on_location, as_units(25, "km")) %>%
   st_union()
 foraging_area <- ne_countries(110,
   returnclass = "sf",
   continent = "South America"
-) |>
-  st_union() |>
+) %>%
+  st_union() %>%
   st_buffer(as_units(100, "km"))
 regions <- st_sf(data.frame(
   region = c("Breeding", "Foraging"),
@@ -289,9 +291,9 @@ ggplot(track_summary, aes(x = region, y = duration)) +
   ) +
   xlab("") +
   scale_y_units("Duration", unit = "days", trans = "log10") +
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) +
   theme_linedraw() +
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) +
   scale_color_brewer("Individual", type = "qual", palette = "Set1")
 
 ## ----plots_speed,  fig.width=6----------------------------------------------------
@@ -306,7 +308,7 @@ ggplot(
   ) +
   xlab("") +
   ylab("Mean ground speed") +
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) +
   scale_color_brewer("Individual", type = "qual", palette = "Set1")
 
 ## ----plot_expend,  fig.width=6----------------------------------------------------
@@ -321,6 +323,6 @@ ggplot(
   ) +
   ylab("Mean DBA") +
   xlab("") +
-  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = .5)) +
+  theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) +
   scale_color_brewer("Individual", type = "qual", palette = "Set1")
 

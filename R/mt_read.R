@@ -67,13 +67,13 @@ NULL
 #' }
 mt_read <- function(file, ...) {
   if (is_scalar_character(file) && grepl("\\.zip$", file)) {
-    f <- grep("csv$", unzip(file, list = T)$Name, value = T)
+    f <- grep("csv$", unzip(file, list = TRUE)$Name, value = TRUE)
     assert_that(is_scalar_character(f), msg = "Env-DATA zipfiles are only expected to contain one csv file")
     data <- mt_read(unz(file, f), ...)
 
     readme <- vroom::vroom_lines(unz(file, "readme.txt"))
     readme_vars <- split(readme, cumsum(grepl("^Name: ", readme)))[-1]
-    var_names <- sub("Name: ", "", unlist(lapply(readme_vars, head, n = 1)))
+    var_names <- sub("Name: ", "", unlist(lapply(readme_vars, head, n = 1L)))
     if (!all(s <- var_names %in% colnames(data))) {
       cli_warn(
         c(
@@ -88,11 +88,11 @@ mt_read <- function(file, ...) {
         class = "move2_warning_no_match_for_vocabulary"
       )
     }
-    units <- lapply(readme_vars, grep, pattern = "^Unit: ", value = T) |>
+    units <- lapply(readme_vars, grep, pattern = "^Unit: ", value = TRUE) |>
       unlist() |>
       sub(pattern = "^Unit: ", replacement = "")
     names(units) <- var_names
-    units_list <- lapply(units, function(x) try(as_units(x), silent = T))
+    units_list <- lapply(units, function(x) try(as_units(x), silent = TRUE))
 
     if (any(ss <- unlist(lapply(units_list, inherits, "try-error")))) {
       cli_warn("The following {qty((unique(units[ss])))}unit{?s} {?is/are} not parsible: {.var {(unique(units[ss]))}}.

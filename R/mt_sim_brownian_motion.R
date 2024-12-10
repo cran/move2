@@ -114,11 +114,11 @@ mt_sim_brownian_motion <- function(t = 1L:10L, # nolint
     assert_that(all(unlist(r["message", ]) == "OK"))
     sigma <- sqrt(unlist(r["value", ]))
   } else {
-    if (!all(sigma >= 0)) {
+    if (!all(sigma >= 0L)) {
       cli_abort("All sigma values should be postive.", class = "move2_error_negative_sigma_value_argument")
     }
-    if (length(sigma) == 1) {
-      sigma <- rep(sigma, n - 1)
+    if (length(sigma) == 1L) {
+      sigma <- rep(sigma, n - 1L)
     }
     dt <- diff(t)
     if (inherits(dt, "difftime")) {
@@ -129,16 +129,16 @@ mt_sim_brownian_motion <- function(t = 1L:10L, # nolint
         class = "move2_error_sigma_not_numeric"
       )
     }
-    sigma <- sqrt((sigma^2) * dt)
+    sigma <- sqrt((sigma^2L) * dt)
   }
-  if (length(sigma) != (n - 1)) {
+  if (length(sigma) != (n - 1L)) {
     cli_abort("The length of {.arg sigma} does not correspond to the number of timestamps, sigma should have a length
               of the number of {.arg timestamps} - 1",
       class = "move2_error_sigma_length_error"
     )
   }
-  x <- cumsum(c(start_location[1], rnorm(n - 1, mean = 0, sd = sigma)))
-  y <- cumsum(c(start_location[2], rnorm(n - 1, mean = 0, sd = sigma)))
+  x <- cumsum(c(start_location[1L], rnorm(n - 1L, mean = 0.0, sd = sigma)))
+  y <- cumsum(c(start_location[2L], rnorm(n - 1L, mean = 0.0, sd = sigma)))
   if (is.null(track_id)) {
     track_id <- tracks
   }
@@ -149,7 +149,7 @@ mt_sim_brownian_motion <- function(t = 1L:10L, # nolint
 
 if (FALSE) { # nolint
   mt_sim_brownian_motion_units <- function(t = 1:10, sigma = set_units(1, "m/s"),
-                                           tracks = 2L, start_location = c(0, 0)) {
+                                           tracks = 2L, start_location = c(0.0, 0.0)) {
     if (is_scalar_integerish(tracks)) {
       n_tracks <- tracks
     } else {
@@ -196,45 +196,45 @@ if (FALSE) { # nolint
       return(do.call(rbind, l))
     }
     n <- length(t)
-    assert_that(length(start_location) == 2, msg = "`start_location` should have length of two")
+    assert_that(length(start_location) == 2L, msg = "`start_location` should have length of two")
     assert_that(is.numeric(start_location))
-    assert_that(length(sigma) == 1 | length(sigma) == (n - 1))
-    assert_that(all(diff(t) >= 0), msg = "Times in `t` should not be descending")
+    assert_that(length(sigma) == 1L | length(sigma) == (n - 1L))
+    assert_that(all(diff(t) >= 0.0), msg = "Times in `t` should not be descending")
     if (is.function(sigma)) {
-      r <- mapply(integrate, head(t, -1), tail(t, -1),
+      r <- mapply(integrate, head(t, -1L), tail(t, -1L),
         MoreArgs = list(f = function(...) {
           x <- sigma(...)
-          if (any(x < 0)) {
+          if (any(x < 0L)) {
             cli_abort("The sigma function results in negative values, they should all be positive or zero",
               class = "move2_error_negative_sigma_value_function"
             )
           }
-          x^2
+          x^2L
         })
       )
       assert_that(all(unlist(r["message", ]) == "OK"))
       sigma <- sqrt(unlist(r["value", ]))
     } else {
-      if (!all(sigma >= set_units(0, m / s))) {
+      if (!all(sigma >= set_units(0.0, m / s))) {
         cli_abort("All sigma values should be postive.", class = "move2_error_negative_sigma_value_argument")
       }
-      if (length(sigma) == 1) {
-        sigma <- rep(sigma, n - 1)
+      if (length(sigma) == 1L) {
+        sigma <- rep(sigma, n - 1L)
       }
       dt <- diff(t)
       if (inherits(dt, "difftime")) {
         dt <- as.numeric(dt, units = "secs")
       }
-      sigma <- sqrt((sigma^2) * dt)
+      sigma <- sqrt((sigma^2L) * dt)
     }
-    if (length(sigma) != (n - 1)) {
+    if (length(sigma) != (n - 1L)) {
       cli_abort("The length of sigma does not correspond to the number of timestamps, sigma should have a length of
                 the number of timestamps - 1",
         class = "move2_error_sigma_length_error"
       )
     }
-    x <- cumsum(c(start_location[1], rnorm(n - 1, mean = 0, sd = sigma)))
-    y <- cumsum(c(start_location[2], rnorm(n - 1, mean = 0, sd = sigma)))
+    x <- cumsum(c(start_location[1L], rnorm(n - 1L, mean = 0.0, sd = sigma)))
+    y <- cumsum(c(start_location[2L], rnorm(n - 1L, mean = 0.0, sd = sigma)))
 
     m <- st_as_sf(coords = c("x", "y"), x = data.frame(time = t, x, y, track = tracks)) |>
       new_move("time", track_id_column = "track", track_attributes = "")

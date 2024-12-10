@@ -44,13 +44,13 @@ mt_distance <- function(x, units) {
     c(st_geometry(x), empty), # head and tail seem to be quite slow on geometry objects (numeric indexing is not better)
     c(empty, st_geometry(x)),
     by_element = TRUE
-  )[-1]
+  )[-1L]
   ids <- mt_track_id(x)
   d[diff(as.numeric(if (is.character(ids)) {
     factor(ids)
   } else {
     ids
-  })) != 0] <- NA
+  })) != 0L] <- NA
 
   return(mt_change_units(d, units))
 }

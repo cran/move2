@@ -1,3 +1,13 @@
+* Ensure outliers are removed when attributes are selected (#91, @RonEfrat)
+* In test account for timezone EST not being available
+* Update stored copy of tag type table to include newest types
+* Add citation to published paper
+* Update movebank vignette
+* Catch condition when no rows are returned from movebank
+* Add functionality to download study info with study name (#83)
+* Ensure preferred label is used in case of conflict (#84, @peterdesmet)
+* Depend on recent version of `bit64` to prevent errors (#21)
+
 # move2 0.3.0
 
 * Fix assertion messaging in `movebank_retrieve`

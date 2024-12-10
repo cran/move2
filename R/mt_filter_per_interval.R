@@ -50,8 +50,8 @@ mt_per_interval <- function(x, criterion = c("first", "random", "last"), unit = 
     mutate(flooredDate = lubridate::floor_date(!!!syms(mt_time_column(x)), unit = unit, ...)) |>
     group_by(!!!syms(mt_track_id_column(x)), !!!syms("flooredDate"))
   return(switch(criterion,
-    first = mutate(xx, sel = dplyr::row_number() == 1),
+    first = mutate(xx, sel = dplyr::row_number() == 1L),
     last = mutate(xx, sel = dplyr::row_number() == n()),
-    random = mutate(xx, sel = dplyr::row_number() == sample.int(n(), 1))
+    random = mutate(xx, sel = dplyr::row_number() == sample.int(n(), 1L))
   ) |> pull("sel"))
 }

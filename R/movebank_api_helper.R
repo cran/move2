@@ -1,10 +1,10 @@
-mb_include_minimal_attributes <- function(attributes) {
-  mb_study_minimal_attributes <- c("deployment_id", "location_long", "location_lat", "timestamp")
+mb_include_minimal_attributes <- function(attributes, to_add=NULL) {
+  mb_study_minimal_attributes <- c("deployment_id", "location_long", "location_lat", "timestamp", to_add)
   if (is.null(attributes)) {
     attributes <- mb_study_minimal_attributes
   } else {
     assert_that(is.character(attributes))
-    if (attributes[1] != "all") {
+    if (attributes[1L] != "all") {
       attributes <- unique(c(
         attributes,
         mb_study_minimal_attributes
@@ -16,13 +16,17 @@ mb_include_minimal_attributes <- function(attributes) {
 movebank_convert_spatial_cols <- function(df) {
   for (i in names(movebank_spatial_column_pairs)) {
     if (all(movebank_spatial_column_pairs[[i]] %in% colnames(df))) {
-      df[[i]] <- sf::st_sfc(
-        apply(st_drop_geometry(df)[, movebank_spatial_column_pairs[[i]]], 1,
-          sf::st_point,
-          simplify = FALSE
-        ),
-        crs = 4326
-      )
+      if (nrow(df) == 0L) {
+        df[[i]] <- sf::st_sfc(crs = 4326L)
+      } else {
+        df[[i]] <- sf::st_sfc(
+          apply(st_drop_geometry(df)[, movebank_spatial_column_pairs[[i]]], 1L,
+            sf::st_point,
+            simplify = FALSE
+          ),
+          crs = 4326L
+        )
+      }
       df <- df |> select(-all_of(movebank_spatial_column_pairs[[i]]))
     }
   }
@@ -35,23 +39,21 @@ movebank_construct_url <- function(entity_type = NA, ...) {
                        entity types: {.val {movebank_valid_entity_types}}")
   )
   extra_args <- list(...)
-  assert_that(!is.null(names(extra_args)) | length(extra_args) == 0,
+  assert_that(!is.null(names(extra_args)) | length(extra_args) == 0L,
     msg = "All arguments must be named to construct a valid url for a movebank request"
   )
   assert_that(all(names(extra_args) != ""),
     msg = "All arguments must be named to construct a valid url for a movebank request"
   )
-  if ("sensor_type_id" %in% names(extra_args)) {
-    if (is.character(extra_args[["sensor_type_id"]])) {
-      if (!all(extra_args[["sensor_type_id"]] %in% (movebank_tag_type_table |> pull("external_id")))) {
-        cli_abort("The character string for sensor type id is not a valid movebank sensor type",
-          class = "move2_error_movebank_api_not_valid_sensor_type_id"
-        )
-      }
-      extra_args[["sensor_type_id"]] <- movebank_tag_type_table$id[
-        movebank_tag_type_table$external_id %in% extra_args[["sensor_type_id"]]
-      ]
+  if ("sensor_type_id" %in% names(extra_args) && is.character(extra_args[["sensor_type_id"]])) {
+    if (!all(extra_args[["sensor_type_id"]] %in% (movebank_tag_type_table |> pull("external_id")))) {
+      cli_abort("The character string for sensor type id is not a valid movebank sensor type",
+        class = "move2_error_movebank_api_not_valid_sensor_type_id"
+      )
     }
+    extra_args[["sensor_type_id"]] <- movebank_tag_type_table$id[
+      movebank_tag_type_table$external_id %in% extra_args[["sensor_type_id"]]
+    ]
   }
   for (i in c("timestamp_start", "timestamp_end")) {
     if (i %in% names(extra_args) &&
@@ -91,7 +93,7 @@ movebank_construct_url <- function(entity_type = NA, ...) {
       x
     }
   })
-  extra_args <- paste(names(extra_args), "=", unlist(lapply(extra_args, paste, collapse = ",")), sep = "")
+  extra_args <- paste0(names(extra_args), "=", unlist(lapply(extra_args, paste, collapse = ",")))
   api_url <- getOption("move2_movebank_api_url")
   assert_that(is_scalar_character(api_url),
     msg = format_error("The option {.var move2_movebank_api_url} should contain a scalar {.cls character}")
@@ -100,14 +102,14 @@ movebank_construct_url <- function(entity_type = NA, ...) {
     "%s?entity_type=%s%s",
     api_url,
     entity_type,
-    sub("&=", "", paste("&", extra_args, sep = "", collapse = ""))
+    sub("&=", "", paste0("&", extra_args, collapse = ""))
   )
   assert_that(is_scalar_character(url))
   # there is still a region where an other internal error occurs:
   # https://github.com/movebank/movebank-api-doc/issues/8
   # https://github.com/movebank/movebank-api-doc/issues/8#issuecomment-1355109348
   url_length <- nchar(url)
-  if (url_length >= 8202) {
+  if (url_length >= 8202L) {
     cli_abort("The constructed url for the request to the movebank API gets too long ({url_length} characters).
               It should be less then 8202 characters. This can be caused by requesting for example a long vector of
               identifiers.", url = url)

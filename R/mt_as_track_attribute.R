@@ -46,7 +46,7 @@ mt_as_track_attribute <- function(x, ..., .keep = FALSE) {
     return(x)
   }
   pos <- pos[names(pos) != mt_track_id_column(x)]
-  if ((is.integer(pos) && length(pos) == 0) | .keep) {
+  if ((is.integer(pos) && length(pos) == 0) || .keep) {
     pos <- TRUE
   } else {
     pos <- -pos
@@ -76,7 +76,7 @@ mt_as_event_attribute <- function(x, ..., .keep = FALSE) {
       mt_track_id_column(x)
     ) |>
     mt_set_track_data(track_data[, if (.keep) {
-      T
+      TRUE
     } else {
       pos
     }, drop = FALSE])

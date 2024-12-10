@@ -10,19 +10,19 @@ test_that("segments type", {
     st_is(s, "LINESTRING"),
     c(TRUE, TRUE, FALSE, TRUE, TRUE, FALSE)
   )
-  expect_equal(mt_distance(m)[c(1:2, 4:5)],
-    sf::st_length(s)[c(1:2, 4:5)],
+  expect_equal(mt_distance(m)[c(1L:2L, 4L:5L)],
+    sf::st_length(s)[c(1L:2L, 4L:5L)],
     ignore_attr = TRUE
   )
   expect_identical(
     lapply(s, st_coordinates),
-    lapply(mt_segments(sf::st_set_crs(m, 4326)), st_coordinates)
+    lapply(mt_segments(sf::st_set_crs(m, 4326L)), st_coordinates)
   )
-  expect_equal(c(lapply(s, st_coordinates)[[1]][1, 1:2]), c(0, 0),
+  expect_equal(c(lapply(s, st_coordinates)[[1]][1L, 1L:2L]), c(0, 0),
     ignore_attr = TRUE
   )
-  expect_identical(s[6], st_geometry(m)[6])
-  expect_identical(s[3], st_geometry(m)[3])
+  expect_identical(s[6L], st_geometry(m)[6L])
+  expect_identical(s[3L], st_geometry(m)[3L])
 })
 test_that("segment locations are first", {
   m <- mt_sim_brownian_motion()
@@ -32,19 +32,19 @@ test_that("segment locations are first", {
       lapply(lapply(
         mt_segments(m),
         st_coordinates
-      ), head, 1), "[", 1:2
+      ), head, 1L), "[", 1L:2L
     )),
     ignore_attr = TRUE
   )
   expect_identical(st_crs(m), st_crs(mt_segments(m)))
 
-  m <- m %>% sf::st_set_crs(3857)
+  m <- m %>% sf::st_set_crs(3857L)
   expect_equal(
     st_coordinates(m),
     do.call("rbind", lapply(lapply(
       lapply(mt_segments(m), st_coordinates),
-      head, 1
-    ), "[", 1:2)),
+      head, 1L
+    ), "[", 1L:2L)),
     ignore_attr = TRUE
   )
   expect_identical(st_crs(m), st_crs(mt_segments(m)))

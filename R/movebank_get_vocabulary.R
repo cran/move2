@@ -9,11 +9,12 @@ movebank_simplify_labels <- function(x) {
 #'
 #'
 #' @param labels Either a character vector with the column names to look up or a `move2` object from which the column
-#' names will be extracted. If no argument is provided all movebank terms are returned
+#' names will be extracted. Matches are made both based on the preferred label and the alternative label in the vocabulary.
+#' If no argument is provided all movebank terms are returned
 #' @param xml Either a connection to the movebank vocabulary xml, a path to the vocabulary file or an url where it can
 #' be downloaded. The later is the default. By downloading the xml yourself the function will speed up and become
 #'  independent of an internet connection being available.
-#' @param omit_deprecated If concepts are marked deprecated they are omitted from the set of possible labels.
+#' @param omit_deprecated If concepts are marked deprecated they are omitted from the set of possible labels to match.
 #' @param return_type A character scalar identifying the desired return type, see details for more information on the
 #' specific types.
 #'
@@ -23,6 +24,8 @@ movebank_simplify_labels <- function(x) {
 #' * `list` A list with all information for each term.
 #' * `xml` A xml_node with the definition.
 #' * `uri` A link to the full definitions page.
+#'
+#' In case `labels` matches both a preferred and an alternative label the term with the preferred label is returned.
 #'
 #' @return A named list of the selected `return_type`, note that if deprecated are not omitted duplicated names can
 #'  occur.
@@ -85,12 +88,12 @@ movebank_get_vocabulary <-
     )
     all_descriptions <- xml2::xml_find_all(xml, select_statement)
     label_list <- mapply(c,
-      lapply(
+      prefLabel = lapply(
         all_descriptions,
         xml2::xml_find_all, ".//skos:prefLabel"
       ) |>
         lapply(xml2::xml_text),
-      lapply(
+      altLabel = lapply(
         all_descriptions,
         xml2::xml_find_all, ".//skos:altLabel"
       ) |>
@@ -103,7 +106,17 @@ movebank_get_vocabulary <-
       labels_simplified <- movebank_simplify_labels(labels)
       relevant_descriptions <- lapply(
         labels_simplified,
-        function(x) which(unlist(lapply(lapply(label_list, "==", x), any)))
+        function(x) {
+          matches <- lapply(label_list, "==", x)
+          ids <- which(unlist(lapply(matches, any)))
+          if (length(ids) == 2L) {
+            label_types <- names(unlist(lapply(matches[ids], which)))
+            if (sum(label_types == "prefLabel") == 1L) {
+              ids <- ids[label_types == "prefLabel"]
+            }
+          }
+          ids
+        }
       )
       names(relevant_descriptions) <- labels
     } else {
@@ -116,7 +129,7 @@ movebank_get_vocabulary <-
     )
     l <- unlist(lapply(xml_descriptions, length))
 
-    if (any(l > 2L)) {
+    if (any(l >= 2L)) {
       cli_abort( # nocov start
         "For some terms duplicate vocabulary terms are retrieved. This is an error that needs to be
                 investegated, please submit an issue.",

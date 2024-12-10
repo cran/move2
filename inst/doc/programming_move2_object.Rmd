@@ -251,8 +251,8 @@ or `Move`/`MoveStack` from *move*.
 
 - `to_move()`: converts to a object of class `Move`/`MoveStack`
 
-- `mt_track_id(x) <- NULL`: to remove `move2` class from the object, it will 
-be recognized as a object of class `sf`
+- `x2 <- x; class(x2) <- class(x) %>% setdiff("move2")`: to remove `move2` class from the object, it will 
+be recognized as an object of class `sf`
 
 - to transform into a flat table without loosing information:
     * move all track associated attributes to the event table: `x <- mt_as_event_attribute(x, names(mt_track_data(x)))`
@@ -290,9 +290,9 @@ define tracks or rename track id column
 - `mt_track_lines()`: convert a trajectory into lines for plotting with e.g.
   `ggplot`
 
-- use the option `options(sf_max.plot=1)` to display a single plot of the track.
+- use the argument `max.plot = 1` to display a single plot of the track.
   The attribute that should be used to color the tracks can be specified, e.g.
-  `plot(x["individual_local_identifier"])`.
+  `plot(x["individual_local_identifier"], max.plot = 1)`.
   [Here](https://r-spatial.github.io/sf/articles/sf5.html) is more information
   on how to do simple plots.
 

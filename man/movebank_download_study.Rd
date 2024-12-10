@@ -118,7 +118,7 @@ For more elaborate usage see \code{vignette("movebank", package='move2')}
 \examples{
 \dontrun{
 ## download entire study (all data of all sensors)
-movebank_download_study_info(study_id = myStudyID)$sensor_type_ids
+movebank_download_study_info(study_id = 2911040)$sensor_type_ids
 movebank_download_study(2911040, sensor_type_id = c("gps", "acceleration"))
 
 ## download data of one individual

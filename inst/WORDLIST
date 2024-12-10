@@ -21,6 +21,8 @@ bartk
 bb
 behavioural
 bff
+bibentry
+bibtype
 bootswatch
 brownian
 BugReports
@@ -29,6 +31,7 @@ Caneco
 cb
 CentOS
 centroid
+citHeader
 cli
 CMD
 cms
@@ -186,3 +189,4 @@ wikipedia
 WIPO
 withr
 www
+yyyyMMddHHmmssSSS
