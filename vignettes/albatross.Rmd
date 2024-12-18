@@ -64,7 +64,7 @@ As the `move2` class extends `sf` we can profit from existing plotting functiona
 library(ggplot2)
 library(raster)
 ```
-```{r map_albatrosses, fig.width=5.3}
+```{r map_albatrosses, fig.width=5.3, fig.alt="Plot of the trajectories and locations of the Galapagos Albatrosses on a map background"}
 library(ggplot2)
 ggplot() +
   ggspatial::annotation_map_tile(zoom = 5) +
@@ -111,7 +111,7 @@ animation_site
 ```{r island_animation_render ,echo=FALSE, results='asis'}
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("island_animation.gif", animation = animation_site)
-cat("![](island_animation.gif)\n")
+cat("![Animation showing the trajectories per island of origin](island_animation.gif)\n")
 ```
 
 We can also take this one step further by animating the map view. To do that we use a local equal area projection and define for each state a manual zoom.
@@ -132,7 +132,7 @@ animation_site +
 ```{r change_view_render ,echo=FALSE, results='asis'}
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("change_view.gif", renderer = gifski_renderer())
-cat("![](change_view.gif)\n")
+cat("![An update of the previous animation showning how specific locations can be highlighted](change_view.gif)\n")
 ```
 
 It is also possible to animate the movement of individuals. To make the animation smoother, we linearly interpolate the position of individuals. Here we interpolate to a location every 60 minutes. We avoid interpolating longer time lags (in this case larger than 3 hours) to avoid inferring movement between location to long apart, this causes some individuals to temporarily disappear from the animation. To ensure that the data set is fully regular we omit the existing locations. For visual purposes we only show a short period of a few days, however, this can be adjusted to what is most appropriate for the intended visualization. For each timestamp we render one frame. Here we color by individual but other attributes like the speed could also be used. 
@@ -168,7 +168,7 @@ animate(animation,
 ```{r movement_animation_render ,echo=FALSE, results='asis'}
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("movement_animation.gif", renderer = gifski_renderer())
-cat("![](movement_animation.gif)\n")
+cat("![An animation of the locations of individual albatrosses overplotted on a map](movement_animation.gif)\n")
 ```
 
 The previous animation was made using a relatively simple approach. However, with some additional changes it is possible to add a tail to the movement of individuals and use a dark color scheme. To visualize the tail we use `shadow_wake` which does not work in combination with `transition_manual`, therefore we switch here to the usage of `transition_time`. To keep the continuity of movement, this case we do in interpolate over longer time spans.
@@ -220,7 +220,7 @@ animate(animation,
 ```{r movement_animation_tail_show_render ,echo=FALSE, results='asis'}
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("movement_animation_tail_show.gif", renderer = gifski_renderer())
-cat("![](movement_animation_tail_show.gif)\n")
+cat("![An animation of the locations of the albatrosses including a tail that highlights the individual movement](movement_animation_tail_show.gif)\n")
 ```
 
 Note that the timezone is set to Lima, this provides us the possibility to easily identify that most movement occurs during the day and that the birds are relatively stationary and floating with the current during the night.
@@ -343,7 +343,7 @@ table(track_summary$individual, track_summary$region)
 
 Now we can plot the obtained summary statistics for the trajectories in each 'region'. First we plot a map, to show where each track is, the inbound tracks are longer then the outbound tracks. 
 
-```{r track_map}
+```{r track_map, fig.alt="A map showing the categorization of track into the different regions"}
 ggplot(track_summary) +
   geom_sf(data = ne_coastline(returnclass = "sf", 50)) +
   geom_sf(aes(color = region)) +
@@ -359,7 +359,7 @@ ggplot(track_summary) +
 
 However the distance is covered in a shorter time as can be seen in the following graph. Here the units are changes to days to facilitate the interpretation. 
 
-```{r plots_duration,  fig.width=6}
+```{r plots_duration,  fig.width=6, fig.alt="The average duration of each stage of the Foraging trip"}
 ggplot(track_summary, aes(x = region, y = duration)) +
   geom_boxplot(outlier.shape = NA) +
   geom_point(aes(color = individual, group = individual),
@@ -375,7 +375,7 @@ ggplot(track_summary, aes(x = region, y = duration)) +
 
 This corresponds with the fact that the ground speed measured by the gps sensor is on average higher (notice units get propagated from movebank). 
 
-```{r plots_speed,  fig.width=6}
+```{r plots_speed,  fig.width=6, fig.alt="A plot showing the average speed for each stage of the foraging trip"}
 ggplot(
   track_summary,
   aes(x = region, y = ground_speed_mean)
@@ -394,7 +394,7 @@ ggplot(
 
 At the same time DBA is lower in these inbound flight corresponding to the tail winds these birds profit from. We also see that birds have a higher speed and DBA in the foraging region compared to the breeding region corresponding with their respective activities.
 
-```{r plot_expend,  fig.width=6}
+```{r plot_expend,  fig.width=6, fig.alt="A plot showing the Mean DBA for each stage of the foraging trips"}
 ggplot(
   track_summary,
   aes(x = region, y = dba_mean)

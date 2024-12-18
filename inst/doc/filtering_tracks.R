@@ -77,7 +77,7 @@ galapagos_albatrosses %>%
   group_by(mt_track_id()) %>%
   filter(as_units(diff(range(mt_time()))) > set_units(1, "week"))
 
-## ----fig.width=7, fig.height=4.2--------------------------------------------------
+## ----fig.width=7, fig.height=4.2, fig.alt="Plot of the tracking data from albatrosses including coastlines and the foraging area"----
 foraging_area <- st_as_sfc(st_bbox(c(
   xmin = -82, xmax = -77,
   ymax = -0.5, ymin = -13

@@ -35,7 +35,7 @@ vulture_data
 In this case some tracks have very long time gaps, to prevent distant points to
 be connected by a line we split those tracks by creating a new id.
 
-```{r}
+```{r map_of_vulture_track, fig.alt="A map showing the trajectories of vultures using coast lines as a reference"}
 library(dplyr, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(rnaturalearth, quietly = TRUE)
@@ -65,7 +65,7 @@ ggplot() +
 
 ## Categorize seasons
 
-```{r}
+```{r categorize_seasons}
 library(magrittr, quietly = TRUE)
 library(lubridate, quietly = TRUE)
 vulture_data <- vulture_data %>% mutate(
@@ -89,11 +89,11 @@ vulture_data <- vulture_data %>% mutate(
 
 Annotate speed and azimuth to the trajectory.
 
-```{r}
+```{r annotate_track}
 vulture_data <- vulture_data %>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
 ```
 ## Seasonal distribution per individual
-```{r fig.height=6}
+```{r azimuth_distribution, fig.height=6, fig.alt="A plot of the azimuths of the tracks split out per season and individual"}
 library(circular, quietly = TRUE)
 vulture_azimuth_distributions <- vulture_data %>%
   filter(speed > set_units(2, "m/s"), !is.na(season)) %>%
@@ -133,12 +133,13 @@ vulture_azimuth_distributions %>%
     name = NULL, breaks = (-2:1) * 90,
     labels = c("S", "W", "N", "E")
   ) +
-  scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L))
+  scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L)) +
+  labs(color = "Season")
 ```
 
 ## Individual trajectory
 
-```{r, fig.height=5}
+```{r speed_direction, fig.height=5, fig.alt="A plot exploring the relation between direction and speed for one track"}
 leo <- vulture_data |>
   filter_track_data(individual_local_identifier == "Leo") |>
   mutate(speed_categorical = cut(speed, breaks = c(2, 5, 10, 15, 35)))
@@ -147,7 +148,7 @@ leo |> ggplot(aes(x = azimuth, y = speed)) +
   scale_x_units(unit = "degrees", breaks = -2:2 * 90, expand = c(0L, 0L)) +
   theme_linedraw()
 ```
-```{r}
+```{r seasonal_speed_distribution, fig.alt="Plot that visualizes the speed and directions per season for one individual"}
 leo |>
   filter(speed > set_units(2L, "m/s"), !is.na(season)) |>
   ggplot() +
@@ -172,7 +173,7 @@ leo |>
 
 Plot turn angle distribution.
 
-```{r, fig.height=4, fig.width=5}
+```{r turnangle_plot, fig.height=4, fig.width=5, fig.alt="Plot of the turning angle distribution"}
 pi_r <- set_units(pi, "rad")
 leo %>%
   mutate(turnangle = mt_turnangle(.)) %>%
@@ -196,7 +197,7 @@ leo %>%
 
 Here we visualize the distance to the first location of each trajectory.
 
-```{r, fig.height=5}
+```{r nsd, fig.height=5, fig.alt="Plot of the net squared displacement overtime per individual"}
 vulture_data <- vulture_data %>%
   group_by(mt_track_id()) %>%
   mutate(displacement = c(st_distance(

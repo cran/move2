@@ -100,7 +100,7 @@ mv_no_dup <- mv \%>\%
   arrange(n_na) \%>\%
   mt_filter_unique(criterion = "first") \%>\%
   arrange(mt_track_id()) \%>\%
-  arrange(mt_track_id(),mt_time())
+  arrange(mt_track_id(), mt_time())
 \dontshow{\}) # examplesIf}
 }
 \seealso{

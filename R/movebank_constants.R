@@ -452,7 +452,7 @@ movebank_column_types <- list(
       "removal", "transmission-end", "unknown"
     )
   ),
-  "deployment-id" = col_factor(), # deployment id now can be a given name defined by de user and, in its absence a large integer created by movebank
+  "deployment-id" = col_big_integer(), # deployment id now can be a given name defined by de user and, in its absence a large integer created by movebank
   "deployment-image" = col_character(),
   "deploy-off-date" = col_datetime(),
   "deploy-off-latitude" = col_double(),
@@ -648,7 +648,7 @@ movebank_column_types <- list(
   "lora:spreading-factor" = col_double(),
   "lora:uplink-count" = col_integer(),
   "lot:crc-status" = col_factor(levels = c("G", "E", "F")),
-  "lot:crc-status-text" = col_factor(levels = c("OK", "Fail", "OK(corrected)")),# might be outdated
+  "lot:crc-status-text" = col_factor(levels = c("OK", "Fail", "OK(corrected)")), # might be outdated
   "lotek:deltatime" = col_integer(),
   "lotek-eres" = col_double(),
   # "lotek-fix-status", # not documented in mb dictionary
@@ -946,8 +946,8 @@ movebank_column_types <- list(
 
 movebank_column_types <- movebank_column_types[!unlist(lapply(movebank_column_types, is.null))]
 movebank_colon_names <- list(
-  "lotek_" = "^lot:", "ornitela_" = "^orn:", "^heartrate:", "^mag:", "gsm"="^gsm:gsm",
-  "gsm_mcc"="^gsm:mcc",
+  "lotek_" = "^lot:", "ornitela_" = "^orn:", "^heartrate:", "^mag:", "gsm" = "^gsm:gsm",
+  "gsm_mcc" = "^gsm:mcc",
   "^bar:", "^gls:", "_" = ":"
 )
 to_download_names <- function(x) {

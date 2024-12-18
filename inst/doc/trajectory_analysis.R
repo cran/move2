@@ -19,7 +19,7 @@ vulture_data <-
   movebank_download_study("Turkey vultures in North and South America")
 vulture_data
 
-## ---------------------------------------------------------------------------------
+## ----map_of_vulture_track, fig.alt="A map showing the trajectories of vultures using coast lines as a reference"----
 library(dplyr, quietly = TRUE)
 library(ggplot2, quietly = TRUE)
 library(rnaturalearth, quietly = TRUE)
@@ -46,7 +46,7 @@ ggplot() +
     xlim = c(-3500, 3800), ylim = c(-4980, 4900)
   )
 
-## ---------------------------------------------------------------------------------
+## ----categorize_seasons-----------------------------------------------------------
 library(magrittr, quietly = TRUE)
 library(lubridate, quietly = TRUE)
 vulture_data <- vulture_data %>% mutate(
@@ -67,10 +67,10 @@ vulture_data <- vulture_data %>% mutate(
   )
 )
 
-## ---------------------------------------------------------------------------------
+## ----annotate_track---------------------------------------------------------------
 vulture_data <- vulture_data %>% mutate(azimuth = mt_azimuth(.), speed = mt_speed(.))
 
-## ----fig.height=6-----------------------------------------------------------------
+## ----azimuth_distribution, fig.height=6, fig.alt="A plot of the azimuths of the tracks split out per season and individual"----
 library(circular, quietly = TRUE)
 vulture_azimuth_distributions <- vulture_data %>%
   filter(speed > set_units(2, "m/s"), !is.na(season)) %>%
@@ -110,9 +110,10 @@ vulture_azimuth_distributions %>%
     name = NULL, breaks = (-2:1) * 90,
     labels = c("S", "W", "N", "E")
   ) +
-  scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L))
+  scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L)) +
+  labs(color = "Season")
 
-## ----fig.height=5-----------------------------------------------------------------
+## ----speed_direction, fig.height=5, fig.alt="A plot exploring the relation between direction and speed for one track"----
 leo <- vulture_data |>
   filter_track_data(individual_local_identifier == "Leo") |>
   mutate(speed_categorical = cut(speed, breaks = c(2, 5, 10, 15, 35)))
@@ -121,7 +122,7 @@ leo |> ggplot(aes(x = azimuth, y = speed)) +
   scale_x_units(unit = "degrees", breaks = -2:2 * 90, expand = c(0L, 0L)) +
   theme_linedraw()
 
-## ---------------------------------------------------------------------------------
+## ----seasonal_speed_distribution, fig.alt="Plot that visualizes the speed and directions per season for one individual"----
 leo |>
   filter(speed > set_units(2L, "m/s"), !is.na(season)) |>
   ggplot() +
@@ -143,7 +144,7 @@ leo |>
   scale_fill_ordinal("Speed") +
   theme_linedraw()
 
-## ----fig.height=4, fig.width=5----------------------------------------------------
+## ----turnangle_plot, fig.height=4, fig.width=5, fig.alt="Plot of the turning angle distribution"----
 pi_r <- set_units(pi, "rad")
 leo %>%
   mutate(turnangle = mt_turnangle(.)) %>%
@@ -162,7 +163,7 @@ leo %>%
   scale_y_continuous(limits = c(-500L, 650L), breaks = c(0L, 250L, 500L)) +
   theme_linedraw()
 
-## ----fig.height=5-----------------------------------------------------------------
+## ----nsd, fig.height=5, fig.alt="Plot of the net squared displacement overtime per individual"----
 vulture_data <- vulture_data %>%
   group_by(mt_track_id()) %>%
   mutate(displacement = c(st_distance(

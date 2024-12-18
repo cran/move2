@@ -105,7 +105,7 @@ ggplot() +
 #> In total 386 empty location records are removed before summarizing.
 ```
 
-<img src="man/figures/README-map-1.png" width="100%" />
+<img src="man/figures/README-map-1.png" alt="An example plot of tracking data from Galapagos Albatrosses including coastlines" width="100%" />
 
 ``` r
 track %>%
@@ -116,9 +116,14 @@ track %>%
   )) +
   xlab("Time to fix") +
   ylab("Voltage drop rate")
+#> Warning: The `scale_name` argument of `continuous_scale()` is deprecated as of ggplot2
+#> 3.5.0.
+#> This warning is displayed once every 8 hours.
+#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+#> generated.
 ```
 
-<img src="man/figures/README-trackUnits-1.png" width="100%" />
+<img src="man/figures/README-trackUnits-1.png" alt="Plot showing how the units of attributes get propagated to plots including the transformation of units." width="100%" />
 
 ## Other packages
 
@@ -186,4 +191,4 @@ validate code before committing. Testing is done through `testthat`.
 depgraph::plot_dependency_graph(".", suggests = FALSE)
 ```
 
-<img src="man/figures/README-deps-1.png" width="100%" />
+<img src="man/figures/README-deps-1.png" alt="Visualization of the dependencies of the `move2` package" width="100%" />

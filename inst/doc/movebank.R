@@ -28,7 +28,7 @@ options("keyring_backend" = "env")
 library(move2)
 
 ## ----eval=F-----------------------------------------------------------------------
-#  movebank_store_credentials("myUserName", "myPassword")
+# movebank_store_credentials("myUserName", "myPassword")
 
 ## ----echo=F-----------------------------------------------------------------------
 movebank_store_credentials("asf", "adsf", force = TRUE)
@@ -37,11 +37,11 @@ movebank_store_credentials("asf", "adsf", force = TRUE)
 movebank_remove_credentials()
 
 ## ----eval=F-----------------------------------------------------------------------
-#  ## store credentials for the most used account.
-#  movebank_store_credentials("myUserName", "myPassword")
-#  
-#  ## store credentials for another movebank account
-#  movebank_store_credentials("myUserName_2", "myPassword_2", key_name = "myOtherAccount")
+# ## store credentials for the most used account.
+# movebank_store_credentials("myUserName", "myPassword")
+# 
+# ## store credentials for another movebank account
+# movebank_store_credentials("myUserName_2", "myPassword_2", key_name = "myOtherAccount")
 
 ## ----credentials, eval=TRUE, echo=FALSE-------------------------------------------
 movebank_store_credentials("myUserName", "myPassword", force = TRUE)
@@ -56,10 +56,10 @@ options("move2_movebank_key_name" = "myOtherAccount")
 options("move2_movebank_key_name" = "movebank")
 
 ## ----eval=FALSE-------------------------------------------------------------------
-#  keyring::key_list()
-#  #   service           username
-#  # 1 movebank          myUserName
-#  # 2 myOtherAccount    myUserName_2
+# keyring::key_list()
+# #   service           username
+# # 1 movebank          myUserName
+# # 2 myOtherAccount    myUserName_2
 
 ## ----remove_credentials-----------------------------------------------------------
 ## for the default account
@@ -69,7 +69,7 @@ movebank_remove_credentials()
 movebank_remove_credentials(key_name = "myOtherAccount")
 
 ## ----eval=FALSE-------------------------------------------------------------------
-#  keyring::key_list()
+# keyring::key_list()
 
 ## ----echo=FALSE-------------------------------------------------------------------
 options("keyring_backend" = krba)
@@ -89,16 +89,16 @@ library(dplyr)
 movebank_download_study_info()
 
 ## ----study_info_2, eval=F---------------------------------------------------------
-#  movebank_download_study_info(i_have_download_access = TRUE)
+# movebank_download_study_info(i_have_download_access = TRUE)
 
 ## ----study_info_3, eval=F---------------------------------------------------------
-#  movebank_download_study_info(i_am_owner = TRUE)
+# movebank_download_study_info(i_am_owner = TRUE)
 
 ## ----study_info_4, eval=F---------------------------------------------------------
-#  movebank_download_study_info(license_type = "CC_0")
+# movebank_download_study_info(license_type = "CC_0")
 
 ## ----study_info_5, eval=F---------------------------------------------------------
-#  movebank_download_study_info(id = 2911040)
+# movebank_download_study_info(id = 2911040)
 
 ## ----galapagos_deployment, time_it=T----------------------------------------------
 movebank_download_deployment("Galapagos Albatrosses")
@@ -128,12 +128,12 @@ movebank_download_study(
 )
 
 ## ----download_multiindv_2, eval=F-------------------------------------------------
-#  ## it is also possible to use the numerical identifiers
-#  movebank_download_study(
-#    study_id = 2911040,
-#    sensor_type_id = "gps",
-#    individual_id = c(2911086, 2911065)
-#  )
+# ## it is also possible to use the numerical identifiers
+# movebank_download_study(
+#   study_id = 2911040,
+#   sensor_type_id = "gps",
+#   individual_id = c(2911086, 2911065)
+# )
 
 ## ----download_acc, time_it=T------------------------------------------------------
 movebank_download_study(2911040,

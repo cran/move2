@@ -1,3 +1,9 @@
+# move2 0.4.2
+
+* Revert changes to deployment id as movebank seem to still return numeric ids (#92)
+
+# move2 0.4.0
+
 * Ensure outliers are removed when attributes are selected (#91, @RonEfrat)
 * In test account for timezone EST not being available
 * Update stored copy of tag type table to include newest types

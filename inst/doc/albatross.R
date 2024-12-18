@@ -33,7 +33,7 @@ if (Sys.info()["user"] != "bart") {
 library(move2)
 
 ## ----example_store_cred, eval=FALSE-----------------------------------------------
-#  movebank_store_credentials("username")
+# movebank_store_credentials("username")
 
 ## ----download_example-------------------------------------------------------------
 data <- movebank_download_study("Galapagos Albatrosses", sensor_type_id = "gps")
@@ -44,7 +44,7 @@ data
 library(ggplot2)
 library(raster)
 
-## ----map_albatrosses, fig.width=5.3-----------------------------------------------
+## ----map_albatrosses, fig.width=5.3, fig.alt="Plot of the trajectories and locations of the Galapagos Albatrosses on a map background"----
 library(ggplot2)
 ggplot() +
   ggspatial::annotation_map_tile(zoom = 5) +
@@ -85,7 +85,7 @@ animation_site
 ## ----island_animation_render ,echo=FALSE, results='asis'--------------------------
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("island_animation.gif", animation = animation_site)
-cat("![](island_animation.gif)\n")
+cat("![Animation showing the trajectories per island of origin](island_animation.gif)\n")
 
 ## ----change_view, eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3, results='hide'----
 animation_site +
@@ -103,7 +103,7 @@ animation_site +
 ## ----change_view_render ,echo=FALSE, results='asis'-------------------------------
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("change_view.gif", renderer = gifski_renderer())
-cat("![](change_view.gif)\n")
+cat("![An update of the previous animation showning how specific locations can be highlighted](change_view.gif)\n")
 
 ## ----movement_animation, eval=params$eval_output &     knitr::opts_chunk$get("eval"), results='hide'----
 data_interpolated <- mt_interpolate(
@@ -136,7 +136,7 @@ animate(animation,
 ## ----movement_animation_render ,echo=FALSE, results='asis'------------------------
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("movement_animation.gif", renderer = gifski_renderer())
-cat("![](movement_animation.gif)\n")
+cat("![An animation of the locations of individual albatrosses overplotted on a map](movement_animation.gif)\n")
 
 ## ----movement_animation_tail------------------------------------------------------
 date_range <- as.POSIXct(c("2008-7-29", "2008-8-1"))
@@ -181,7 +181,7 @@ animate(animation,
 ## ----movement_animation_tail_show_render ,echo=FALSE, results='asis'--------------
 # animate() doesn't seem to put the images in the right place for pkgdown, so this is a manual workaround
 anim_save("movement_animation_tail_show.gif", renderer = gifski_renderer())
-cat("![](movement_animation_tail_show.gif)\n")
+cat("![An animation of the locations of the albatrosses including a tail that highlights the individual movement](movement_animation_tail_show.gif)\n")
 
 ## ----start_advance, message=FALSE-------------------------------------------------
 require(units)
@@ -270,7 +270,7 @@ track_summary <- data %>%
 ## ----tab;e------------------------------------------------------------------------
 table(track_summary$individual, track_summary$region)
 
-## ----track_map--------------------------------------------------------------------
+## ----track_map, fig.alt="A map showing the categorization of track into the different regions"----
 ggplot(track_summary) +
   geom_sf(data = ne_coastline(returnclass = "sf", 50)) +
   geom_sf(aes(color = region)) +
@@ -283,7 +283,7 @@ ggplot(track_summary) +
   labs(color = "Region") +
   scale_color_brewer(type = "qual")
 
-## ----plots_duration,  fig.width=6-------------------------------------------------
+## ----plots_duration,  fig.width=6, fig.alt="The average duration of each stage of the Foraging trip"----
 ggplot(track_summary, aes(x = region, y = duration)) +
   geom_boxplot(outlier.shape = NA) +
   geom_point(aes(color = individual, group = individual),
@@ -296,7 +296,7 @@ ggplot(track_summary, aes(x = region, y = duration)) +
   theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) +
   scale_color_brewer("Individual", type = "qual", palette = "Set1")
 
-## ----plots_speed,  fig.width=6----------------------------------------------------
+## ----plots_speed,  fig.width=6, fig.alt="A plot showing the average speed for each stage of the foraging trip"----
 ggplot(
   track_summary,
   aes(x = region, y = ground_speed_mean)
@@ -311,7 +311,7 @@ ggplot(
   theme(axis.text.x = element_text(angle = -90, hjust = 0, vjust = 0.5)) +
   scale_color_brewer("Individual", type = "qual", palette = "Set1")
 
-## ----plot_expend,  fig.width=6----------------------------------------------------
+## ----plot_expend,  fig.width=6, fig.alt="A plot showing the Mean DBA for each stage of the foraging trips"----
 ggplot(
   track_summary,
   aes(x = region, y = dba_mean)
