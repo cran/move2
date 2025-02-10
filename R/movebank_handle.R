@@ -63,6 +63,7 @@ movebank_handle <- function(username = NULL, password = NULL) {
   curl_handle <- curl::new_handle()
 
   curl::handle_setopt(
+    useragent = getOption("move2_movebank_useragent"),
     handle = curl_handle,
     httpauth = 1,
     userpwd = userpwd

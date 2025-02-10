@@ -3,6 +3,7 @@ NULL
 # nocov start
 .onLoad <- function(libname, pkgname) { # nolint
   options(
+    move2_movebank_useragent= paste("R package move2", getNamespaceVersion("move2")),
     move2_movebank_key_name = "movebank",
     move2_movebank_keyring = NULL,
     move2_movebank_api_url =

@@ -83,7 +83,9 @@ mt_turnangle <- function(x, units) {
     az <- c(NA, az)
     pi_r <- pi
   }
-  ta <- ((((az) + pi_r) %% (pi_r * 2)) - pi_r) %% (pi_r * 2)
-
+  ta <- ((((az) + pi_r) %% (pi_r * 2)) - pi_r)
+  # TODO next two lines can be removed when I can depend on a new version of units
+  t <- ((ta + (pi_r * 3)) %/% (pi_r * 2))
+  ta <- dplyr::if_else(!t, ta + (pi_r * 2), ta)
   return(mt_change_units(ta, units))
 }

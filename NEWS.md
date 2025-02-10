@@ -1,3 +1,8 @@
+# move2 0.4.4
+
+* Add `useragent` to movebank requests (#93)
+* Ensure turn angles between -180 & 180 with changes in `units` (#94)
+
 # move2 0.4.2
 
 * Revert changes to deployment id as movebank seem to still return numeric ids (#92)
