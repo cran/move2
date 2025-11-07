@@ -96,7 +96,7 @@ library(purrr, quietly = TRUE)
 library(tidyr, quietly = TRUE)
 vulture_azimuth_distributions %>%
   mutate(
-    x = map(azimuth_distribution, ~ .$x),
+    x = map(azimuth_distribution, ~ as.numeric(.$x)),
     y = map(azimuth_distribution, ~ .$y)
   ) %>%
   select(-azimuth_distribution) %>%
@@ -110,7 +110,7 @@ vulture_azimuth_distributions %>%
     name = NULL, breaks = (-2:1) * 90,
     labels = c("S", "W", "N", "E")
   ) +
-  scale_y_continuous(name = NULL, limits = c(-0.8, 1.0), expand = c(0L, 0L)) +
+  scale_y_continuous(name = NULL, limits = c(-0.8, 1.4), expand = c(0L, 0L)) +
   labs(color = "Season")
 
 ## ----speed_direction, fig.height=5, fig.alt="A plot exploring the relation between direction and speed for one track"----

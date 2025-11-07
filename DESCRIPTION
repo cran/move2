@@ -1,6 +1,6 @@
 Package: move2
 Title: Processing and Analysing Animal Trajectories
-Version: 0.4.4
+Version: 0.4.5
 Authors@R: c(
     person("Bart", "Kranstauber", email = "b.kranstauber@uva.nl", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0001-8303-780X")),
@@ -24,10 +24,11 @@ Config/testthat/edition: 3
 Config/testthat/parallel: false
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2025-02-10 21:31:21 UTC; bart
-Author: Bart Kranstauber [aut, cre] (<https://orcid.org/0000-0001-8303-780X>),
-  Kamran Safi [aut] (<https://orcid.org/0000-0002-8418-6759>),
-  Anne K. Scharf [aut] (<https://orcid.org/0000-0002-3357-8533>)
+Packaged: 2025-11-07 11:59:28 UTC; bart
+Author: Bart Kranstauber [aut, cre] (ORCID:
+    <https://orcid.org/0000-0001-8303-780X>),
+  Kamran Safi [aut] (ORCID: <https://orcid.org/0000-0002-8418-6759>),
+  Anne K. Scharf [aut] (ORCID: <https://orcid.org/0000-0002-3357-8533>)
 Maintainer: Bart Kranstauber <b.kranstauber@uva.nl>
 Repository: CRAN
-Date/Publication: 2025-02-10 22:00:02 UTC
+Date/Publication: 2025-11-07 12:40:02 UTC

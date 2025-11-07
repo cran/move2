@@ -1,3 +1,8 @@
+# move2 0.4.5
+
+* Fix test issue with new `unique.sfc` function (#98, @edzer)
+* Fix plot in vignette
+
 # move2 0.4.4
 
 * Add `useragent` to movebank requests (#93)
