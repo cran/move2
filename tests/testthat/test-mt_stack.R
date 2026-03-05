@@ -3,7 +3,8 @@ test_that("mt_stack works", {
     mt_stack(
       mt_sim_brownian_motion(tracks = c("a")),
       mt_sim_brownian_motion(tracks = c("j", "h"))
-    ), "move2"
+    ),
+    "move2"
   )
   expect_identical(
     mt_stack(
@@ -11,7 +12,8 @@ test_that("mt_stack works", {
       mt_sim_brownian_motion(tracks = c("j", "h"))
     ) |>
       mt_track_id() |>
-      unique(), c("a", "j", "h")
+      unique(),
+    c("a", "j", "h")
   )
   expect_warning(expect_identical(
     mt_stack(
@@ -20,7 +22,8 @@ test_that("mt_stack works", {
       mt_sim_brownian_motion(tracks = c("j", "h"))
     ) |>
       mt_track_id() |>
-      unique(), c("a", "j", "h")
+      unique(),
+    c("a", "j", "h")
   ))
   expect_error(
     mt_stack(
@@ -95,16 +98,35 @@ test_that("mt_stack with different types", {
       mt_sim_brownian_motion(t = as.POSIXct("1970-1-1") + 1:10),
       mt_read(mt_example())
     ),
-    "arguments have different crs"
+    sub(
+      'Error : ',
+      '',
+      sub(
+        '\\n',
+        '',
+        as.character(try(
+          dplyr::bind_rows(
+            st_as_sf(st_sfc()),
+            st_as_sf(st_sfc(crs = st_crs(4326)))
+          ),
+          silent = T
+        ))
+      )
+    )
+    #    "CRS mismatch:"
   ))
-  a <- sf::st_set_crs(mt_sim_brownian_motion(
-    t = as.POSIXct("1970-1-1") + 1:10,
-    tracks = factor(letters[1L:3L])
-  ), 4326)
+  a <- sf::st_set_crs(
+    mt_sim_brownian_motion(
+      t = as.POSIXct("1970-1-1") + 1:10,
+      tracks = factor(letters[1L:3L])
+    ),
+    4326
+  )
   b <- mt_read(mt_example())
   suppressWarnings(expect_s3_class(
     mt_stack(
-      a, b
+      a,
+      b
     ),
     "move2"
   ))
@@ -123,7 +145,8 @@ test_that("mt_stack with different types", {
       "all `time_column` attributes have been renamed to `time`"
     )
   ))
-  suppressWarnings(expect_error( # fail on different crs
+  suppressWarnings(expect_error(
+    # fail on different crs
     mt_stack(
       mt_sim_brownian_motion(
         t = as.POSIXct("1970-1-1") + 1:10,
@@ -138,7 +161,8 @@ test_that("duplicate individuals check_unique", {
     mt_stack(
       mt_sim_brownian_motion(tracks = letters[1L:3L]),
       mt_sim_brownian_motion(tracks = letters[4L:6L])
-    ), "move2"
+    ),
+    "move2"
   )
   expect_error(
     mt_stack(
@@ -158,10 +182,12 @@ test_that("duplicate individuals check_unique", {
 
 test_that("duplicate individuals merge", {
   expect_identical(
-    mt_stack(mt_sim_brownian_motion(tracks = letters[1L:3L]),
+    mt_stack(
+      mt_sim_brownian_motion(tracks = letters[1L:3L]),
       mt_sim_brownian_motion(tracks = letters[4L:6L]),
       .track_combine = "merge"
-    ) |> mt_track_id(),
+    ) |>
+      mt_track_id(),
     rep(letters[1:6], each = 10)
   )
   expect_warning(
@@ -171,22 +197,28 @@ test_that("duplicate individuals merge", {
       mt_sim_brownian_motion(tracks = letters[3L:6L]) |>
         mutate_track_data(a = "b"),
       .track_combine = "merge"
-    ), "The column.*, does not have one unique value per track, therefore these values are replaced by .NA.."
+    ),
+    "The column.*, does not have one unique value per track, therefore these values are replaced by .NA.."
   )
 
   expect_identical(
-    suppressWarnings(mt_stack(
-      mt_sim_brownian_motion(tracks = letters[1L:3L]) |>
-        mutate_track_data(a = "a"),
-      mt_sim_brownian_motion(tracks = letters[3L:6L]) |>
-        mutate_track_data(a = "b"),
-      .track_combine = "merge"
-    ) |> mt_track_data()), structure(
+    suppressWarnings(
+      mt_stack(
+        mt_sim_brownian_motion(tracks = letters[1L:3L]) |>
+          mutate_track_data(a = "a"),
+        mt_sim_brownian_motion(tracks = letters[3L:6L]) |>
+          mutate_track_data(a = "b"),
+        .track_combine = "merge"
+      ) |>
+        mt_track_data()
+    ),
+    structure(
       list(
         track = c("a", "b", "c", "d", "e", "f"),
         a = c("a", "a", NA, "b", "b", "b")
       ),
-      row.names = c(NA, -6L), class = "data.frame"
+      row.names = c(NA, -6L),
+      class = "data.frame"
     )
   )
 
@@ -197,13 +229,15 @@ test_that("duplicate individuals merge", {
       mt_sim_brownian_motion(tracks = letters[3L:6L]) |>
         mutate_track_data(a = "b"),
       .track_combine = "merge_list"
-    ) |> mt_track_data(),
+    ) |>
+      mt_track_data(),
     structure(
       list(
         track = c("a", "b", "c", "d", "e", "f"),
         a = list("a", "a", c("a", "b"), "b", "b", "b")
       ),
-      row.names = c(NA, -6L), class = "data.frame"
+      row.names = c(NA, -6L),
+      class = "data.frame"
     )
   )
 })
@@ -211,10 +245,12 @@ test_that("duplicate individuals merge", {
 
 test_that("duplicate individuals rename", {
   expect_identical(
-    mt_stack(mt_sim_brownian_motion(tracks = letters[1L:3L]),
+    mt_stack(
+      mt_sim_brownian_motion(tracks = letters[1L:3L]),
       mt_sim_brownian_motion(tracks = letters[4L:6L]),
       .track_combine = "rename"
-    ) |> mt_track_id(),
+    ) |>
+      mt_track_id(),
     rep(letters[1:6], each = 10)
   )
   expect_silent(expect_identical(
@@ -223,61 +259,101 @@ test_that("duplicate individuals rename", {
         mutate_track_data(a = "a"),
       mt_sim_brownian_motion(tracks = letters[3L:6L]) |>
         mutate_track_data(a = "b"),
-      .track_combine = "rename", .track_id_repair = "unique_quiet"
-    ) |> mt_track_data(),
-    structure(list(
-      track = c("a", "b", "c...3", "c...4", "d", "e", "f"),
-      a = c(
-        "a",
-        "a", "a", "b", "b", "b", "b"
-      )
-    ), row.names = c(NA, -7L), class = "data.frame")
+      .track_combine = "rename",
+      .track_id_repair = "unique_quiet"
+    ) |>
+      mt_track_data(),
+    structure(
+      list(
+        track = c("a", "b", "c...3", "c...4", "d", "e", "f"),
+        a = c(
+          "a",
+          "a",
+          "a",
+          "b",
+          "b",
+          "b",
+          "b"
+        )
+      ),
+      row.names = c(NA, -7L),
+      class = "data.frame"
+    )
   ))
 })
 test_that("merge_list indviduals track data", {
-  a <- mt_sim_brownian_motion(1L:3L, tracks = c("a", "b")) |> mutate_track_data(sex = c("f", "m"), age = 4:5)
+  a <- mt_sim_brownian_motion(1L:3L, tracks = c("a", "b")) |>
+    mutate_track_data(sex = c("f", "m"), age = 4:5)
   b <- a |> mutate(time = time + 4)
   expect_identical(
     mt_stack(a, b, .track_combine = "merge_list") |> mt_track_data(),
-    structure(list(track = c("a", "b"), sex = list(c("f", "f"), c("m", "m")), age = list(c(4L, 4L), c(5L, 5L))),
-      row.names = c(NA, -2L), class = "data.frame"
+    structure(
+      list(
+        track = c("a", "b"),
+        sex = list(c("f", "f"), c("m", "m")),
+        age = list(c(4L, 4L), c(5L, 5L))
+      ),
+      row.names = c(NA, -2L),
+      class = "data.frame"
     )
   )
   expect_identical(
-    mt_stack(a, b |>
-      filter_track_data(.track_id = "b"), .track_combine = "merge_list") |>
-      mt_track_data(),
-    structure(list(track = c("a", "b"), sex = list(c("f"), c("m", "m")), age = list(c(4L), c(5L, 5L))),
-      row.names = c(NA, -2L), class = "data.frame"
-    )
-  )
-  expect_identical(
-    mt_stack(a, b |>
-      filter_track_data(.track_id = "a"),
-    .track_combine = "merge_list"
+    mt_stack(
+      a,
+      b |>
+        filter_track_data(.track_id = "b"),
+      .track_combine = "merge_list"
     ) |>
       mt_track_data(),
     structure(
       list(
         track = c("a", "b"),
-        sex = list(c("f", "f"), c("m")), age = list(c(4L, 4L), c(5L))
+        sex = list(c("f"), c("m", "m")),
+        age = list(c(4L), c(5L, 5L))
       ),
-      row.names = c(NA, -2L), class = "data.frame"
+      row.names = c(NA, -2L),
+      class = "data.frame"
     )
   )
   expect_identical(
-    mt_stack(a, b |> filter_track_data(.track_id = "a") |>
-      mutate_track_data(extra = "o"), .track_combine = "merge_list") |> mt_track_data(),
+    mt_stack(
+      a,
+      b |>
+        filter_track_data(.track_id = "a"),
+      .track_combine = "merge_list"
+    ) |>
+      mt_track_data(),
     structure(
       list(
-        track = c("a", "b"), sex = list(c("f", "f"), c("m")),
-        age = list(c(4L, 4L), c(5L)), extra = list(c(NA, "o"), NA_character_)
+        track = c("a", "b"),
+        sex = list(c("f", "f"), c("m")),
+        age = list(c(4L, 4L), c(5L))
       ),
-      row.names = c(NA, -2L), class = "data.frame"
+      row.names = c(NA, -2L),
+      class = "data.frame"
     )
   )
   expect_identical(
-    mt_stack(a |> filter_track_data(.track_id = "b"),
+    mt_stack(
+      a,
+      b |> filter_track_data(.track_id = "a") |> mutate_track_data(extra = "o"),
+      .track_combine = "merge_list"
+    ) |>
+      mt_track_data(),
+    structure(
+      list(
+        track = c("a", "b"),
+        sex = list(c("f", "f"), c("m")),
+        age = list(c(4L, 4L), c(5L)),
+        extra = list(c(NA, "o"), NA_character_)
+      ),
+      row.names = c(NA, -2L),
+      class = "data.frame"
+    )
+  )
+  expect_identical(
+    mt_stack(
+      a |> filter_track_data(.track_id = "b"),
       b |>
         filter_track_data(.track_id = "a"),
       .track_combine = "merge_list"
@@ -289,7 +365,8 @@ test_that("merge_list indviduals track data", {
         sex = list(c("m"), c("f")),
         age = list(c(5L), c(4L))
       ),
-      row.names = c(NA, -2L), class = "data.frame"
+      row.names = c(NA, -2L),
+      class = "data.frame"
     )
   )
 })
@@ -299,15 +376,18 @@ test_that("merge indviduals track data", {
   a <- mt_sim_brownian_motion(1L:3L, tracks = c("a", "b")) |>
     mutate_track_data(sex = c("f", "m"), age = 4:5)
   b <- a |> mutate(time = time + 4)
-  res <- structure(list(track = c("a", "b"), sex = c("f", "m"), age = 4:5),
-    row.names = c(NA, -2L), class = "data.frame"
+  res <- structure(
+    list(track = c("a", "b"), sex = c("f", "m"), age = 4:5),
+    row.names = c(NA, -2L),
+    class = "data.frame"
   )
   expect_identical(
     mt_stack(a, b, .track_combine = "merge") |> mt_track_data(),
     res
   )
   expect_identical(
-    mt_stack(a,
+    mt_stack(
+      a,
       b |>
         filter_track_data(.track_id = "b"),
       .track_combine = "merge"
@@ -316,7 +396,8 @@ test_that("merge indviduals track data", {
     res
   )
   expect_identical(
-    mt_stack(a,
+    mt_stack(
+      a,
       b |>
         filter_track_data(.track_id = "a"),
       .track_combine = "merge"
@@ -358,30 +439,79 @@ test_that("test different track columns", {
     mt_stack(d, a) |> mt_track_id(),
     (c(rep(LETTERS[7L:9L], each = 10L), rep(letters[1L:3L], each = 10L)))
   )
-  expect_identical(mt_stack(b, d, a) |> mt_track_id(), (c(rep(4L:6L, each = 10), rep(LETTERS[7L:9L], each = 10), rep(letters[1L:3L], each = 10))))
-  expect_identical(mt_stack(d, a, b) |> mt_track_id(), (c(rep(LETTERS[7L:9L], each = 10), rep(letters[1L:3L], each = 10), rep(4L:6L, each = 10))))
-  expect_identical(mt_stack(e, b, d, a) |> mt_track_id(), (c(rep(10:12, each = 10), rep(4L:6L, each = 10), rep(LETTERS[7L:9L], each = 10), rep(letters[1L:3L], each = 10))))
-  expect_identical(mt_stack(d, a, b, e) |> mt_track_id(), (c(rep(LETTERS[7L:9L], each = 10), rep(letters[1L:3L], each = 10), rep(4L:6L, each = 10), rep(10:12, each = 10))))
+  expect_identical(
+    mt_stack(b, d, a) |> mt_track_id(),
+    (c(
+      rep(4L:6L, each = 10),
+      rep(LETTERS[7L:9L], each = 10),
+      rep(letters[1L:3L], each = 10)
+    ))
+  )
+  expect_identical(
+    mt_stack(d, a, b) |> mt_track_id(),
+    (c(
+      rep(LETTERS[7L:9L], each = 10),
+      rep(letters[1L:3L], each = 10),
+      rep(4L:6L, each = 10)
+    ))
+  )
+  expect_identical(
+    mt_stack(e, b, d, a) |> mt_track_id(),
+    (c(
+      rep(10:12, each = 10),
+      rep(4L:6L, each = 10),
+      rep(LETTERS[7L:9L], each = 10),
+      rep(letters[1L:3L], each = 10)
+    ))
+  )
+  expect_identical(
+    mt_stack(d, a, b, e) |> mt_track_id(),
+    (c(
+      rep(LETTERS[7L:9L], each = 10),
+      rep(letters[1L:3L], each = 10),
+      rep(4L:6L, each = 10),
+      rep(10:12, each = 10)
+    ))
+  )
 })
 test_that("conflicting time columns", {
   expect_error(
-    mt_stack(mt_sim_brownian_motion(tracks = "a"), mt_sim_brownian_motion(tracks = "b") |>
-      mutate(new_time = time * 3.0) |>
-      mt_set_time_column("new_time")),
+    mt_stack(
+      mt_sim_brownian_motion(tracks = "a"),
+      mt_sim_brownian_motion(tracks = "b") |>
+        mutate(new_time = time * 3.0) |>
+        mt_set_time_column("new_time")
+    ),
     "The .time_column. differs between the objects to stack and renaming would overwrite existing data."
   )
 })
 test_that("merge stacking lists works", {
   m <- mt_sim_brownian_motion(1L:3L, tracks = letters[5L:8L]) |>
     mutate(bb = c(rep("a", 6L), rep("b", 6L))) |>
-    mutate_track_data(sex = c("f", "f", "m", "m"), age = c(4, 4, 5, 6), old_track = track)
+    mutate_track_data(
+      sex = c("f", "f", "m", "m"),
+      age = c(4, 4, 5, 6),
+      old_track = track
+    )
   aa <- lapply(split(m, mt_track_id(m)), \(x) mt_set_track_id(x, "bb"))
   expect_identical(
-    mt_stack(aa[[1L]], aa[[2L]], aa[[3L]], aa[[4L]], .track_combine = "merge_list"),
+    mt_stack(
+      aa[[1L]],
+      aa[[2L]],
+      aa[[3L]],
+      aa[[4L]],
+      .track_combine = "merge_list"
+    ),
     mt_stack(aa, .track_combine = "merge_list")
   )
   expect_identical(
-    suppressWarnings(mt_stack(aa[[1L]], aa[[2L]], aa[[3L]], aa[[4L]], .track_combine = "merge")),
+    suppressWarnings(mt_stack(
+      aa[[1L]],
+      aa[[2L]],
+      aa[[3L]],
+      aa[[4L]],
+      .track_combine = "merge"
+    )),
     suppressWarnings(mt_stack(aa, .track_combine = "merge"))
   )
 })

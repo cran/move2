@@ -43,13 +43,16 @@ mt_segments <- function(x) {
       segment_column = replace(.data$segment_column, .data$s, st_cast(
         do.call(st_sfc, c(
           list(crs = st_crs(x)),
-          mapply(c, .data$segment_column[.data$s],
-            .data$next_location[.data$s],
-            SIMPLIFY = FALSE
-          )
+          lapply(apply(
+          cbind(st_coordinates(.data$segment_column[.data$s]), st_coordinates(.data$next_location[.data$s])), 1, matrix, ncol=2, simplify = F, byrow=T), sf::st_multipoint)
+          # mapply(c, .data$segment_column[.data$s],
+          #   .data$next_location[.data$s],
+          #   SIMPLIFY = FALSE
+          # )
         )), "LINESTRING"
       ))
     ) |>
     pull(.data$segment_column)
   sfc_segments
 }
+

@@ -25,7 +25,7 @@ The CRS can be centered around the centroid or center of a \code{move2} object o
 \examples{
 mt_aeqd_crs(center = c(10, 45))
 mt_aeqd_crs(center = sf::st_point(c(10, 45)), units = "km")
-\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (parallel::detectCores() < 9) withAutoprint(\{ # examplesIf}
 m <- mt_read(mt_example())
 mt_aeqd_crs(center = sf::st_geometry(m)[5])
 mt_aeqd_crs(m)

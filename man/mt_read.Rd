@@ -34,7 +34,7 @@ not necessarily correspond to the deployments in movebank as this information is
 }
 \examples{
 path_fishers <- mt_example()
-\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (parallel::detectCores() < 9) withAutoprint(\{ # examplesIf}
 mt_read(path_fishers)
 
 ## Reduce the mount of data read this might provide memory advantages

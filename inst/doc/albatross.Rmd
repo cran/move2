@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 
 knitr::opts_chunk$set(
   gganimate = list(
-    nframes = 30,
+    nframes = 25,
     fps = 5
   )
 )
@@ -141,7 +141,7 @@ It is also possible to animate the movement of individuals. To make the animatio
 data_interpolated <- mt_interpolate(
   data[!sf::st_is_empty(data), ],
   time = seq(
-    as.POSIXct("2008-7-27"),
+    as.POSIXct("2008-7-28"),
     as.POSIXct("2008-8-1"), "60 mins"
   ),
   max_time_lag = units::as_units(3, "hours"),
@@ -174,7 +174,7 @@ cat("![An animation of the locations of individual albatrosses overplotted on a 
 The previous animation was made using a relatively simple approach. However, with some additional changes it is possible to add a tail to the movement of individuals and use a dark color scheme. To visualize the tail we use `shadow_wake` which does not work in combination with `transition_manual`, therefore we switch here to the usage of `transition_time`. To keep the continuity of movement, this case we do in interpolate over longer time spans.
 
 ```{r movement_animation_tail}
-date_range <- as.POSIXct(c("2008-7-29", "2008-8-1"))
+date_range <- as.POSIXct(c("2008-7-30", "2008-8-1"))
 ts <- mt_time(data)
 times <- sort(unique((c(date_range, ts[ts < max(date_range) & ts > min(date_range)]))))
 data_interpolated <-
@@ -210,11 +210,11 @@ animation <- ggplot() +
 ```
 
 
-The time period selected is 3 days and we generate one frame every 30 minutes. The `detail` argument is used to estimate additional intermediate locations so that the tail gets a smooth shape.  
+The time period selected is 2 days and we generate one frame every 30 minutes. The `detail` argument is used to estimate additional intermediate locations so that the tail gets a smooth shape.  
 
 ```{r movement_animation_tail_show, results='hide', eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3}
 animate(animation,
-  nframes = 3 * 24 * 2 + 1, detail = 5
+  nframes = 2 * 24 * 2 + 1, detail = 5
 )
 ```
 ```{r movement_animation_tail_show_render ,echo=FALSE, results='asis'}

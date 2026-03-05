@@ -1,6 +1,60 @@
 m <- mt_sim_brownian_motion(tracks = letters[2:3], t = 1:10)
 mt <- mt_read(mt_example())[7:60, ]
 
+test_that("reframe and group modify works", {
+  skip_if_not_installed("dplyr")
+  dat <- mt_as_move2(dplyr::tibble(x = 1:30, y = runif(30), t = sort(runif(30)), id = gl(3, 10)),
+    coords = c("x", "y"), time_column = "t", track_id_column = "id"
+  )
+  uu <- function(x) {
+    # attributes seems to be added by reframe
+    #    g = st_sfc(st_point(1:2), st_point(3:4))
+    #    s = st_sf(a=3:4, g)
+    # s |> reframe(head(pick(everything())))  |> pull(g) |> attributes()
+    # s |> pull(g) |> attributes()
+    attr(x$geometry, "classes") <- NULL
+    x
+  }
+  expect_equal(
+    dat |> group_by(id) |> reframe(head(pick(everything()), 3)) |> tibble::remove_rownames() |>
+      uu(),
+    ## change order column as reframe does this by default (see ?do example)
+    dat[1:3 + rep((0:2) * 10, each = 3), 2:1]
+  )
+  expect_equal(
+    dat |> group_by(id) |> group_modify(head, n=3) |> ungroup(),
+    ## change order column as reframe does this by default (see ?do example)
+    dat[1:3 + rep((0:2) * 10, each = 3), 2:1]
+  )
+  expect_equal(dat |> dplyr::group_modify(head, n=13), head(dat, 13))
+  expect_equal(dat |> dplyr::group_map(head, n=13), list(head(dat, 13)))
+
+  expect_equal(
+    dat |> group_by(t>.5) |> dplyr::group_map(~.x, .keep=FALSE),
+    list(dat[!(dat$t>.5),],dat[(dat$t>.5),])
+  )
+
+  expect_equal(
+    dat |> group_by(id) |> dplyr::group_map(~.x,.keep=T),
+    dat |> group_by(id) |> dplyr::group_split())
+
+  expect_equal(
+    dat |> group_by(id) |> dplyr::group_map(~.x),
+    dat |> group_by(id) |> dplyr::group_split())
+  expect_equal(
+    dat |> group_by(id) |> dplyr::group_map(head, n=3) |> mt_stack() ,
+    dat[1:3 + rep((0:2) * 10, each = 3),]
+  )
+
+
+  fish <- mt_read(mt_example(), n_max = 200)
+  expect_equal(
+    fish |> group_by(as.Date(timestamp)) |>
+      reframe(head(pick(everything()), 3)) |> sf::st_crs(),
+    sf::st_crs(fish)
+  )
+})
+
 test_that("testing tidy functions", {
   skip_if_not_installed("dplyr")
   expect_s3_class(m, "move2")
@@ -166,4 +220,23 @@ test_that("bind_cols and st_join return correct", {
   e[c(1, 4, 7)] <- NA
   expect_identical(sf::st_join(mdf, dfsf)$new_colA, e)
   expect_identical(sf::st_join(m, dfsf)$new_colA, e)
+})
+
+
+test_that("track_id order does not matter for `group_by_track_id",{
+    dat<-mt_as_move2(data.frame(x=1:10, y=1, id=gl(5,2), t=1:10, extra=letters[1:10]),coords=1:2,time_column = 't', track_id_column = 'id' ) |> mutate_track_data(r=c(3,2,3,3,1), h=letters[1:5])
+    expect_identical(dat |> group_by_track_data(r) |> dplyr::group_indices(), v<-c(3L,3L,2L,2L,3L,3L,3L,3L,1L,1L) )
+    expect_named(dat |> group_by_track_data(r), c("id","t","extra","geometry","r"))
+    expect_named(dat |> group_by_track_data(r,h), c("id","t","extra","geometry","r","h"))
+    expect_named(dat |> group_by_track_data(h), c("id","t","extra","geometry","h"))
+
+    dat_mix<-    mt_set_track_data(dat,mt_track_data(dat)[5:1,])
+    expect_identical(dat_mix |> group_by_track_data(r) |> dplyr::group_indices(), v )
+    expect_identical(dat |> group_by_track_data(r<2.5) |> dplyr::group_indices(), v<-c(1L,1L,2L,2L,1L,1L,1L,1L,2L,2L) )
+    expect_identical(dat_mix |> group_by_track_data(r<2.5) |> dplyr::group_indices(), v<-c(1L,1L,2L,2L,1L,1L,1L,1L,2L,2L) )
+    expect_named(dat |> group_by_track_data(r<2.5), c("id","t","extra","geometry","r < 2.5"))
+    expect_identical(dat_mix |> group_by(t<3)|> group_by_track_data(r<2.5) |> dplyr::group_indices(), v<-c(1L,1L,2L,2L,1L,1L,1L,1L,2L,2L) )
+    expect_identical(dat |> group_by(t<3)|> group_by_track_data(r<2.5) |> dplyr::group_indices(), v<-c(1L,1L,2L,2L,1L,1L,1L,1L,2L,2L) )
+    expect_identical(dat |> group_by(t>3.4)|> group_by_track_data(r<2.5, .add = T) |> dplyr::group_indices(), v<-c(1L,1L,2L,4L,3L,3L,3L,3L,4L,4L) )
+
 })

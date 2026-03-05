@@ -186,3 +186,109 @@ test_that("error different time", {
   expect_error(mt_interpolate(mt, tt), "does not correspond to the class of the .time.")
   expect_error(mt_interpolate(mt, "hour"), "does not correspond to the class of the .time.")
 })
+
+
+test_that("spatial interpolation works (unprojected)", {
+  d <- data.frame(x = c(1L:5L), y = c(1L:5L), track = gl(1, 5), timestamp = c(0, 1, 3, 6, 10)) |>
+    st_as_sf(coords = 1L:2L) |>
+    mt_as_move2(track_id_column = "track", time_column = "timestamp")
+  ln <- st_sfc(st_linestring(cbind(c(0, 3), c(3, 0))))
+  expect_s3_class(m <- mt_interpolate(d, sf = ln), "move2")
+  expect_identical(
+    mt_time(m),
+    sort(c(mt_time(d), mean(mt_time(d)[1:2])))
+  )
+  expect_identical(nrow(m),6L)
+  expect_identical(st_geometry(m)[[2]], st_point(c(1.5, 1.5)))
+  expect_error(mt_interpolate(d, sf = st_sfc(st_linestring(cbind(c(0, 3), c(3, 0))), crs = 4326)))
+})
+
+
+test_that("spatial interpolation works (projected)", {
+  d <- data.frame(x = c(1L:5L), y = c(1L:5L), track = gl(1, 5),
+                  timestamp = as.POSIXct("1970-1-1", tz = "CEST") + c(0, 1, 3, 6, 10)) |>
+    st_as_sf(coords = 1L:2L, crs = 4326) |>
+    mt_as_move2(track_id_column = "track", time_column = "timestamp")
+  ln <- st_sfc(st_linestring(cbind(c(0, 3), c(3, 0))), crs = 4326)
+  expect_s3_class(m <- mt_interpolate(d, sf = ln), "move2")
+  expect_identical(nrow(m),6L)
+  expect_identical(mt_time(m)[2], as.POSIXct("1970-1-1", tz = "CEST") + .5008000209503045)
+  expect_identical(st_geometry(m)[[2]], st_point(c(1.50068573746802270, 1.50085712245130076)))
+  expect_error(mt_interpolate(d, sf = st_sfc(st_linestring(cbind(c(0, 3), c(3, 0))))))
+  expect_error(mt_interpolate(d, sf = st_sfc(st_linestring(cbind(c(0, 3), c(3, 0))), crs = 3035)))
+})
+
+
+test_that("spatial interpolation with sf and two tracks", {
+  d <- data.frame(x = c(1L:5L, 0:4), y = c(1L:5L),
+                  tt=1:10,
+                  track = gl(2, 5), timestamp = c(0, 1, 3, 6, 10)) |>
+    st_as_sf(coords = 1L:2L) |>
+    mt_as_move2(track_id_column = "track", time_column = "timestamp")
+  ln <- st_sf(data.frame(ha=c("a","b"),g=st_sfc(list(st_linestring(cbind(c(0, 3), c(3, 0))),
+                                                     st_linestring(cbind(c(0, 5), c(3, 0)))))))
+  #no intersection
+  expect_identical(mt_interpolate(d, sf=st_sfc(st_linestring(cbind(0:1,0)))),d)
+  expect_null(mt_interpolate(d, sf=st_sfc(st_linestring(cbind(0:1,0))), omit = T))
+  # intersection on point
+  expect_s3_class(m <- mt_interpolate(d, sf = ln), "move2")
+  expect_identical(nrow(m), 13L)
+  expect_named(m, c('tt','track','timestamp', 'geometry',"ha"))
+})
+
+
+
+test_that("spatial interpolation track data", {
+  d <- data.frame(x = c(1L:5L,0:4), y = c(1L:5L), track = gl(2, 5),  age = gl(2, 5),
+                  timestamp = as.POSIXct("1970-1-1", tz = "CEST") + c(0, 1, 3, 6, 10)) |>
+    st_as_sf(coords = 1L:2L) |> dplyr::as_tibble() |>
+    mt_as_move2(track_id_column = "track", time_column = "timestamp", track_att="age")
+  ln <- st_sfc(st_linestring(cbind(c(0, 3), c(3, 0))))
+  expect_s3_class(m <- mt_interpolate(d, sf = ln), "move2")
+  # One location is exactly at line
+  expect_identical(nrow(m),11L)
+  expect_identical(mt_track_data(m), mt_track_data(d))
+  expect_identical(m[-2,],d)
+  expect_s3_class(m <- mt_interpolate(d, sf = ln, omit=T), "move2")
+  expect_identical(nrow(m),2L)
+  expect_identical(mt_track_data(m), mt_track_data(d))
+})
+
+
+
+test_that("spatial interpolation with multiline", {
+  d <- data.frame(x = rep(1:2, each=5), y = c(0L:4L), track = gl(2, 5),  age = gl(2, 5),
+                  timestamp = as.POSIXct("1970-1-1", tz = "UTC") + c(0, 1, 3, 6, 10)) |>
+    st_as_sf(coords = 1L:2L) |> dplyr::as_tibble() |>
+    mt_as_move2(track_id_column = "track", time_column = "timestamp", track_att="age")
+  ln <- st_sfc(list(
+    sf::st_multilinestring(list(cbind(c(0,3),2.5),cbind(c(0,3),3.5))),
+    st_linestring(cbind(c(0, 3,3,0), c(.5,.5, 1.5,1.5)))))
+  expect_s3_class(m <- mt_interpolate(d, sf = ln), "move2")
+  expect_identical(nrow(m),18L)
+  expect_identical(mt_time(m)[1:9], as.POSIXct("1970-1-1", tz = "UTC")+c(0,.5,1,2,3,4.5,6,8,10))
+  expect_identical(mt_track_data(m), mt_track_data(d))
+  expect_s3_class(m <- mt_interpolate(d, sf = ln, omit=T), "move2")
+  expect_identical(nrow(m),8L)
+  expect_identical(mt_track_data(m), mt_track_data(d))
+  expect_identical(st_coordinates(m), cbind(X=rep(1:2, each=4), Y=(1:4)-.5))
+})
+
+
+
+test_that("spatial interpolation with duplicated records", {
+  d <- data.frame(x = rep(1:2, each=5), y = c(0L:4L), track = gl(2, 5),  age = gl(2, 5),
+                  timestamp = as.POSIXct("1970-1-1", tz = "UTC") + c(0, 1, 3, 6, 10)) |>
+    st_as_sf(coords = 1L:2L) |> dplyr::as_tibble() |>
+    mt_as_move2(track_id_column = "track", time_column = "timestamp", track_att="age")
+  ln <- st_sf(
+    data.frame(ha=c("a"),g=st_sfc(list(st_linestring(cbind(c(0.2, 3), c(3, 0)))))))
+
+  expect_warning(m<-mt_interpolate(d, sf = ln[c(1,1),]), class="move2_warning_interpolation_duplicates_sf")
+  expect_identical(nrow(m),12L)
+  expect_s3_class(m , "move2")
+  expect_warning(m<-mt_interpolate(d[c(1:2,2,3:10),], sf = ln), class="move2_warning_interpolation_duplicates_x")
+
+  expect_identical(nrow(m),12L)
+  expect_s3_class(m , "move2")
+  })

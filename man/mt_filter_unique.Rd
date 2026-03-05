@@ -78,7 +78,7 @@ mt_filter_unique(m, "first")
 m$sensor_type[1:12] <- NA
 mt_filter_unique(m[, c("time", "track", "geometry", "sensor_type")])
 
-\dontshow{if (requireNamespace("dplyr")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (requireNamespace("dplyr")) withAutoprint(\{ # examplesIf}
 ## Sometimes it is desirable to not consider specific columns for finding
 ## the unique records. For example the record identifier like `event_id`
 ## in movebank This can be done by reducing the data.frame used to identify
@@ -88,7 +88,7 @@ m[mt_unique(m |> dplyr::select(-event_id, -ends_with("type_2"))), ]
 ## Note that because we subset the full original data.frame the
 ## columns are not lost
 \dontshow{\}) # examplesIf}
-\dontshow{if (parallel::detectCores() < 9 && requireNamespace("dplyr")) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (parallel::detectCores() < 9 && requireNamespace("dplyr")) withAutoprint(\{ # examplesIf}
 ## This example is to retain the duplicate entry which contains the least
 ## number of columns with NA values
 require(dplyr)

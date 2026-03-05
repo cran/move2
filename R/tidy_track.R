@@ -83,10 +83,14 @@ group_by_track_data <- function(.data, ..., .add = FALSE, .drop = dplyr::group_b
   x <- .data
   track_id_column <- mt_track_id_column(x)
   class(x) <- setdiff(class(x), c("move2", "sf"))
+  gvar<- mt_track_data(.data) |> group_by(...) |> dplyr::group_vars()
   new_df <- mt_track_data(.data) |>
-    dplyr::right_join(st_drop_geometry(x[, mt_track_id_column(.data)]), by = track_id_column) |>
+    dplyr::left_join(x=st_drop_geometry(x[, track_id_column, drop=F]), by = track_id_column) |>
     group_by(..., .add = .add, .drop = .drop)
   new_df[, mt_track_id_column(.data)] <- NULL
   x <- bind_cols(x, ungroup(new_df)) |> group_by(..., .add = .add, .drop = .drop)
+  to_omit<-names(mt_track_data(.data))
+  to_omit<-to_omit[!(to_omit%in%c(track_id_column, gvar))]
+  x<- select(x,-all_of(to_omit))
   dplyr_reconstruct.move2(x, template = .data)
 }

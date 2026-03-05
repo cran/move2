@@ -44,7 +44,7 @@ units::set_units(dist, km)
 
 ## speed between consecutive locations
 mt_sim_brownian_motion() |> mt_speed()
-\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (parallel::detectCores() < 9) withAutoprint(\{ # examplesIf}
 ## When projections are provided units are included
 data <- mt_read(mt_example())[330:340, ]
 speed_calc <- data |>

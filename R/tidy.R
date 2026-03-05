@@ -1,4 +1,4 @@
-#' @importFrom dplyr filter select group_by slice
+#' @importFrom dplyr filter select group_by slice reframe
 #' @importFrom sf NA_agr_
 NULL
 
@@ -89,14 +89,15 @@ arrange.move2 <- function(.data, ..., .dots) { # nolint
 # dplyr extending functions: https://dplyr.tidyverse.org/reference/dplyr_extending.html
 # Dont work as sf doesnt not implement them
 
-# #' @export
+#' @exportS3Method NULL
 dplyr_row_slice.move2 <- function(data, i, ...) { # nolint
   x <- vctrs::vec_slice(data, i)
   dplyr_reconstruct.move2(x, data)
 }
 
 
-# #' @export
+#' @exportS3Method NULL
+
 dplyr_reconstruct.move2 <- function(data, template) { # nolint
   if (inherits(template, "tbl_df") && !inherits(data, "tbl_df")) {
     data <- dplyr::as_tibble(data)
@@ -136,6 +137,7 @@ dplyr_reconstruct.move2 <- function(data, template) { # nolint
   return(data)
 }
 
+#' @exportS3Method NULL
 group_split.move2 <- function(.tbl, ..., .keep = TRUE) { # nolint
   t <- .tbl
   class(.tbl) <- setdiff(class(.tbl), "move2")
@@ -147,8 +149,46 @@ group_split.move2 <- function(.tbl, ..., .keep = TRUE) { # nolint
 }
 
 
+#' @exportS3Method NULL
+# make default .keep true to prevent column from being removed
+group_map.move2 <- function(.data, .f, ..., .keep = TRUE) { # nolint
+  NextMethod(.keep=.keep)
+}
+
+
 #' @export
 left_join.move2 <- function(x, y, by = NULL, copy = FALSE, suffix = c(".x", ".y"), ...) { # nolint
   class(x) <- setdiff(class(x), "move2")
   dplyr_reconstruct.move2(NextMethod(), template = x)
 }
+
+
+
+#' @export
+reframe.move2 <- function(.data, ..., .by=NULL) { # nolint
+  # note this relates to a problem with inheritance in sf: https://github.com/r-spatial/sf/issues/1852
+  template <- .data
+  class(.data) <- setdiff(class(.data), "move2")
+  x <- NextMethod()
+  x <- dplyr_reconstruct.move2(x, template)
+  x
+}
+
+
+
+
+#' @export
+group_modify.move2 <- function(.data,.f, ..., .keep=FALSE) { # nolint
+  template <- .data
+  class(.data) <- setdiff(class(.data), "move2")
+  x <- NextMethod()
+  if(all(c(mt_track_id_column(template), mt_time_column(template), attr(template,"sf_column"))%in%colnames(x)))
+  { # only reconstruct when there is chance of it working
+    x <- dplyr_reconstruct.move2(x, template)
+    }
+  x
+}
+
+
+
+

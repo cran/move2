@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 
 knitr::opts_chunk$set(
   gganimate = list(
-    nframes = 30,
+    nframes = 25,
     fps = 5
   )
 )
@@ -109,7 +109,7 @@ cat("![An update of the previous animation showning how specific locations can b
 data_interpolated <- mt_interpolate(
   data[!sf::st_is_empty(data), ],
   time = seq(
-    as.POSIXct("2008-7-27"),
+    as.POSIXct("2008-7-28"),
     as.POSIXct("2008-8-1"), "60 mins"
   ),
   max_time_lag = units::as_units(3, "hours"),
@@ -139,7 +139,7 @@ anim_save("movement_animation.gif", renderer = gifski_renderer())
 cat("![An animation of the locations of individual albatrosses overplotted on a map](movement_animation.gif)\n")
 
 ## ----movement_animation_tail------------------------------------------------------
-date_range <- as.POSIXct(c("2008-7-29", "2008-8-1"))
+date_range <- as.POSIXct(c("2008-7-30", "2008-8-1"))
 ts <- mt_time(data)
 times <- sort(unique((c(date_range, ts[ts < max(date_range) & ts > min(date_range)]))))
 data_interpolated <-
@@ -175,7 +175,7 @@ animation <- ggplot() +
 
 ## ----movement_animation_tail_show, results='hide', eval=params$eval_output &     knitr::opts_chunk$get("eval"), fig.width=5.3----
 animate(animation,
-  nframes = 3 * 24 * 2 + 1, detail = 5
+  nframes = 2 * 24 * 2 + 1, detail = 5
 )
 
 ## ----movement_animation_tail_show_render ,echo=FALSE, results='asis'--------------

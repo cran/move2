@@ -4,7 +4,7 @@
 \alias{mt_interpolate}
 \title{Linearly interpolate locations}
 \usage{
-mt_interpolate(x, time, max_time_lag, omit = FALSE)
+mt_interpolate(x, time, max_time_lag, omit = FALSE, sf)
 }
 \arguments{
 \item{x}{A \code{move2} object}
@@ -17,25 +17,43 @@ For details on the interval specification see \code{\link[lubridate]{floor_date}
 
 \item{omit}{If the original location that do not match a value in \code{time} should be omitted. This only
 takes affect when \code{time} is not missing.}
+
+\item{sf}{an \code{sf} or \code{sfc} collection of lines to interpolate to.}
 }
 \value{
 A \code{move2} object with the interpolated locations
 }
 \description{
-Linear interpolation along the straight line between consecutive locations.
+Linear interpolation along the straight line between consecutive locations. Either interpolate to a
+time or intersection of a line.
 }
 \details{
 Each interpolation is done along a straight path from the previous to the next location.
-Interpolation is done with \code{\link[sf]{st_line_sample}} when there is no CRS provided and \code{\link[s2]{s2_interpolate_normalized}} when the data has a projection.
+Interpolation in time is done with \code{\link[sf]{st_line_sample}} when there is no CRS provided and \code{\link[s2]{s2_interpolate_normalized}} when the data has a projection.
+
+Spatial interpolations will be useful, for example, to find out when a individual crosses a distance from its natal ground or leaves a territory. Furthermore it could be used to identify road crossings.
+In some cases it might useful to convert polygons to spatial lines using \code{\link[sf]{st_cast}}.
 }
 \examples{
 data <- mt_sim_brownian_motion(t = c(0, 0.6, 3, 3.5))
 ## interpolating at specific times
 mt_interpolate(data, c(.5, 1.5, 2.5))
+line_sf <- sf::st_sf(data.frame(
+  id = "test",
+  geometry = sf::st_sfc(
+    sf::st_linestring(cbind(
+      c(-1, 1, 1, -1, -1),
+      c(-1, -1, 1, 1, -1)
+    ))
+  )
+))
+mt_interpolate(data,
+  sf = line_sf
+)
 ## interpolating to empty locations
 data$geometry[c(1, 3)] <- sf::st_point() ## creating empty locations
 mt_interpolate(data)
-\dontshow{if (parallel::detectCores() < 9) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (parallel::detectCores() < 9) withAutoprint(\{ # examplesIf}
 fishers <- mt_read(mt_example())[1:200, ]
 mt_interpolate(fishers, "2 hours")
 ## omit the original records

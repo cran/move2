@@ -102,7 +102,7 @@ vulture_azimuth_distributions %>%
   select(-azimuth_distribution) %>%
   unnest(c(x, y)) %>%
   ggplot() +
-  geom_path(aes(x = x, y = y, color = season)) +
+  geom_path(aes(x = as.numeric(x), y = y, color = season)) +
   coord_polar(start = pi / 2) +
   theme_linedraw() +
   facet_wrap(~ factor(track_id)) +
@@ -179,4 +179,42 @@ vulture_data %>% ggplot() +
   )) +
   ylab("Distance from start") +
   theme_linedraw()
+
+## ----buffer-----------------------------------------------------------------------
+vulture_data %>%
+  # Group by individual/track_iu
+  group_by(mt_track_id()) %>%
+  # Create a list with each individual being a element of the list
+  group_split() %>%
+  # Use purrr::map to do some operation on each track
+  purrr::map(~ {
+    # Create a circular buffer around the first location
+    buffer <- sf::st_cast(sf::st_buffer(
+      sf::st_geometry(head(.x, 1)),
+      units::set_units(1000, "km")
+    ), "LINESTRING")
+    # Do a spatial interpolation to the locations the track crosses the buffer
+    mt_interpolate(
+      .x,
+      sf = buffer, omit = TRUE
+    )
+  }) |>
+  # Use purrr compact to omit individuals that never reach a 1000 kilometers from the first location and thus do not have an crossing
+  purrr::compact() |>
+  # Combine back into one move2
+  mt_stack()
+
+## ----convex-----------------------------------------------------------------------
+yearly_convex_hull <- vulture_data %>%
+  group_by(year = factor(lubridate::year(timestamp)), track=mt_track_id()) %>%
+  group_map(~ st_sf(.y, geom = sf::st_convex_hull(sf::st_union(.x)))) %>%
+  bind_rows()
+yearly_convex_hull |> ggplot() +
+  geom_sf(data = ne_coastline(returnclass = "sf", 50)) +
+  geom_sf(aes(fill = year), alpha = .1) +
+  theme_linedraw() +
+  coord_sf(
+    crs = sf::st_crs("+proj=aeqd +lon_0=-83 +lat_0=8 +units=km"),
+    xlim = c(-3500, 3800), ylim = c(-4980, 4900)
+  )
 

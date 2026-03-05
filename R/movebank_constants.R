@@ -418,7 +418,7 @@ movebank_column_types <- list(
   "bas:transition-2" = col_double(),
   "battery-charge-percent" = col_integer(), # integer in study
   "battery-charging-current" = col_double(),
-  "battery-charging-voltage" = col_logical(),
+  "battery-charging-voltage" = col_double(),
   "beacon:frequency" = col_double(),
   "behavior-according-to" = col_character(),
   "behavioural-classification" = col_factor(),

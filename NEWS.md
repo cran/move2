@@ -1,3 +1,14 @@
+# move2 0.5.0
+
+* Add interpolation to intersect spatial lines
+* Ensure `dplyr::reframe` works for move2
+* Add documentation on track level operations
+* Fix `group_by_track_data()` when the `track_data` was not in same order as the data, directly prevent adding columns
+* Make sure `group_map()` and `group_modify()` work well
+* Resolve test failure as message for different CRS changed (#101, @edzer)
+* Assert correct class for battery voltage
+* Create a warning for invalid usage of API with event reduction profiles (#97)
+
 # move2 0.4.5
 
 * Fix test issue with new `unique.sfc` function (#98, @edzer)

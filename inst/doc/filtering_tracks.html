@@ -433,20 +433,20 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">mt_filter_per_interval</span>(<span class="at">criterion =</span> <span class="st">&quot;random&quot;</span>, <span class="at">unit =</span> <span class="st">&quot;days&quot;</span>)</span>
 <span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and `time_column`</span></span>
 <span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 36.7 days in a</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 36.6 days in a</span></span>
 <span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 1057 features and 7 fields</span></span>
 <span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -91.2108 ymin: -12.76468 xmax: -77.7835 ymax: 0.158348</span></span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -91.25814 ymin: -12.79128 xmax: -77.77145 ymax: -0.0190186</span></span>
 <span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
 <span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a><span class="co">#&gt; # A tibble: 1,057 × 8</span></span>
 <span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a><span class="co">#&gt;   ground_speed heading height_above_ellipsoid eobs_temperature</span></span>
 <span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a><span class="co">#&gt; *        [m/s]     [°]                    [m]             [°C]</span></span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 1         0       95.7                   12.6               19</span></span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 2         0.11    36.0                   13                 21</span></span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 3         0.56   287.                    -0.4               17</span></span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 4         0.61   349.                    -4                 12</span></span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 5         7.41   136.                    -4.4               12</span></span>
+<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a><span class="co">#&gt; 1         0.09   111.                    11.4               26</span></span>
+<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a><span class="co">#&gt; 2         0.19    22.9                   12.5               34</span></span>
+<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a><span class="co">#&gt; 3         9.53    78.0                   -1.1               15</span></span>
+<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a><span class="co">#&gt; 4         0.44   357.                    -8                 11</span></span>
+<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a><span class="co">#&gt; 5         0.78    17.7                  -15.5               11</span></span>
 <span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 1,052 more rows</span></span>
 <span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; # ℹ 4 more variables: individual_local_identifier &lt;fct&gt;, timestamp &lt;dttm&gt;,</span></span>
 <span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a><span class="co">#&gt; #   visible &lt;lgl&gt;, geometry &lt;POINT [°]&gt;</span></span>
@@ -521,16 +521,17 @@ is a location this can as follows (in this case there are none):</p>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="co">#&gt; Containing 0 tracks lasting on average NA days in a</span></span>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 0 features and 9 fields</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 10</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; # Groups:   mt_time(), mt_track_id() [0]</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; # ℹ 10 variables: ground_speed [m/s], heading [°], height_above_ellipsoid [m],</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; #   eobs_temperature [°C], individual_local_identifier &lt;fct&gt;, …</span></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; Track features:</span></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 4</span></span>
-<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; # ℹ 4 variables: study_site &lt;chr&gt;, weight [g], animal_life_stage &lt;fct&gt;,</span></span>
-<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; #   individual_local_identifier &lt;fct&gt;</span></span></code></pre></div>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 10</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="co">#&gt; # Groups:   mt_time(), mt_track_id() [0]</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="co">#&gt; # ℹ 10 variables: ground_speed [m/s], heading [°], height_above_ellipsoid [m],</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co">#&gt; #   eobs_temperature [°C], individual_local_identifier &lt;fct&gt;, …</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co">#&gt; Track features:</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="co">#&gt; # A tibble: 0 × 4</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="co">#&gt; # ℹ 4 variables: study_site &lt;chr&gt;, weight [g], animal_life_stage &lt;fct&gt;,</span></span>
+<span id="cb7-22"><a href="#cb7-22" tabindex="-1"></a><span class="co">#&gt; #   individual_local_identifier &lt;fct&gt;</span></span></code></pre></div>
 <p>The package also has some build in functions for filtering unique
 records. Several strategies for omitting duplicated records are build
 in.</p>
@@ -547,15 +548,15 @@ strategy.</p>
 <span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 8 features and 3 fields</span></span>
 <span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -1.602409 ymin: -0.180256 xmax: 1.760516 ymax: 1.238341</span></span>
+<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -0.8921512 ymin: 0 xmax: 0.04864738 ymax: 0.5707268</span></span>
 <span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="co">#&gt; CRS:           NA</span></span>
 <span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a><span class="co">#&gt; First 5 features:</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;     time track                    geometry temperature</span></span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 1      1     1                 POINT (0 0)           1</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 2      2     1 POINT (-1.602409 -0.180256)           2</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 3      1     2                 POINT (0 0)           3</span></span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; 4      2     2   POINT (1.760516 1.238341)          NA</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; 1.1    1     1                 POINT (0 0)           1</span></span>
+<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a><span class="co">#&gt;     time track                      geometry temperature</span></span>
+<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#&gt; 1      1     1                   POINT (0 0)           1</span></span>
+<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="co">#&gt; 2      2     1 POINT (-0.8921512 0.01413197)           2</span></span>
+<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 3      1     2                   POINT (0 0)           3</span></span>
+<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; 4      2     2  POINT (0.04864738 0.5707268)          NA</span></span>
+<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="co">#&gt; 1.1    1     1                   POINT (0 0)           1</span></span>
 <span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a><span class="co">#&gt; Track features:</span></span>
 <span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co">#&gt;   track</span></span>
 <span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="co">#&gt; 1     1</span></span>
@@ -568,14 +569,14 @@ strategy.</p>
 <span id="cb8-27"><a href="#cb8-27" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 5 features and 3 fields</span></span>
 <span id="cb8-28"><a href="#cb8-28" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb8-29"><a href="#cb8-29" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -1.602409 ymin: -0.180256 xmax: 1.760516 ymax: 1.238341</span></span>
+<span id="cb8-30"><a href="#cb8-30" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -0.8921512 ymin: 0 xmax: 0.04864738 ymax: 0.5707268</span></span>
 <span id="cb8-31"><a href="#cb8-31" tabindex="-1"></a><span class="co">#&gt; CRS:           NA</span></span>
-<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;     time track                    geometry temperature</span></span>
-<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; 1      1     1                 POINT (0 0)           1</span></span>
-<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 2      2     1 POINT (-1.602409 -0.180256)           2</span></span>
-<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 3      1     2                 POINT (0 0)           3</span></span>
-<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 3.1    1     2                 POINT (0 0)           7</span></span>
-<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 4.1    2     2   POINT (1.760516 1.238341)           8</span></span>
+<span id="cb8-32"><a href="#cb8-32" tabindex="-1"></a><span class="co">#&gt;     time track                      geometry temperature</span></span>
+<span id="cb8-33"><a href="#cb8-33" tabindex="-1"></a><span class="co">#&gt; 1      1     1                   POINT (0 0)           1</span></span>
+<span id="cb8-34"><a href="#cb8-34" tabindex="-1"></a><span class="co">#&gt; 2      2     1 POINT (-0.8921512 0.01413197)           2</span></span>
+<span id="cb8-35"><a href="#cb8-35" tabindex="-1"></a><span class="co">#&gt; 3      1     2                   POINT (0 0)           3</span></span>
+<span id="cb8-36"><a href="#cb8-36" tabindex="-1"></a><span class="co">#&gt; 3.1    1     2                   POINT (0 0)           7</span></span>
+<span id="cb8-37"><a href="#cb8-37" tabindex="-1"></a><span class="co">#&gt; 4.1    2     2  POINT (0.04864738 0.5707268)           8</span></span>
 <span id="cb8-38"><a href="#cb8-38" tabindex="-1"></a><span class="co">#&gt; Track features:</span></span>
 <span id="cb8-39"><a href="#cb8-39" tabindex="-1"></a><span class="co">#&gt;   track</span></span>
 <span id="cb8-40"><a href="#cb8-40" tabindex="-1"></a><span class="co">#&gt; 1     1</span></span>
@@ -592,10 +593,10 @@ informative locations.</p>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="co">#&gt; A &lt;move2&gt; with `track_id_column` &quot;individual_local_identifier&quot; and `time_column`</span></span>
 <span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="co">#&gt; &quot;timestamp&quot;</span></span>
 <span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a><span class="co">#&gt; Containing 28 tracks lasting on average 37.1 days in a</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 110883 features and 7 fields (with 96879 geometries empty)</span></span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a><span class="co">#&gt; Simple feature collection with 110883 features and 7 fields (with 96841 geometries empty)</span></span>
 <span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co">#&gt; Geometry type: POINT</span></span>
 <span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a><span class="co">#&gt; Dimension:     XY</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -91.3732 ymin: -12.79464 xmax: -77.52837 ymax: 0.1821983</span></span>
+<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a><span class="co">#&gt; Bounding box:  xmin: -91.3732 ymin: -12.79464 xmax: -77.52837 ymax: 0.1814998</span></span>
 <span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co">#&gt; Geodetic CRS:  WGS 84</span></span>
 <span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="co">#&gt; # A tibble: 110,883 × 8</span></span>
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a><span class="co">#&gt;   ground_speed heading height_above_ellipsoid eobs_temperature</span></span>

@@ -25,7 +25,9 @@ mt_time_lags(x, units)
 \value{
 \code{mt_time()} returns a vector of timestamps, depending on the type of data these can be either \code{POSIXct},
 \code{date}or \code{numeric} \cr
-\code{mt_time_lags()} returns a vector of the time lags as \code{numeric} or \code{\link[units]{units}} depending on the type of data.
+\code{mt_time_lags()} returns a vector of the time lags as \code{numeric} or \code{\link[units]{units}}
+depending on the type of data. Each element is the timelag to the next location. The last
+value for each track will be \code{NA}.
 }
 \description{
 \itemize{

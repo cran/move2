@@ -1,13 +1,16 @@
 #' @importFrom methods setOldClass
 NULL
 # nocov start
-.onLoad <- function(libname, pkgname) { # nolint
+.onLoad <- function(libname, pkgname) {
+  # nolint
   options(
-    move2_movebank_useragent= paste("R package move2", getNamespaceVersion("move2")),
+    move2_movebank_useragent = paste(
+      "R package move2",
+      getNamespaceVersion("move2")
+    ),
     move2_movebank_key_name = "movebank",
     move2_movebank_keyring = NULL,
-    move2_movebank_api_url =
-      "https://www.movebank.org/movebank/service/direct-read"
+    move2_movebank_api_url = "https://www.movebank.org/movebank/service/direct-read"
   )
 
   invisible()
@@ -25,7 +28,19 @@ NULL
   s3_register("dplyr::left_join", "move2")
   s3_register("sf::st_intersection", "move2")
   s3_register("sf::st_join", "move2")
+  s3_register("dplyr::reframe", "move2")
+  s3_register("dplyr::group_modify", "move2")
+  s3_register("dplyr::group_map", "move2")
 }
 setOldClass(c("move2", "sf"))
+
+
+release_bullets <- function() {
+  c(
+    "Update codemeta.json with: `codemetar::write_codemeta()`",
+    "update CITATION.cff with `cffr::cff_write(dependencies = FALSE)`
+    (after incrementing version)"
+  )
+}
 
 # nocov end

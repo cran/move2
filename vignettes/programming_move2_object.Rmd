@@ -240,6 +240,42 @@ Here we first a quick overview of the most important function.
 
 - `mt_track_id_column()`: returns the name of the column containing the track
   ids used by the `move2` object
+  
+## Track wise operations
+
+Many operations one would like to do with tracking data are track wise. Several ways 
+to do this exist. First it is possible to create track wise summaries very similar to 
+`dplyr::summarize()` using `mt_track_lines()`. For more complex operations options exist
+to used either create a list of individuals using `split(data,mt_track_id(data))`. If the
+result of these operations is a `move2` the tracks can be combined again using 
+`mt_stack()`. Alternatively a pipe like setup can be use that could look as follows:
+
+```{r ttt, eval=FALSE}
+data %>%
+  group_by(mt_track_id()) %>%
+  group_split() %>%
+  purrr::map(~ {
+    # track wise operations can be executed here (use .x to refer to the `move2` object)
+  }) %>%
+  mt_stack()
+```
+
+
+Before combining the trajectories it could be useful to use `purrr::compact()` if not all list elements contain a `move2`. This can for example when doing intersection where not all tracks reach a certain area. 
+Alternatively `group_map()` or `group_modify()` can be used. Where the former returns a list while the later returns a `data.frame` or `move2` (depending if the `move2` columns are retained).
+
+```{r ttat, eval=FALSE}
+data %>%
+  group_by(mt_track_id()) %>%
+  group_modify(
+    ~{
+      # operations go here
+    }
+  )
+```
+
+Additionally in some cases `dplyr::reframe()` might come in useful. 
+More examples can be found in the [trajectory analysis](https://bartk.gitlab.io/move2/articles/trajectory_analysis.html#net-displacement) vignette.
 
 ## Transforming other classes to a `move2` object
 

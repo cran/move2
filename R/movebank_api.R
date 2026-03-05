@@ -144,25 +144,35 @@ utils::globalVariables("where") # for tidy select
 #' movebank_download_study_info(i_am_owner = TRUE)
 #' }
 #'
-movebank_download_study <- function(study_id, attributes = "all", # nolint
-                                    ...,
-                                    remove_movebank_outliers = TRUE) {
+movebank_download_study <- function(
+  study_id,
+  attributes = "all", # nolint
+  ...,
+  remove_movebank_outliers = TRUE
+) {
   study_id <- movebank_get_study_id(study_id, ...)
 
-  assert_that(is.flag(remove_movebank_outliers), !is.na(remove_movebank_outliers))
-  if(remove_movebank_outliers){
+  assert_that(
+    is.flag(remove_movebank_outliers),
+    !is.na(remove_movebank_outliers)
+  )
+  if (remove_movebank_outliers) {
     # ensure the visible column is present when outliers are about to removed
-  attr<-mb_include_minimal_attributes(attributes, 'visible')
-  }else{
-    attr<-mb_include_minimal_attributes(attributes)
+    attr <- mb_include_minimal_attributes(attributes, 'visible')
+  } else {
+    attr <- mb_include_minimal_attributes(attributes)
   }
   data <- movebank_retrieve(
     entity_type = "event",
-    study_id = study_id, attributes =attr , ...
+    study_id = study_id,
+    attributes = attr,
+    ...
   )
-  if (is_scalar_character(attributes) &&
-    attributes == "all" &&
-    !any((c("location_long", "location_lat") %in% colnames(data)))) {
+  if (
+    is_scalar_character(attributes) &&
+      attributes == "all" &&
+      !any((c("location_long", "location_lat") %in% colnames(data)))
+  ) {
     # if only sensor data is downloaded add NA locations
     data$location_long <- NA_real_
     data$location_lat <- NA_real_
@@ -178,30 +188,40 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
   if (all(is.na(data$deployment_id))) {
     cli_abort(
       class = "move2_error_no_deployed_data",
-      c(e = "Even though {sum(is.na(data$deployment_id))} event record{?s} were downloaded, none seem to be deployed
-        ({.code deployment_id} is {.code NA} for all records).", i = "This can be resolved by defining deployments in
-        movebank ({.url https://www.movebank.org/cms/movebank-content/deployment-manager}).")
+      c(
+        e = "Even though {sum(is.na(data$deployment_id))} event record{?s} were downloaded, none seem to be deployed
+        ({.code deployment_id} is {.code NA} for all records).",
+        i = "This can be resolved by defining deployments in
+        movebank ({.url https://www.movebank.org/cms/movebank-content/deployment-manager})."
+      )
     )
   }
   if (anyNA(data$deployment_id)) {
     cli_inform(
       class = "move2_inform_omit_deployment_id_na",
-      c(i = "In total {sum(is.na(data$deployment_id))} record{?s} were omitted as they were not deployed (the
-        {.code deployment_id} was {.code NA}).")
+      c(
+        i = "In total {sum(is.na(data$deployment_id))} record{?s} were omitted as they were not deployed (the
+        {.code deployment_id} was {.code NA})."
+      )
     )
     data <- data |>
       filter(!is.na(.data$`deployment_id`))
   }
   if (all(is.na(data$location_long)) && all(is.na(data$location_lat))) {
-    data$geometry <- st_as_sfc(list(st_point()), crs = st_crs(4326L))[rep(1, nrow(data))]
+    data$geometry <- st_as_sfc(list(st_point()), crs = st_crs(4326L))[rep(
+      1,
+      nrow(data)
+    )]
     data <- st_sf(
       data
-    ) |> dplyr::select(-any_of(c("location_long", "location_lat")))
+    ) |>
+      dplyr::select(-any_of(c("location_long", "location_lat")))
   } else {
     data <- data |>
       st_as_sf(
         coords = c("location_long", "location_lat"),
-        crs = st_crs(4326L), na.fail = FALSE,
+        crs = st_crs(4326L),
+        na.fail = FALSE,
         sf_column_name = "geometry"
       )
   }
@@ -209,8 +229,10 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     filter(.data$deployment_id %in% unique(data$deployment_id))
   dots <- rlang::list2(...)
   dots[["rename_columns"]] <- TRUE
-  study_info <- rlang::exec("movebank_download_study_info",
-    id = study_id, !!!dots
+  study_info <- rlang::exec(
+    "movebank_download_study_info",
+    id = study_id,
+    !!!dots
   ) |>
     select(-any_of(c("sensor_type_ids", "study_id"))) |>
     #  rename(study_id = all_of("id")) |>
@@ -222,29 +244,35 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     )
   if (nrow(study_info) != 1) {
     # This error should not occur, just a check to be sure
-    cli_abort("Unexpected event, more then one row of study info",
+    cli_abort(
+      "Unexpected event, more then one row of study info",
       class = "move2_error_movebank_api_multiple_rows_of_study_info"
     ) # nocov
   }
   track_id_column <- "deployment_id"
-  if ("individual_local_identifier" %in% colnames(data) &&
-    (data |>
-      group_by(!!!syms("individual_local_identifier")) |>
-      st_drop_geometry() |>
-      summarise(cnt = length(unique(!!!syms("deployment_id"))) == 1L) |>
-      pull("cnt") |>
-      all()) &&
-    !any(data |>
-      st_drop_geometry() |>
-      filter(!is.na(!!!syms("deployment_id"))) |>
-      pull("individual_local_identifier") |>
-      is.na())
-  # if individuals id's are not filled out we fall back to local ids, this can atleast happen when individuals have no
-  # name in movebank and there is only one individual
+  if (
+    "individual_local_identifier" %in%
+      colnames(data) &&
+      (data |>
+        group_by(!!!syms("individual_local_identifier")) |>
+        st_drop_geometry() |>
+        summarise(cnt = length(unique(!!!syms("deployment_id"))) == 1L) |>
+        pull("cnt") |>
+        all()) &&
+      !any(
+        data |>
+          st_drop_geometry() |>
+          filter(!is.na(!!!syms("deployment_id"))) |>
+          pull("individual_local_identifier") |>
+          is.na()
+      )
+    # if individuals id's are not filled out we fall back to local ids, this can atleast happen when individuals have no
+    # name in movebank and there is only one individual
   ) {
     # there is only one deployment per individual
     if (anyDuplicated(track_data$individual_local_identifier)) {
-      cli_abort("While there is only one deployment per individual in the event data, there are multiple deployments
+      cli_abort(
+        "While there is only one deployment per individual in the event data, there are multiple deployments
                   per individual in the track level data",
         class = "move2_error_movebank_api_individuals_duplicated_in_track_data"
       )
@@ -263,15 +291,23 @@ movebank_download_study <- function(study_id, attributes = "all", # nolint
     ),
     c(mt_track_id_column(res), mt_time_column(res))
   )
-  if ((res |> tibble::as_tibble() |>
-    select(any_of(c(duplicated_columns, mt_track_id_column(res)))) |>
-    group_by(across(any_of(mt_track_id_column(res)))) |>
-    dplyr::summarise(across(everything(), n_distinct)) |>
-    select(any_of(duplicated_columns)) == 1) |> all()) {
+  if (
+    (res |>
+      tibble::as_tibble() |>
+      select(any_of(c(duplicated_columns, mt_track_id_column(res)))) |>
+      group_by(across(any_of(mt_track_id_column(res)))) |>
+      dplyr::summarise(across(everything(), n_distinct)) |>
+      select(any_of(duplicated_columns)) ==
+      1) |>
+      all()
+  ) {
     res <- res |> select(-any_of(duplicated_columns))
   }
-  if ("individual_taxon_canonical_name" %in% names(res) &&
-    "taxon_canonical_name" %in% names(mt_track_data(res))) {
+  if (
+    "individual_taxon_canonical_name" %in%
+      names(res) &&
+      "taxon_canonical_name" %in% names(mt_track_data(res))
+  ) {
     res <- res |> select(-all_of("individual_taxon_canonical_name"))
   }
   return(res)
@@ -295,19 +331,28 @@ movebank_download_deployment <- function(study_id, ...) {
   dots[["progress"]] <- FALSE
   dots[["rename_columns"]] <- TRUE
 
-  deployment_data <- rlang::exec("movebank_retrieve",
-    entity_type = "deployment", study_id = study_id,
+  deployment_data <- rlang::exec(
+    "movebank_retrieve",
+    entity_type = "deployment",
+    study_id = study_id,
     !!!dots
   )
-  individual_data <- rlang::exec("movebank_retrieve",
-    entity_type = "individual", study_id = study_id,
+  individual_data <- rlang::exec(
+    "movebank_retrieve",
+    entity_type = "individual",
+    study_id = study_id,
     !!!dots
-  ) |> select(-any_of("sensor_type_ids"))
-  tag_data <- rlang::exec("movebank_retrieve",
-    entity_type = "tag", study_id = study_id, !!!dots
+  ) |>
+    select(-any_of("sensor_type_ids"))
+  tag_data <- rlang::exec(
+    "movebank_retrieve",
+    entity_type = "tag",
+    study_id = study_id,
+    !!!dots
   ) |>
     select(-any_of("sensor_type_ids")) # prevent duplicated sensor type id info
-  deployment_table <- rlang::exec("movebank_retrieve",
+  deployment_table <- rlang::exec(
+    "movebank_retrieve",
     entity_type = "deployment",
     study_id = study_id,
     attributes = c("id", "tag_id", "individual_id"),
@@ -315,7 +360,11 @@ movebank_download_deployment <- function(study_id, ...) {
   ) # |>    rename(deployment_id = all_of("id"))
   res <- deployment_table |>
     left_join(deployment_data, "deployment_id") |>
-    left_join(individual_data, "individual_id", suffix = c("", "_individual")) |>
+    left_join(
+      individual_data,
+      "individual_id",
+      suffix = c("", "_individual")
+    ) |>
     left_join(tag_data, "tag_id", suffix = c("", "_tag")) |>
     mutate(study_id = as.integer64(study_id)) |>
     select_if(~ !all(is.na(.)))
@@ -334,9 +383,15 @@ movebank_download_deployment <- function(study_id, ...) {
 #' @param progress if `TRUE` a progress bar will be displayed. More details can be found here \code{\link[vroom]{vroom}}. Argument applicable to `movebank_download_study` and `movebank_retrieve`.
 #' @export
 
-movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(), # nolint cyclo complexity to reduce
-                              rename_columns = FALSE, omit_derived_data = TRUE, convert_spatial_columns = TRUE,
-                              progress = vroom::vroom_progress()) {
+movebank_retrieve <- function(
+  entity_type = NA,
+  ...,
+  handle = movebank_handle(), # nolint cyclo complexity to reduce
+  rename_columns = FALSE,
+  omit_derived_data = TRUE,
+  convert_spatial_columns = TRUE,
+  progress = vroom::vroom_progress()
+) {
   assert_that(is.flag(rename_columns), !is.na(rename_columns))
   assert_that(is.flag(omit_derived_data), !is.na(omit_derived_data))
   assert_that(is.flag(convert_spatial_columns), !is.na(convert_spatial_columns))
@@ -354,10 +409,12 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
   # We define too many columns and remove the warning about that
   issue <- catch_cnd(suppressWarnings(
     classes = c("vroom_mismatched_column_name", "vroom_parse_issue"),
-    data_dl <- vroom::vroom(con,
+    data_dl <- vroom::vroom(
+      con,
       col_types = mb_column_types_underscore,
       delim = ",",
-      progress = progress, trim_ws = FALSE
+      progress = progress,
+      trim_ws = FALSE
     )
   ))
   # use vroom and not readr as the later misses col_big_integer, readr cannot be silenced and reads from connections
@@ -367,9 +424,11 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
     close(con)
     error_return <- curl::curl_fetch_memory(url, handle = handle)
     error_message_content <- gsub(
-      "\n+\n", "\n",
+      "\n+\n",
+      "\n",
       xml2::xml_text(xml2::read_html(gsub(
-        "<br>", "\n",
+        "<br>",
+        "\n",
         rawToChar(error_return$content)
       )))
     )
@@ -379,7 +438,8 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
           "No valid movebank credentials provided (status code 401)",
           "Please ensure your movebank credentials are valid"
         ),
-        class = "move2_error_movebank_api_401_no_valid_credentials", url = url
+        class = "move2_error_movebank_api_401_no_valid_credentials",
+        url = url
       )
     } else if (error_return$status_code == 500L) {
       cli_abort(
@@ -388,7 +448,11 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
           "There has been an internal movebank server error",
           paste(
             "The following exception was communicated:",
-            sub(pattern = ".*Exception: ", "", strsplit(error_message_content, "\n")[[1]][1])
+            sub(
+              pattern = ".*Exception: ",
+              "",
+              strsplit(error_message_content, "\n")[[1]][1]
+            )
           ),
           "This error can occur when non-existing attributes are requested as part of the {.arg attributes} argument,
           but also other movebank internal error can give the same result",
@@ -401,19 +465,26 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
     } else if (error_return$status_code == 403) {
       rlang::abort(
         sub(
-          "Apache.*", "",
+          "Apache.*",
+          "",
           sub(
             ".*Description ",
-            "", error_message_content
-          )
-        ),
-        body = format_error_bullets(c(i = sub(
-          "Description.*",
-          "", sub(
-            ".*Message ", "",
+            "",
             error_message_content
           )
-        ))), url = url,
+        ),
+        body = format_error_bullets(c(
+          i = sub(
+            "Description.*",
+            "",
+            sub(
+              ".*Message ",
+              "",
+              error_message_content
+            )
+          )
+        )),
+        url = url,
         class = "move2_error_movebank_api_403_no_access"
       )
     } else {
@@ -425,14 +496,28 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
           "The requested url can be retrieved with: {.code rlang::last_error()$url}"
         ),
         error = error_message_content,
-        class = "move2_error_movebank_api_general_error", url = url
+        class = "move2_error_movebank_api_general_error",
+        url = url
       )
     }
   }
-  tmp <- suppressWarnings(data_dl[1, 1, drop = TRUE], classes = c("vroom_parse_issue"))
+  tmp <- suppressWarnings(
+    data_dl[1, 1, drop = TRUE],
+    classes = c("vroom_parse_issue")
+  )
   if (is_scalar_character(tmp)) {
-    if (grepl("^<p>By accepting this document the user agrees to the following:</p>", tmp)) {
-      check_installed(c("digest", "xml2"), "to create a hash for accepting licence terms.")
+    res <- suppressWarnings(
+      grepl(
+        "^<p>By accepting this document the user agrees to the following:</p>",
+        tmp
+      ),
+      classes = c("vroom_parse_issue")
+    )
+    if (res) {
+      check_installed(
+        c("digest", "xml2"),
+        "to create a hash for accepting licence terms."
+      )
       error_return <- curl::curl_fetch_memory(url, handle = handle)
       error_message_content <- gsub(
         "\n+\n",
@@ -443,48 +528,75 @@ movebank_retrieve <- function(entity_type = NA, ..., handle = movebank_handle(),
           rawToChar(error_return$content)
         )))
       )
-
-      cli_abort("An attempt is made to download a study without having accepted the study specific license terms",
-        body = format_error_bullets(c(i = sprintf(
-          "%s\nThis can be resolved by accepting the license terms. In R is done by adding the following to a
+      cli_abort(
+        "An attempt is made to download a study without having accepted the study specific license terms",
+        body = format_error_bullets(c(
+          i = sprintf(
+            "%s\nThis can be resolved by accepting the license terms. In R is done by adding the following to a
           download request: 'license-md5'='%s'. Alternatively the study can be once downloaded from movebank directly.",
-          error_message_content,
-          digest::digest( # sub("\n$","",
-            rawToChar(error_return$content),
-            serialize = FALSE
+            error_message_content,
+            digest::digest(
+              # sub("\n$","",
+              rawToChar(error_return$content),
+              serialize = FALSE
+            )
           )
-        ))), url = url,
+        )),
+        url = url,
         class = "move2_error_movebank_api_license_not_accepted"
       )
     }
   }
-  p <- suppressWarnings(vroom::problems(data_dl), classes = c("vroom_parse_issue"))
+  p <- suppressWarnings(
+    vroom::problems(data_dl),
+    classes = c("vroom_parse_issue")
+  )
   if (nrow(p) != 0) {
-    cli_warn(c("{.fun vroom} finds reading problems with the movebank specification.",
-      i = "This might relate to the returned data not fitting the expectation of the movebank data format specified in
+    cli_warn(
+      c(
+        "{.fun vroom} finds reading problems with the movebank specification.",
+        i = "This might relate to the returned data not fitting the expectation of the movebank data format specified in
       the package.",
-      i = "For retrieving the specific problem you can enable `global_entrace` using {.run rlang::global_entrace()}
+        i = "For retrieving the specific problem you can enable `global_entrace` using {.run rlang::global_entrace()}
       then run the command and use {.code rlang::last_warnings()[[1]]$problems} to retrieve the problems.",
-      i = "The requested url can then be retrieved with: {.code rlang::last_warnings()[[1]]$url}",
-      i = "Alternatively in some cases you might be able to retrieve the problems calling {.fun vroom::problems} on the
+        i = "The requested url can then be retrieved with: {.code rlang::last_warnings()[[1]]$url}",
+        i = "Alternatively in some cases you might be able to retrieve the problems calling {.fun vroom::problems} on the
       result of the function call that produced the warning."
-    ), problems = p, url = url, class = "move2_warning_movebank_api_format_not_parsed")
+      ),
+      problems = p,
+      url = url,
+      class = "move2_warning_movebank_api_format_not_parsed"
+    )
   }
   if (rename_columns) {
     data_dl <- data_dl |>
       rename_with(
-        .cols = any_of(c("id", "local_identifier", "comments", "number_of_deployments")),
-        .fn = function(x, y) paste(x, y, sep = "_"), x = entity_type
+        .cols = any_of(c(
+          "id",
+          "local_identifier",
+          "comments",
+          "number_of_deployments"
+        )),
+        .fn = function(x, y) paste(x, y, sep = "_"),
+        x = entity_type
       )
   }
   if (omit_derived_data) {
-    data_dl <- data_dl |> select(-any_of(c(
-      "timestamp_end", "timestamp_start",
-      "number_of_events", "number_of_deployments"
-    )))
+    data_dl <- data_dl |>
+      select(
+        -any_of(c(
+          "timestamp_end",
+          "timestamp_start",
+          "number_of_events",
+          "number_of_deployments"
+        ))
+      )
   }
-  for (i in names(mb_column_units_underscore)[names(mb_column_units_underscore) %in% names(data_dl)]) {
-    data_dl[[i]] <- structure(data_dl[[i]],
+  for (i in names(mb_column_units_underscore)[
+    names(mb_column_units_underscore) %in% names(data_dl)
+  ]) {
+    data_dl[[i]] <- structure(
+      data_dl[[i]],
       class = "units",
       units = attr(as_units(mb_column_units_underscore[i]), "units")
     )
@@ -520,10 +632,13 @@ movebank_get_study_id <- function(study_id, ...) {
       pull("id")
     if (!is_scalar_vector(study_id)) {
       if (length(study_id) < 1) {
-        cli_abort(c(
-          e = "The argument {.arg study_id} currently does not match any study.",
-          i = "Check if a correct name is provided."
-        ), class = "move2_error_movebank_api_no_study_name_match")
+        cli_abort(
+          c(
+            e = "The argument {.arg study_id} currently does not match any study.",
+            i = "Check if a correct name is provided."
+          ),
+          class = "move2_error_movebank_api_no_study_name_match"
+        )
       }
       nms <- study_id_data$name[s <- study_id_data$study_id %in% study_id]
       ids <- study_id_data$study_id[s]
@@ -531,16 +646,22 @@ movebank_get_study_id <- function(study_id, ...) {
       studies <- unlist(lapply(names(ss), function(x) {
         cli_fmt(cli_text("{.arg {x}} ({.val {ss[[x]]}})"))
       }))
-      cli_abort(c(
-        e = "The argument {.arg study_id} matches more then one study.",
-        i = "{.arg study_id} should only match one study. The currently matched studies are: {studies}",
-        i = "To resolve either write out the full name of the study or use the numerical identifier for downloading data.
+      cli_abort(
+        c(
+          e = "The argument {.arg study_id} matches more then one study.",
+          i = "{.arg study_id} should only match one study. The currently matched studies are: {studies}",
+          i = "To resolve either write out the full name of the study or use the numerical identifier for downloading data.
         You can also find the (correct) numerical study identifier in movebank."
-      ), class = "move2_error_movebank_api_name_matches_multiple_studies")
+        ),
+        class = "move2_error_movebank_api_name_matches_multiple_studies"
+      )
     }
   }
 
-  if (!(is_scalar_integerish(study_id) || (inherits(study_id, "integer64") && is_scalar_vector(study_id)))) {
+  if (
+    !(is_scalar_integerish(study_id) ||
+      (inherits(study_id, "integer64") && is_scalar_vector(study_id)))
+  ) {
     cli_abort(
       class = "move2_error_no_valid_study_id",
       c(
